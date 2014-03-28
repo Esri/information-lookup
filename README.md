@@ -2,7 +2,7 @@
 
 Web app template that is used to determine if the location specified intersects a polygon.  The location entered is optionally stored in a layer in the web map.
 
-![App](information-lookup.PNG)
+![App](information-lookup.png)
 
 ## Features
 * Place Finding - Find places or geocode an address
