@@ -43,22 +43,87 @@ function (
     String,
     esriLang,
     JSON
+    
 ) {
 
 
     return declare("", null, {
         config: {},
-        constructor: function (config) {
-            //config will contain application and user defined info for the template such as i18n strings, the web map id
+       
+        startup: function (config) {
+            // config will contain application and user defined info for the template such as i18n strings, the web map id
             // and application id
-            // any url parameters and any application specific configuration information. 
-            this.config = config;
-            // document ready
-            ready(lang.hitch(this, function () {
-                //supply either the webmap id or, if available, the item info 
-                var itemInfo = this.config.itemInfo || this.config.webmap;
-                this._createWebMap(itemInfo);
-            }));
+            // any url parameters and any application specific configuration information.
+            if (config) {
+                this.config = config;
+                try {
+
+                    this.isMobileDevice = false;
+                    this.isAndroidDevice = false;
+                    this.isBrowser = false;
+                    this.isTablet = false;
+                    this.lessthanios6 = false;
+                    this.isiOS = false;
+                    //config will contain application and user defined info for the template such as i18n strings, the web map id
+                    // and application id
+                    // any url parameters and any application specific configuration information. 
+                    this.config = config;
+
+                    document.title = this.config.i18n.page.title;
+
+                    if (this.config.showSplash) {
+                        dojo.byId("buttonText").innerHTML = this.config.i18n.splashscreen.buttonText;
+
+                        this._checkDevice();
+
+
+                        on(dojo.byId("splashButton"), "click", lang.hitch(this, this._hideSplashScreenMessage));
+
+                        dojo.byId('divSplashContent').innerHTML = this.config.splashText;
+
+                        dojo.byId('divSplashScreenContainer').style.display = "block";
+
+                        dojo.addClass(dojo.byId('divSplashScreenContent'), "divSplashScreenDialogContent");
+                        this._setSplashScreenHeight();
+                    }
+                }
+                catch (e) {
+                    console.log(e.message);
+                }
+
+
+
+
+
+                // document ready
+                ready(lang.hitch(this, function () {
+                    //supply either the webmap id or, if available, the item info
+                    var itemInfo = this.config.itemInfo || this.config.webmap;
+                    this._createWebMap(itemInfo);
+                    dojo.style("loader", "display", "none");
+                }));
+            } else {
+                var error = new Error("Main:: Config is not defined");
+                this.reportError(error);
+            }
+        },
+        reportError: function (error) {
+            // remove loading class from body
+            domClass.remove(document.body, "app-loading");
+            domClass.add(document.body, "app-error");
+            // an error occurred - notify the user. In this example we pull the string from the
+            // resource.js file located in the nls folder because we've set the application up
+            // for localization. If you don't need to support multiple languages you can hardcode the
+            // strings here and comment out the call in index.html to get the localization strings.
+            // set message
+            var node = dom.byId("loading_message");
+            if (node) {
+                if (this.config && this.config.i18n) {
+                    node.innerHTML = this.config.i18n.map.error + ": " + error.message;
+                } else {
+                    node.innerHTML = "Unable to create map: " + error.message;
+                }
+            }
         },
         _mapLoaded: function () {
             // Map is ready
@@ -70,6 +135,271 @@ function (
             this._createToolbar();
             this._initGraphic();
 
+        },
+        _checkDevice: function () {
+
+            var userAgent = window.navigator.userAgent;
+
+
+            if (userAgent.indexOf("iPhone") >= 0 || userAgent.indexOf("iPad") >= 0) {
+                this.isiOS = true;
+                userAgent.replace(/OS ((\d+_?){2,3})\s/, function (match, key) {
+                    var version = key.split('_');
+                    if (version[0] < 6) {
+                        this.lessthanios6 = true;
+
+                    }
+                });
+            }
+            if ((userAgent.indexOf("Android") >= 0 && userAgent.indexOf("Mobile") >= 0) || userAgent.indexOf("iPhone") >= 0) {
+                this.isMobileDevice = true;
+                if ((userAgent.indexOf("Android") >= 0)) {
+                    this.isAndroidDevice = true;
+                }
+                //dojo.byId('divSplashContent').style.fontSize = "15px";
+
+            } else if ((userAgent.indexOf("iPad") >= 0) || (userAgent.indexOf("Android") >= 0)) {
+                this.isTablet = true;
+                //dojo.byId('divSplashContent').style.fontSize = "14px";
+            } else {
+                this.isBrowser = true;
+                //dojo.byId('divSplashContent').style.fontSize = "11px";
+
+            }
+            if (this.lessthanios6) {
+                if (userAgent.indexOf("iPhone") || userAgent.indexOf("iPad")) {
+                }
+
+            }
+            if (dojo.isIE) {
+
+            }
+
+
+
+
+            if (this.isMobileDevice) {
+                dojo.byId('divSplashScreenContent').style.width = "95%";
+                dojo.byId('divSplashScreenContent').style.height = "95%";
+            } else {
+                dojo.byId("divSplashScreenContent").style.width = "350px";
+                dojo.byId("divSplashScreenContent").style.height = "290px";
+
+            }
+
+
+        },
+        _hideSplashScreenMessage: function () {
+            if (dojo.isIE < 9 || this.isAndroidDevice) {
+                dojo.byId("divSplashScreenContent").style.display = "none";
+                dojo.addClass('divSplashScreenContainer', "opacityHideAnimation");
+            } else {
+                dojo.addClass('divSplashScreenContainer', "opacityHideAnimation");
+                dojo.replaceClass("divSplashScreenContent", "hideContainer", "showContainer");
+
+            }
+
+        },
+
+        _setSplashScreenHeight: function () {
+            var height = (this.isMobileDevice) ? (dojo.window.getBox().h - 110) : (dojo.coords(dojo.byId('divSplashScreenContent')).h - 80);
+            dojo.byId('divSplashContent').style.height = (height + 14) + "px";
+            //this._createScrollbar(dojo.byId("divSplashContainer"), dojo.byId("divSplashContent"));
+        },
+        //Create scroll-bar
+        _createScrollbar: function (container, content) {
+            var yMax;
+            var pxLeft, pxTop, xCoord, yCoord;
+            var scrollbar_track;
+            var isHandleClicked = false;
+            this.container = container;
+            this.content = content;
+            content.scrollTop = 0;
+            if (dojo.byId(container.id + 'scrollbar_track')) {
+                dojo.empty(dojo.byId(container.id + 'scrollbar_track'));
+                container.removeChild(dojo.byId(container.id + 'scrollbar_track'));
+            }
+            if (!dojo.byId(container.id + 'scrollbar_track')) {
+                scrollbar_track = document.createElement('div');
+                scrollbar_track.id = container.id + "scrollbar_track";
+                scrollbar_track.className = "scrollbar_track";
+            } else {
+                scrollbar_track = dojo.byId(container.id + 'scrollbar_track');
+            }
+            var containerHeight = dojo.coords(container);
+            scrollbar_track.style.right = 5 + 'px';
+            var scrollbar_handle = document.createElement('div');
+            scrollbar_handle.className = 'scrollbar_handle';
+            scrollbar_handle.id = container.id + "scrollbar_handle";
+            scrollbar_track.appendChild(scrollbar_handle);
+            container.appendChild(scrollbar_track);
+            if ((content.scrollHeight - content.offsetHeight) <= 5) {
+                scrollbar_handle.style.display = 'none';
+                scrollbar_track.style.display = 'none';
+                return;
+            } else {
+
+                scrollbar_handle.style.display = 'block';
+                scrollbar_track.style.display = 'block';
+                scrollbar_handle.style.height = Math.max(this.content.offsetHeight * (this.content.offsetHeight / this.content.scrollHeight), 25) + 'px';
+                yMax = this.content.offsetHeight - scrollbar_handle.offsetHeight;
+                yMax = yMax - 5; //for getting rounded bottom of handle
+                if (window.addEventListener) {
+                    content.addEventListener('DOMMouseScroll', ScrollDiv, false);
+                }
+                content.onmousewheel = function (evt) {
+                    console.log(content.id);
+                    ScrollDiv(evt);
+                };
+            }
+
+            function ScrollDiv(evt) {
+                evt = window.event || evt; //equalize event object
+                var delta = evt.detail ? evt.detail * (-120) : evt.wheelDelta; //delta returns +120 when wheel is scrolled up, -120 when scrolled down
+                pxTop = scrollbar_handle.offsetTop;
+                var y;
+                if (delta <= -120) {
+                     y = pxTop + 10;
+                    if (y > yMax) {
+                        y = yMax;
+                    } // Limit vertical movement
+                    if (y < 0) {
+                        y = 0;
+                    } // Limit vertical movement
+                    scrollbar_handle.style.top = y + "px";
+                    content.scrollTop = Math.round(scrollbar_handle.offsetTop / yMax * (content.scrollHeight - content.offsetHeight));
+
+                } else {
+                     y = pxTop - 10;
+                    if (y > yMax) {
+                        y = yMax;
+                    } // Limit vertical movement
+                    if (y < 0) {
+                        y = 2;
+                    } // Limit vertical movement
+                    scrollbar_handle.style.top = (y - 2) + "px";
+                    content.scrollTop = Math.round(scrollbar_handle.offsetTop / yMax * (content.scrollHeight - content.offsetHeight));
+                }
+            }
+
+            //Attach events to scrollbar components
+            scrollbar_track.onclick = function (evt) {
+                if (!isHandleClicked) {
+                    evt = (evt) ? evt : event;
+                    pxTop = scrollbar_handle.offsetTop; // Sliders vertical position at start of slide.
+                    var offsetY;
+                    if (!evt.offsetY) {
+                        var coords = dojo.coords(evt.target);
+                        offsetY = evt.layerY - coords.t;
+                    } else offsetY = evt.offsetY;
+                    if (offsetY < scrollbar_handle.offsetTop) {
+                        scrollbar_handle.style.top = offsetY + "px";
+                        content.scrollTop = Math.round(scrollbar_handle.offsetTop / yMax * (content.scrollHeight - content.offsetHeight));
+                    } else if (offsetY > (scrollbar_handle.offsetTop + scrollbar_handle.clientHeight)) {
+                        var y = offsetY - scrollbar_handle.clientHeight;
+                        if (y > yMax) y = yMax; // Limit vertical movement
+                        if (y < 0) y = 0; // Limit vertical movement
+                        scrollbar_handle.style.top = y + "px";
+                        content.scrollTop = Math.round(scrollbar_handle.offsetTop / yMax * (content.scrollHeight - content.offsetHeight));
+                    } else {
+                        return;
+                    }
+                }
+                isHandleClicked = false;
+            };
+
+            //Attach events to scrollbar components
+            scrollbar_handle.onmousedown = function (evt) {
+                isHandleClicked = true;
+                evt = (evt) ? evt : event;
+                evt.cancelBubble = true;
+                if (evt.stopPropagation) evt.stopPropagation();
+                pxTop = scrollbar_handle.offsetTop; // Sliders vertical position at start of slide.
+                yCoord = evt.screenY; // Vertical mouse position at start of slide.
+                document.body.style.MozUserSelect = 'none';
+                document.body.style.userSelect = 'none';
+                document.onselectstart = function () {
+                    return false;
+                };
+                document.onmousemove = function (evt) {
+                    evt = (evt) ? evt : event;
+                    evt.cancelBubble = true;
+                    if (evt.stopPropagation) evt.stopPropagation();
+                    var y = pxTop + evt.screenY - yCoord;
+                    if (y > yMax) {
+                        y = yMax;
+                    } // Limit vertical movement
+                    if (y < 0) {
+                        y = 0;
+                    } // Limit vertical movement
+                    scrollbar_handle.style.top = y + "px";
+                    content.scrollTop = Math.round(scrollbar_handle.offsetTop / yMax * (content.scrollHeight - content.offsetHeight));
+                };
+            };
+
+            document.onmouseup = function () {
+                document.body.onselectstart = null;
+                document.onmousemove = null;
+            };
+
+            scrollbar_handle.onmouseout = function (evt) {
+                document.body.onselectstart = null;
+            };
+
+            var startPos;
+            var scrollingTimer;
+
+            dojo.connect(container, "touchstart", function (evt) {
+                touchStartHandler(evt);
+            });
+
+
+            dojo.connect(container, "touchmove", function (evt) {
+                touchMoveHandler(evt);
+            });
+
+            dojo.connect(container, "touchend", function (evt) {
+                touchEndHandler(evt);
+            });
+
+            //Handlers for Touch Events
+            function touchStartHandler(e) {
+                startPos = e.touches[0].pageY;
+            }
+
+            function touchMoveHandler(e) {
+                var touch = e.touches[0];
+                e.cancelBubble = true;
+                if (e.stopPropagation) e.stopPropagation();
+                e.preventDefault();
+
+                pxTop = scrollbar_handle.offsetTop;
+                var y;
+                if (startPos > touch.pageY) {
+                    y = pxTop + 10;
+                } else {
+                    y = pxTop - 10;
+                }
+
+                //set scrollbar handle
+                if (y > yMax) y = yMax; // Limit vertical movement
+                if (y < 0) y = 0; // Limit vertical movement
+                scrollbar_handle.style.top = y + "px";
+
+                //set content position
+                content.scrollTop = Math.round(scrollbar_handle.offsetTop / yMax * (content.scrollHeight - content.offsetHeight));
+
+                scrolling = true;
+                startPos = touch.pageY;
+            }
+
+            function touchEndHandler(e) {
+                scrollingTimer = setTimeout(function () {
+                    clearTimeout(scrollingTimer);
+                    scrolling = false;
+                }, 100);
+            }
+            //touch scrollbar end
         },
         _createLocatorButton: function () {
 
@@ -190,7 +520,6 @@ function (
             var extentChange = on(this.map, "extent-change", lang.hitch(this, function () {
                 this._extentChanged();
             }));
-            document.title = this.config.i18n.page.title;
             var serviceAreaLayerNames = [];
             this.popupMedia = [];
 
@@ -202,7 +531,7 @@ function (
 
                 array.forEach(this.layers, function (layer) {
 
-                    serviceAreaLayerNames[f] = String.trim(serviceAreaLayerNames[f])
+                    serviceAreaLayerNames[f] = String.trim(serviceAreaLayerNames[f]);
                     if (layer.layerObject.layerInfos != null) {
                         array.forEach(layer.layerObject.layerInfos, function (subLyrs) {
                             if (subLyrs.name == serviceAreaLayerNames[f]) {
@@ -698,7 +1027,7 @@ function (
                     if (this.defCnt == 0) {
                         this._allQueriesComplate();
                     }
-                   
+
                 }))
 
 
@@ -767,17 +1096,7 @@ function (
                         this._mapLoaded();
                     }));
                 }
-            }), lang.hitch(this, function (error) {
-                //an error occurred - notify the user. In this example we pull the string from the 
-                //resource.js file located in the nls folder because we've set the application up 
-                //for localization. If you don't need to support mulitple languages you can hardcode the 
-                //strings here and comment out the call in index.html to get the localization strings. 
-                if (this.config && this.config.i18n) {
-                    alert(this.config.i18n.map.error + ": " + error.message);
-                } else {
-                    alert("Unable to create map: " + error.message);
-                }
-            }));
+            }), this.reportError);
         }
 
 

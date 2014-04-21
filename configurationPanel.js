@@ -82,8 +82,20 @@
             "label":"No value",
             "tooltip":"Value to set when the request location does not intersects a lookup feature",
             "stringFieldOption": "text"
-        }
-        
+        },
+        {
+            "type": "boolean",
+            "fieldName": "showSplash",
+            "label": "Display Splash Screen on Startup",
+            "tooltip": "Check on if you want to display a splash screen at startup"
+        },
+         {
+             "type":"string",
+             "fieldName":"splashText",
+             "label":"Splash Screen message",
+             "tooltip":"Message to display when application is loaded",
+             "stringFieldOption": "richtext"
+         }
         ]
     }],
     "values":{
@@ -94,7 +106,9 @@
         "zoomLevel": 16,
         "storeLocation": false,
         "serviceRequestLayerAvailibiltyFieldValueAvail": "Intersected",
-        "serviceRequestLayerAvailibiltyFieldValueNotAvail": "Not Intersected"
+        "serviceRequestLayerAvailibiltyFieldValueNotAvail": "Not Intersected",
+        "splashText":"<center>Information Lookup is a configurable web application template that can be used to provide the general public, internal staff and other interested parties the with information about a location. If no features are found at that location, a general message is displayed. Optionally, the location entered can be stored in a point layer. The template can be configured using the ArcGIS Online Configuration dialog.</center>"
+
         
 
     }
