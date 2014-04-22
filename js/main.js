@@ -19,10 +19,11 @@ define([
     "esri/geometry",
     "esri/dijit/PopupTemplate",
     "dojo/string",
-     "esri/lang",
-     "dojo/json",
-     "dojo/dom-class",
-     "dojo/dom"
+    "esri/lang",
+    "dojo/json",
+    "dojo/dom-class",
+    "dojo/dom",
+    "dojo/dom-attr"
 ],
 function (
     dojo,
@@ -48,7 +49,8 @@ function (
     esriLang,
     JSON,
     domClass,
-    dom
+    dom,
+    domAttr
 ) {
     return declare("", null, {
         config: {},
@@ -59,6 +61,18 @@ function (
             // any url parameters and any application specific configuration information.
             if (config) {
                 this.config = config;
+
+                var ss = document.createElement("link");
+                ss.type = "text/css";
+                ss.rel = "stylesheet";
+                ss.href = "css/" + this.config.theme + ".css";
+                document.getElementsByTagName("head")[0].appendChild(ss);
+
+                //if (dojo.configData.ThemeColor) {
+                //    if (dom.byId("theme")) {
+                //        domAttr.set(dom.byId("theme"), "href", dojo.configData.ThemeColor);
+                //    }
+                //}
                 try {
 
                     this.isMobileDevice = false;
@@ -125,6 +139,8 @@ function (
         _mapLoaded: function () {
             // Map is ready
             console.log("map loaded");
+            domClass.add(this.map.infoWindow.domNode, this.config.theme);
+
             this._createLocatorButton();
             this._createGeocoder();
 
@@ -987,7 +1003,7 @@ function (
                 //Once the map is created we get access to the response which provides important info 
                 //such as the map, operational layers, popup info and more. This object will also contain
                 //any custom options you defined for the template. In this example that is the "theme" property.
-                //Here" we"ll use it to update the application to match the specified color theme.  
+                
                 console.log(this.config);
                 this.map = response.map;
 

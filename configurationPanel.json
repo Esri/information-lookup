@@ -101,7 +101,27 @@
              "label":"Splash Screen message",
              "tooltip":"Message to display when application is loaded",
              "stringFieldOption": "richtext"
-         }
+         },{
+         "category":"<b>Choose a splash theme</b>",
+         "fields":[
+            {
+               "type":"string",
+               "fieldName":"theme",
+               "tooltip":"Color theme to use",
+               "label":"Color Scheme:",
+               "options":[
+                  {
+                     "label":"Black",
+                     "value":"black"
+                  },
+                  {
+                     "label":"Blue",
+                     "value":"blue"
+                  }
+               ]
+            }
+         ]
+      }
         ]
     }],
     "values":{

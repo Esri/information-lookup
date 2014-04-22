@@ -4,8 +4,8 @@ define([], function () {
     //default web map, default app color theme and more. These values can be overwritten by template configuration settings
     //and url parameters.
     var defaults = {
-        "appid": "3ab5b7fa6dfa48caa2cd2c7db59337ae",//
-        "webmap": "", // "25660c0facdb419191c8b2dec5da74d7" 
+        "appid": "",//
+        "webmap": "25660c0facdb419191c8b2dec5da74d7", // "" 
        "oauthappid": null, //"AFTKRmv16wj14N3z",
 	    //Group templates must support a group url parameter. This will contain the id of the group.
 	    //group: "",
@@ -15,7 +15,7 @@ define([], function () {
 	    //Example of a template specific property. If your template had several color schemes
 	    //you could define the default here and setup configuration settings to allow users to choose a different
 	    //color theme.
-	    "theme": "blue",
+	    "theme": "black",
 	    "bingKey": "", //Enter the url to your organizations bing maps key if you want to use bing basemaps
 	    //Defaults to arcgis.com. Set this value to your portal or organization host name.
 	    "sharinghost": location.protocol + "//" + "www.arcgis.com",
@@ -61,8 +61,8 @@ define([], function () {
         "serviceRequestLayerAvailibiltyFieldValueAvail": "Intersected",
         "serviceRequestLayerAvailibiltyFieldValueNotAvail": "Not Intersected",
         "showSplash": true,
-        "splashText": "<center>Information Lookup is a configurable web application template that can be used to provide the general public, internal staff and other interested parties the with information about a location. If no features are found at that location, a general message is displayed. Optionally, the location entered can be stored in a point layer. The template can be configured using the ArcGIS Online Configuration dialog.</center>"
-
+        "splashText": "<center>Information Lookup is a configurable web application template that can be used to provide the general public, internal staff and other interested parties the with information about a location. If no features are found at that location, a general message is displayed. Optionally, the location entered can be stored in a point layer. The template can be configured using the ArcGIS Online Configuration dialog.</center>",
+        
     };
     return defaults;
 });
