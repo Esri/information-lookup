@@ -68,11 +68,6 @@ function (
                 ss.href = "css/" + this.config.theme + ".css";
                 document.getElementsByTagName("head")[0].appendChild(ss);
 
-                //if (dojo.configData.ThemeColor) {
-                //    if (dom.byId("theme")) {
-                //        domAttr.set(dom.byId("theme"), "href", dojo.configData.ThemeColor);
-                //    }
-                //}
                 try {
 
                     this.isMobileDevice = false;
@@ -139,8 +134,7 @@ function (
         _mapLoaded: function () {
             // Map is ready
             console.log("map loaded");
-            domClass.add(this.map.infoWindow.domNode, this.config.theme);
-
+           
             this._createLocatorButton();
             this._createGeocoder();
 
