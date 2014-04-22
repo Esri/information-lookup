@@ -5,14 +5,15 @@
 
         "fields":[
         {
+            "type":"paragraph",
+            "value": "<font size='3'><b>Solution Configurations</b></font><br /><font size='3'>------------------------------------</font><br /><font size='2'>To see this application configured for an industry, visit the following configurations on <a style='color: blue ! important' target='_blank' href='http://solutions.arcgis.com'>solutions.ArcGIS.com</a><br />&nbsp;-&nbsp;&nbsp;<a style='color: blue ! important' target='_blank' href='http://solutions.arcgis.com/utilities/electric/help/system-improvement/'>Electric System Improvement</a><br />&nbsp;-&nbsp;&nbsp;<a style='color: blue ! important' target='_blank' href='http://solutions.arcgis.com/utilities/water/help/sewer-service-lookup/'>Sewer Service Lookup</a><br />&nbsp;-&nbsp;&nbsp;<a style='color: blue ! important' target='_blank' href='http://solutions.arcgis.com/utilities/water/help/water-restrictions/'>Water Restrictions</a><br />&nbsp;-&nbsp;&nbsp;<a style='color: blue ! important' target='_blank' href='http://solutions.arcgis.com/utilities/gas/help/gas-service-lookup/'>Gas Service Lookup</a></font>"
+
+        }, 
+        {
             "type": "webmap",
             "label": "Select a map"
         },
-        {
-            "type":"paragraph",
-            "value": "View the  <a target='_blank' href='http://solutions.arcgis.com/utilities/water/help/sewer-service-lookup/get-started/'>Service lookup help</a> for more details"
-
-        }, 
+        
         {
             "type":"string",
             "fieldName":"serviceAreaLayerNames",
