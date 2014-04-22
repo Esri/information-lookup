@@ -1,3 +1,5 @@
+/*global define,location,commonConfig:true */
+/*jslint sloppy:true */
 define([], function () {
     var config = {
         bingMapsKey: "Arrzu_Koi7htDRMIwm6kTe0Nqh8FvVdN17blcaJVTEhn87z-tIYJh2LgBNbJS4fv",
