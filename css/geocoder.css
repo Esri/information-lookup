@@ -1,0 +1,43 @@
+﻿
+#searchDiv {
+    display: block;
+    position: absolute;
+    z-index: 3;
+    top: 55px;
+    left: 75px;
+    width: 60%;
+}
+
+
+
+/* customize geocoder appearance */
+.simpleGeocoder, .simpleGeocoder .esriGeocoderContainer {
+    width: 100%;
+}
+
+    .simpleGeocoder .esriGeocoder {
+        height: 100%;
+    }
+
+         .simpleGeocoder .esriGeocoder input {
+            
+            /* Firefox */
+            width: -moz-calc(100% - 75px);
+            /* WebKit */
+            width: -webkit-calc(100% - 75px);
+            /* Opera */
+            width: -o-calc(100% - 75px);
+            /* Standard */
+            width: calc(100% - 75px);
+            padding-right:0;
+            margin-right:0;
+
+        }
+
+
+    .simpleGeocoder .esriGeocoderResult:hover,
+    .simpleGeocoder .esriGeocoderResultEven:focus,
+    .simpleGeocoder .esriGeocoderResultOdd:focus {
+        /* default is #EDEDED, use a light blue instead */
+        background-color: #B5DAEA;
+    }
