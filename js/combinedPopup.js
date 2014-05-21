@@ -432,11 +432,11 @@ define([
                                     //this.layerDescription = layerFields[g].fieldName + ": " + "{" + result.Layer.name + "_" + layerFields[g].fieldName + "}<br>";
                                     layFldTable = layFldTable + "<tr valign='top'>";
                                     if (layerFields[g].label != null) {
-                                        layFldTable = layFldTable + "<td class='attrName'>" + layerFields[g].label + "</td>";
+                                        layFldTable = layFldTable + "<td class='popName'>" + layerFields[g].label + "</td>";
                                     } else {
-                                        layFldTable = layFldTable + "<td class='attrName'>" + layerFields[g].fieldName + "</td>";
+                                        layFldTable = layFldTable + "<td class='popName'>" + layerFields[g].fieldName + "</td>";
                                     }
-                                    layFldTable = layFldTable + "<td class='attrValue'>" + "{" + result.Layer.name + "_" + layerFields[g].fieldName + "}</td>";
+                                    layFldTable = layFldTable + "<td class='popValue'>" + "{" + result.Layer.name + "_" + layerFields[g].fieldName + "}</td>";
                                     layFldTable = layFldTable + "</tr>";
 
                                 }
@@ -449,8 +449,8 @@ define([
 
                         }
                         if (result.Layer.popupInfo.description === null) {
-                            var popupTable = "<div>";
-                            popupTable = popupTable + "<table class='attrTablePopUp' cellpadding='0' cellspacing='0'>";
+                            var popupTable = "<div class=''>";
+                            popupTable = popupTable + "<table class='popTable' cellpadding='0' cellspacing='0'>";
                             popupTable = popupTable + "<tbody>";
 
                             if (popupTitle !== "") {
@@ -500,7 +500,6 @@ define([
                     });
 
                 }
-
                 if (this.results.length === 0) {
                     var editGraphic = new Graphic(this.event, this.editSymbol, null, null);
                     if (this.showGraphic === true) {
@@ -509,6 +508,11 @@ define([
                     this.map.infoWindow.setTitle(this.config.serviceUnavailableTitle);
                     this.map.infoWindow.setContent(this.config.serviceUnavailableMessage.replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, "'"));
                     this.map.infoWindow.show(editGraphic.geometry);
+                    if (this.config.popupWidth != null && this.config.popupHeight != null) {
+                        this.map.infoWindow.resize(this.config.popupWidth, this.config.popupHeight);
+                    } else {
+                        this.map.infoWindow.resize();
+                    }
                     if (this.config.storeLocation === true && this.config.editingAllowed) {
                         atts[this.config.serviceRequestLayerAvailibiltyField] = this.config.serviceRequestLayerAvailibiltyFieldValueNotAvail;
                         this._logRequest(this.event, atts);
@@ -528,15 +532,14 @@ define([
 
                     this.map.infoWindow.setFeatures(featureArray);
                     this.map.infoWindow.show(editGraphic.geometry);
-                    this.map.infoWindow.resize();
-
-                    if (this.config.storeLocation === true && this.config.editingAllowed) {
-                        atts[this.config.serviceRequestLayerAvailibiltyField] = this.config.serviceRequestLayerAvailibiltyFieldValueAvail;
-
-                        this._logRequest(this.event, atts);
+                    if (this.config.popupWidth != null && this.config.popupHeight != null) {
+                        this.map.infoWindow.resize(this.config.popupWidth, this.config.popupHeight);
+                    } else {
+                        this.map.infoWindow.resize();
                     }
                 }
                 this.map.centerAndZoom(this.event, this.config.zoomLevel);
+
             }
 
         },

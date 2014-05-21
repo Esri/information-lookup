@@ -163,7 +163,7 @@ function (
         },
 
         addBaseMapGallery: function (divId) {
-            var title = "Switch Basemap"
+            var title = "Switch Basemap";
             if (this.config.i18n) {
                 if (this.config.i18n.ui) {
                     if (this.config.i18n.ui.basemapButton) {
