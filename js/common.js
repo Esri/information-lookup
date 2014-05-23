@@ -233,6 +233,42 @@ function (
             if (this.toolbar) {
                 this.toolbar.deactivate();
             }
+        },
+        findLayer: function (layers, layerNames) {
+            var result = [];
+            var layDetails = {};
+            array.forEach(this.layers, function (layer) {
+
+                if (layer.layerObject.layerInfos != null) {
+                    array.forEach(layer.layerObject.layerInfos, function (subLyrs) {
+                        if (layerNames.contains(subLyrs.name)) {
+                            layDetails = {};
+                            layDetails.name = subLyrs.name;
+                            layDetails.layerOrder = layerNames.indexOf(subLyrs.name);
+                            layDetails.url = layer.layerObject.url + "/" + subLyrs.id;
+
+                            if (layer.layers != null) {
+                                array.forEach(layer.layers, function (popUp) {
+                                    if (subLyrs.id == popUp.id) {
+                                        layDetails.popupInfo = popUp.popupInfo;
+                                    }
+                                }, this);
+                            }
+                            result.push(layDetails);
+                        }
+                    }, this);
+                } else {
+                    if (layerNames.contains(layer.title)) {
+                        layDetails = {};
+                        layDetails.popupInfo = layer.popupInfo;
+                        layDetails.name = layer.title;
+                        layDetails.url = layer.layerObject.url;
+                        layDetails.layerOrder = layerNames.indexOf(layer.title);
+                        result.push(layDetails);
+                    }
+                }
+            });
+            return result;
         }
 
     });
