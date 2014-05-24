@@ -237,34 +237,27 @@ function (
         findLayer: function (layers, layerNames) {
             var result = [];
             var layDetails = {};
-            array.forEach(this.layers, function (layer) {
+            array.forEach(layers, function (layer) {
 
                 if (layer.layerObject.layerInfos != null) {
                     array.forEach(layer.layerObject.layerInfos, function (subLyrs) {
-                        if (layerNames.contains(subLyrs.name)) {
-                            layDetails = {};
-                            layDetails.name = subLyrs.name;
-                            layDetails.layerOrder = layerNames.indexOf(subLyrs.name);
-                            layDetails.url = layer.layerObject.url + "/" + subLyrs.id;
-
+                        if (dojo.indexOf(layerNames, subLyrs.name) >= 0) {
+                            layer.layerOrder = layerNames.indexOf(layer.title);
                             if (layer.layers != null) {
                                 array.forEach(layer.layers, function (popUp) {
                                     if (subLyrs.id == popUp.id) {
-                                        layDetails.popupInfo = popUp.popupInfo;
+                                        layer.popupInfo = popUp.popupInfo;
                                     }
                                 }, this);
                             }
-                            result.push(layDetails);
+                            result.push(layer);
                         }
                     }, this);
                 } else {
-                    if (layerNames.contains(layer.title)) {
-                        layDetails = {};
-                        layDetails.popupInfo = layer.popupInfo;
-                        layDetails.name = layer.title;
-                        layDetails.url = layer.layerObject.url;
-                        layDetails.layerOrder = layerNames.indexOf(layer.title);
-                        result.push(layDetails);
+                    if (dojo.indexOf(layerNames, layer.title) >= 0) {
+                        layer.layerOrder = layerNames.indexOf(layer.title);
+
+                        result.push(layer);
                     }
                 }
             });
