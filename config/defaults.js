@@ -4,8 +4,8 @@ define([], function () {
     //default web map, default app color theme and more. These values can be overwritten by template configuration settings
     //and url parameters.
     var defaults = {
-        "appid": "",
-        "webmap": "25660c0facdb419191c8b2dec5da74d7",
+        "appid": "",//
+        "webmap": "9ac1fc2561ce4881ade95b9930b30d6c",//"25660c0facdb419191c8b2dec5da74d7", // "" 
         "oauthappid": null, //"AFTKRmv16wj14N3z",
         //Group templates must support a group url parameter. This will contain the id of the group.
         //group: "",
@@ -50,19 +50,17 @@ define([], function () {
             }]
         },
 
-        "serviceAreaLayerNames": "Service Area",
+        "serviceAreaLayerNames": "Trimming Areas|Maintenance Areas",
         "popupTitle": "Service Information",
-        "popupWidth": null,
-        "popupHeight": null,
         "serviceUnavailableTitle": "Outside Utility Service Area",
         "serviceUnavailableMessage": "The utility does not provide service to the selected location",
         "zoomLevel": 16,
-        "storeLocation": false,
+        "storeLocation": true,
         "serviceRequestLayerName": "Request Tracking",
         "serviceRequestLayerAvailibiltyField": "REQSTATUS",
         "serviceRequestLayerAvailibiltyFieldValueAvail": "Intersected",
         "serviceRequestLayerAvailibiltyFieldValueNotAvail": "Not Intersected",
-        "showSplash": false,
+        "showSplash": true,
         "splashText": "<center>Information Lookup is a configurable web application template that can be used to provide the general public, internal staff and other interested parties the with information about a location. If no features are found at that location, a general message is displayed. Optionally, the location entered can be stored in a point layer. The template can be configured using the ArcGIS Online Configuration dialog.</center>",
 
     };
