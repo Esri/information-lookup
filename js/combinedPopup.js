@@ -540,6 +540,10 @@ define([
                     } else {
                         this.map.infoWindow.resize();
                     }
+                    if (this.config.storeLocation === true && this.config.editingAllowed) {
+                        atts[this.config.serviceRequestLayerAvailibiltyField] = this.config.serviceRequestLayerAvailibiltyFieldValueAvail;
+                        this._logRequest(this.event, atts);
+                    }
                 }
                 this.map.centerAndZoom(this.event, this.config.zoomLevel);
 
