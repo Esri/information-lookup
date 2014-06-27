@@ -241,7 +241,7 @@ function (
 
                 if (layer.layerObject.layerInfos != null) {
                     array.forEach(layer.layerObject.layerInfos, function (subLyrs) {
-                        if (dojo.indexOf(layerNames, subLyrs.name) >= 0) {
+                        if (layerNames == subLyrs.name) {
                             layer.layerOrder = layerNames.indexOf(layer.title);
                             if (layer.layers != null) {
                                 array.forEach(layer.layers, function (popUp) {
@@ -254,7 +254,7 @@ function (
                         }
                     }, this);
                 } else {
-                    if (dojo.indexOf(layerNames, layer.title) >= 0) {
+                    if (layerNames == layer.title) {
                         layer.layerOrder = layerNames.indexOf(layer.title);
 
                         result.push(layer);
