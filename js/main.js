@@ -31,7 +31,6 @@ define([
     "dijit/registry",
     "dojo/_base/connect"
 
-
 ],
 function (
     dojo,
@@ -177,7 +176,7 @@ function (
                 this.popup.enableMapClick();
 
                 this._hideBusyIndicator();
-
+              
             }
             catch (e) {
                 this.reportError(e);

@@ -11,6 +11,7 @@ define([
     "dojo/on",
     "esri/geometry",
     "esri/geometry/Extent",
+    "esri/geometry/Point",
     "esri/graphic",
     "esri/toolbars/draw",
     "esri/symbols/SimpleMarkerSymbol",
@@ -31,6 +32,7 @@ define([
     on,
     Geometry,
     Extent,
+    Point,
     Graphic,
     Draw,
     SimpleMarkerSymbol,
@@ -66,6 +68,15 @@ define([
             this._createToolbar();
             this._initGraphic();
             this.emit("ready", { "Name": "CombinedPopup" });
+            if (this.config.location) {
+                var e = this.config.location.split(',');
+                if (e.length === 2) {
+                    var point = new Point(parseFloat(e[0]), parseFloat(e[1]), this.map.spatialReference);
+                    this.showPopup(point);
+                }
+
+            }
+
         },
         showPopup: function (evt) {
             if (this.lookupLayers === undefined) {
