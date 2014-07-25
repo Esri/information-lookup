@@ -52,7 +52,6 @@
                 name: "application",
                 location: package_path + '/js'
             },
-
             {
                 name: "config",
                 location: package_path + '/config'
@@ -72,11 +71,13 @@
     <script type="text/javascript" src="//js.arcgis.com/3.10/"></script>
     <script type="text/javascript">
         require([
-         "application/template",
-         "application/main"
+         "application/templateOptions",
+            "application/template",
+            "application/main",
         ], function (
-         Template,
-         Main
+        templateConfig,
+            Template,
+            Main
               ) {
             dojo.addOnLoad(pageReady);
             function pageReady() {
@@ -84,7 +85,7 @@
 
             }
             // create the template. This will take care of all the logic required for template applications
-            var myTemplate = new Template();
+            var myTemplate = new Template(templateConfig);
             // create my main application. Start placing your logic in the main.js file.
             var myApp = new Main();
             // start template
@@ -98,6 +99,7 @@
                 myApp.reportError(error);
             });
         });
+        
     </script>
 </body>
 </html>

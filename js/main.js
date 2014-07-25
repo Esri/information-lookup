@@ -213,6 +213,22 @@ function (
         },
         //create a map based on the input web map id
         _createWebMap: function (itemInfo) {
+            if (this.config.extent) {
+                var e = this.config.extent.split(',');
+                if (e.length === 4) {
+                    itemInfo.item.extent = [
+                        [
+                            parseFloat(e[0]),
+                            parseFloat(e[1])
+                        ],
+                        [
+                            parseFloat(e[2]),
+                            parseFloat(e[3])
+                        ]
+                    ];
+                }
+            }
+
             arcgisUtils.createMap(itemInfo, "mapDiv", {
                 mapOptions: {
                     autoResize: true
