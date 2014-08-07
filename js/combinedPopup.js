@@ -174,6 +174,9 @@ define([
             var serviceAreaLayerNames = [];
             this.popupMedia = [];
 
+            if (String.trim(this.config.serviceAreaLayerNames) == "") {
+                alert("No layers defined in the config, the search box will not work");
+            }
             serviceAreaLayerNames = this.config.serviceAreaLayerNames.split("|");
             this.lookupLayers = [];
             var layDetails = {};

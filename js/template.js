@@ -120,7 +120,7 @@ define(["dojo/Evented", "dojo/_base/declare", "dojo/_base/kernel", "dojo/_base/a
         _getCommonConfig: function () {
             var deferred;
             deferred = new Deferred();
-            if (this.templateConfig.queryForCommonConfig) {
+            if (this.templateConfig.queryForCommonConfig100) {
                 require(["arcgis_templates/commonConfig"], lang.hitch(this, function (response) {
                     this.commonConfig = response;
                     deferred.resolve(response);

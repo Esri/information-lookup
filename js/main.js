@@ -118,47 +118,7 @@ function (
             // Map is ready
             try {
                 console.log("map loaded");
-                //dojo.connect(this.map, 'resize', this, function (extent) {
-                //    this.map.resize();
-                //    this.map.reposition();
-                //});
-                //dojo.connect(this.map, 'onReposition', this, function (x, y) {
-                //    this.map.resize();
-                //});
-                //dojo.connect(this.map, 'onExtentChange', this, function (extent) {
-                //    this.map.resize();
-                //    this.map.reposition();
-                //});
-                //dojo.connect(window, 'onresize', this, function () {
-
-                //    //var w = window.innerWidth;
-                //    //var h = window.innerHeight;
-                //    //alert(w + " " + h);
-                //    //alert("Width = " + this.map.width + "; Height = " + this.map.height);
-                //    clearTimeout(this.resizeTimer);
-                //    this.resizeTimer = setTimeout(lang.hitch(this, this._resizeMap()), 200);
-
-                //});
-                //dojo.connect(window, 'load', this, function () {
-
-                //    //var w = window.innerWidth;
-                //    //var h = window.innerHeight;
-                //    //alert(w + " " + h);
-                //    //alert("Width = " + this.map.width + "; Height = " + this.map.height);
-                //    clearTimeout(this.resizeTimer);
-                //    this.resizeTimer = setTimeout(lang.hitch(this, this._resizeMap()), 200);
-
-                //});
-               
-                //connect.connect(this.map, 'resize', function () {
-                //    //resize the map if the div is resized
-                //    clearTimeout(resizeTimer);
-                //    resizeTimer = setTimeout(function () {
-                //        map.resize();
-                //        map.reposition();
-                //    }, 500);
-                //});
-
+             
                 this.common = new Common(this.map, this.config);
                 this.common.checkingEditing();
                 this.common.addLocatorButton("locateDiv");
@@ -241,7 +201,6 @@ function (
                 //such as the map, operational layers, popup info and more. This object will also contain
                 //any custom options you defined for the template. In this example that is the "theme" property.
 
-                console.log(this.config);
                 this.map = response.map;
 
                 this.handler = response.clickEventHandle;
