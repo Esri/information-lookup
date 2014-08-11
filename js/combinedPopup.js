@@ -67,6 +67,8 @@ define([
             this._initPopup();
             this._createToolbar();
             this._initGraphic();
+            this.map.infoWindow.on("hide", lang.hitch(this, this._infoHide))
+
             this.emit("ready", { "Name": "CombinedPopup" });
             if (this.config.location) {
                 var e = this.config.location.split(',');
@@ -168,6 +170,11 @@ define([
         disableMapClick: function () {
             this.toolbar.deactivate();
 
+        },
+        _infoHide: function () {
+            if (this.map.graphics != null) {
+                this.map.graphics.clear();
+            }
         },
         _initPopup: function () {
 
@@ -603,7 +610,7 @@ define([
                     if (this.config.popupWidth != null && this.config.popupHeight != null) {
                         this.map.infoWindow.resize(this.config.popupWidth, this.config.popupHeight);
                     }else if (this.config.popupWidth != null) {
-                        this.map.infoWindow.resize(this.config.popupWidth, this.map.infoWindow._maxHeight);
+                        this.map.infoWindow.resize(this.config.popupWidth, this.map.infoWindow._maxHeight); 
                     }else {
                         this.map.infoWindow.resize();
                     }
