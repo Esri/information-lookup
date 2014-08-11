@@ -441,7 +441,8 @@ define([
                             if (obj[key] == fieldName && (matchName || key == "normalizeField")) {
                                 obj[key] = layerName + "_" + fieldName;
                             } else {
-                                obj[key] = obj[key].replace("{" + fieldName + "}", "{" + layerName + "_" + fieldName + "}").replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, "'");
+                                var re = new RegExp("{" + fieldName + "}", "g");
+                                obj[key] = obj[key].replace(re, "{" + layerName + "_" + fieldName + "}").replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, "'");
                             }
                         }
                     }
@@ -504,8 +505,9 @@ define([
                             }
 
                             if (result.Layer.popupInfo.description == null) {
+                                var re = new RegExp("{" + layerFields[g].fieldName + "}", "g");
 
-                                popupTitle = popupTitle.replace("{" + layerFields[g].fieldName + "}", "{" + result.Layer.name + "_" + layerFields[g].fieldName + "}");
+                                popupTitle = popupTitle.replace(re, "{" + result.Layer.name + "_" + layerFields[g].fieldName + "}");
 
                                 if (layerFields[g].visible === true) {
 
@@ -522,7 +524,10 @@ define([
                                 }
 
                             } else {
-                                layerDescription = layerDescription.replace("{" + layerFields[g].fieldName + "}", "{" + result.Layer.name + "_" + layerFields[g].fieldName + "}");
+                                var re = new RegExp("{" + layerFields[g].fieldName + "}", "g");
+
+                                layerDescription = layerDescription.replace(re, "{" + result.Layer.name + "_" + layerFields[g].fieldName + "}");
+
                             }
                             resultFeature[result.Layer.name + "_" + layerFields[g].fieldName] = result.results[0].attributes[layerFields[g].fieldName];
                             layerFields[g].fieldName = result.Layer.name + "_" + layerFields[g].fieldName;
