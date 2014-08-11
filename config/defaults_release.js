@@ -54,6 +54,8 @@ define([], function () {
         "popupTitle": "Service Information",
         "serviceUnavailableTitle": "Outside Utility Service Area",
         "serviceUnavailableMessage": "The utility does not provide service to the selected location",
+        "popupWidth": null,
+        "popupHeight": null,
         "zoomLevel": 16,
         "storeLocation": false,
         "serviceRequestLayerName": "Request Tracking",

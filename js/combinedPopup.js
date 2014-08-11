@@ -602,7 +602,9 @@ define([
                     this.map.infoWindow.show(editGraphic.geometry);
                     if (this.config.popupWidth != null && this.config.popupHeight != null) {
                         this.map.infoWindow.resize(this.config.popupWidth, this.config.popupHeight);
-                    } else {
+                    }else if (this.config.popupWidth != null) {
+                        this.map.infoWindow.resize(this.config.popupWidth, this.map.infoWindow._maxHeight);
+                    }else {
                         this.map.infoWindow.resize();
                     }
                     if (this.config.storeLocation === true && this.config.editingAllowed) {
@@ -626,7 +628,12 @@ define([
                     this.map.infoWindow.show(editGraphic.geometry);
                     if (this.config.popupWidth != null && this.config.popupHeight != null) {
                         this.map.infoWindow.resize(this.config.popupWidth, this.config.popupHeight);
-                    } else {
+                    }
+                    else if (this.config.popupWidth != null) {
+                        this.map.infoWindow.resize(this.config.popupWidth, this.map.infoWindow._maxHeight);
+                        
+                    } 
+                    else {
                         this.map.infoWindow.resize();
                     }
                     if (this.config.storeLocation === true && this.config.editingAllowed) {
