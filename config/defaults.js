@@ -4,7 +4,7 @@ define([], function () {
     //default web map, default app color theme and more. These values can be overwritten by template configuration settings
     //and url parameters.
     var defaults = {
-        "appid": "",
+        "appid": "621a4bd91f624fd49e9ddbb3f87a911a",
         "webmap": "25660c0facdb419191c8b2dec5da74d7",
         "oauthappid": null, //"AFTKRmv16wj14N3z",
         //Group templates must support a group url parameter. This will contain the id of the group.
