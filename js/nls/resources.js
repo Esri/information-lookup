@@ -22,6 +22,9 @@ define({
         },
         ui:{
             basemapButton: "Basemap"
+        },
+        popup: {
+            urlMoreInfo: "More Info"
         }
 
     }),
@@ -49,5 +52,6 @@ define({
     "sv": 1,
     "th": 1,
     "tr": 1,
-    "zh-cn": 1
+    "zh-cn": 1,
+    "vi": 1
 });

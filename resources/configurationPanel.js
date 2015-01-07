@@ -7,7 +7,7 @@
             "type":"paragraph",
             "value": "<font size='3'><b>Solution Configurations</b></font><br /><font size='3'>------------------------------------</font><br /><font size='2'>To see this application configured for an industry, visit the following configurations on <a style='color: blue ! important' target='_blank' href='http://solutions.arcgis.com'>solutions.ArcGIS.com</a><br />&nbsp;-&nbsp;&nbsp;<a style='color: blue ! important' target='_blank' href='http://solutions.arcgis.com/utilities/electric/help/system-improvement/'>Electric System Improvement</a><br />&nbsp;-&nbsp;&nbsp;<a style='color: blue ! important' target='_blank' href='http://solutions.arcgis.com/utilities/water/help/sewer-service-lookup/'>Sewer Service Lookup</a><br />&nbsp;-&nbsp;&nbsp;<a style='color: blue ! important' target='_blank' href='http://solutions.arcgis.com/utilities/water/help/water-restrictions/'>Water Restrictions</a><br />&nbsp;-&nbsp;&nbsp;<a style='color: blue ! important' target='_blank' href='http://solutions.arcgis.com/utilities/gas/help/gas-service-lookup/'>Gas Service Lookup</a></font>"
 
-        }, 
+        },
         {
             "type": "webmap",
             "label": "Select a map"
@@ -18,7 +18,17 @@
             "fieldName":"serviceAreaLayerNames",
             "label":"Lookup Layers",
             "tooltip":"Polygon Layers used for service lookup delimited by a vertical bar"
-        },
+        }, 
+        //{
+        //        "label": "Lookup Layers",
+        //        "fieldName": "serviceAreaLayerNamesSelector",
+        //        "type": "multilayerandfieldselector",
+        //        "tooltip": "Polygon Layers used for combined popup",
+        //        "layerOptions": {
+        //            "supportedTypes": ["FeatureLayer","FeatureCollection","DynamicLayer"],
+        //            "geometryTypes": ["esriGeometryPolygon"]
+        //        }
+        //},
         {
             "type":"string",
             "fieldName":"popupTitle", 
@@ -119,7 +129,7 @@
          },{
              "type":"string",
              "fieldName":"theme",
-             "tooltip":"Color scehma for the splash screen",
+             "tooltip":"Color schema for the splash screen",
              "label":"Splash Screen Theme:",
              "options":[
                 {
@@ -131,12 +141,18 @@
                     "value":"blue"
                 }
              ]
-         }
-         
+         },
+        {
+            "type": "boolean",
+            "fieldName": "basemapWidgetVisible",
+            "label": "Show or hide the basemap selector button",
+            "tooltip": "Check on if you want to display the basemap selector"
+        }
         ]
     }],
     "values":{
         "serviceAreaLayerNames": "Service Area",
+        "serviceAreaLayerNamesSelector": null,
         "popupTitle": "Service Information",
         "popupWidth": null,
         "popupHeight": null,
@@ -148,6 +164,7 @@
         "serviceRequestLayerAvailibiltyFieldValueNotAvail": "Not Intersected",
         "showSplash": false,
         "splashText":"<center>Information Lookup is a configurable web application template that can be used to provide the general public, internal staff and other interested parties the with information about a location. If no features are found at that location, a general message is displayed. Optionally, the location entered can be stored in a point layer. The template can be configured using the ArcGIS Online Configuration dialog.</center>",
-        "theme":"black"
+        "theme":"black",
+        "basemapWidgetVisible": false
     }
 }
