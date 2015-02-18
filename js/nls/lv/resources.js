@@ -22,6 +22,9 @@
         },
         ui:{
             basemapButton: "Pamatkarte"
+        },
+        popup: {
+            urlMoreInfo: "Papildinformācija"
         }
 
     })

@@ -22,6 +22,9 @@
         },
         ui:{
             basemapButton: "Bản đồ nền"
+        },
+        popup: {
+            urlMoreInfo: "Thông tin Khác"
         }
 
     })

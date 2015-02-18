@@ -22,6 +22,9 @@
         },
         ui:{
             basemapButton: "Baskarta"
+        },
+        popup: {
+            urlMoreInfo: "Mer information"
         }
 
     })

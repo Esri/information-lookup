@@ -22,6 +22,9 @@
         },
         ui:{
             basemapButton: "Mappa di base"
+        },
+        popup: {
+            urlMoreInfo: "Ulteriori informazioni"
         }
 
     })

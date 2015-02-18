@@ -22,6 +22,9 @@
         },
         ui:{
             basemapButton: "Altlık Haritası"
+        },
+        popup: {
+            urlMoreInfo: "Daha Fazla Bilgi"
         }
 
     })

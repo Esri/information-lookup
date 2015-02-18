@@ -22,6 +22,9 @@
         },
         ui:{
             basemapButton: "베이스맵"
+        },
+        popup: {
+            urlMoreInfo: "자세한 내용"
         }
 
     })

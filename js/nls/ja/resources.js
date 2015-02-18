@@ -22,6 +22,9 @@
         },
         ui:{
             basemapButton: "ベースマップ"
+        },
+        popup: {
+            urlMoreInfo: "詳細情報"
         }
 
     })

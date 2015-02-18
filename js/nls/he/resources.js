@@ -22,6 +22,9 @@
         },
         ui:{
             basemapButton: "מפת בסיס"
+        },
+        popup: {
+            urlMoreInfo: "מידע נוסף"
         }
 
     })

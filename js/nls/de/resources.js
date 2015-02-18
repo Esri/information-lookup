@@ -22,6 +22,9 @@
         },
         ui:{
             basemapButton: "Grundkarte"
+        },
+        popup: {
+            urlMoreInfo: "Weitere Informationen"
         }
 
     })

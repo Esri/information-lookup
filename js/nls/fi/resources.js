@@ -22,6 +22,9 @@
         },
         ui:{
             basemapButton: "Taustakartta"
+        },
+        popup: {
+            urlMoreInfo: "Lisätietoja"
         }
 
     })
