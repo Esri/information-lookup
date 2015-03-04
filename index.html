@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <title>Information Lookup</title>
@@ -61,10 +61,6 @@
             }, {
                 name: "arcgis_templates",
                 location: package_path + '/..'
-            }, {
-                name: "templateConfig",
-                location: package_path//package_path.substr(0, package_path.lastIndexOf('/'))
-
             }
             ]
         };
@@ -72,10 +68,9 @@
     <script type="text/javascript" src="//js.arcgis.com/3.13/"></script>
     <script type="text/javascript">
         require([
-            "application/templateOptions",
+            "config/templateConfig",
             "application/template",
-            "application/main",
-
+            "application/main"
         ], function (
             templateConfig,
             Template,

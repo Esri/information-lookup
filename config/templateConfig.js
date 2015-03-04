@@ -1,4 +1,4 @@
-﻿/*global define */
+/*global define */
 /*jslint sloppy:true */
 /*
  | Copyright 2014 Esri
@@ -35,10 +35,11 @@ define({
     "queryForCommonConfig": false,
     // These are the options specified for querying items within the group. Modify these to get more items. You can also call the public template.queryGroupItems() method with these options as a parameter.
     "groupParams": {
-        "sortField": "modified",
-        "sortOrder": "desc",
-        "num": 9,
-        "start": 0
+    	q: "group:\"${groupid}\" AND -type:\"Code Attachment\"",
+	    "sortField": "modified",
+	    "sortOrder": "desc",
+	    "num": 9,
+	    "start": 0
     },
     //This option demonstrates how to handle additional custom url parameters. For example
     //if you want users to be able to specify lat/lon coordinates that define the map's center or
@@ -46,5 +47,7 @@ define({
     "urlItems": [
         "location",
         "extent"// example param. ?theme=<my theme>
-    ]
+    ],
+    // Most users will not need to modify this value. For esri hosting environments only. Will automatically create a "sharinghost" and "proxyurl" for the application. Only set this is to true if the app is going to be stored on Esri's hosting servers. If you are using your own custom hosted portal, set the "sharinghost" in defaults.js instead of setting this to true.
+    esriEnvironment: false
 });
