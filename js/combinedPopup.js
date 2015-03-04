@@ -132,7 +132,9 @@ define([
                     query.geometry = extent;
                     query.geometryType = "esriGeometryExtent";
                     query.outFields = ["*"];
-
+                    if (this.lookupLayers[f].definitionExpression) {
+                        query.where = this.lookupLayers[f].definitionExpression;
+                    }
                     queryDeferred = this.lookupLayers[f].layer.layerObject.queryFeatures(query);
                     queryDeferred.addCallback(lang.hitch(this, this._queryComplete(this.lookupLayers[f])));
 
@@ -152,7 +154,9 @@ define([
                     query.outSpatialReference = this.map.spatialReference;
                     query.geometryType = "esriGeometryPoint";
                     query.outFields = ["*"];
-
+                    if (this.lookupLayers[f].definitionExpression) {
+                        query.where = this.lookupLayers[f].definitionExpression;
+                    }
                     queryTask = new QueryTask(this.lookupLayers[f].url);
                     queryDeferred = queryTask.execute(query);
                     queryDeferred.addCallback(lang.hitch(this, this._queryComplete(this.lookupLayers[f])));
@@ -244,6 +248,11 @@ define([
                                         layDetails.layerOrder = f;
                                         layDetails.url = subLyrs.layerObject.url;
                                         layDetails.layer = subLyrs;
+                                        if (subLyrs.layerDefinition) {
+                                            if (subLyrs.layerDefinition.definitionExpression) {
+                                                layDetails.definitionExpression = subLyrs.layerDefinition.definitionExpression;
+                                            }
+                                        }
                                         console.log(serviceAreaLayerNames[f] + " " + "set");
 
                                         layDetails.popupInfo = subLyrs.popupInfo;
@@ -271,12 +280,17 @@ define([
                                     layDetails.name = subLyrs.name;
                                     layDetails.layerOrder = f;
                                     layDetails.url = layer.layerObject.url + "/" + subLyrs.id;
-
+                                    
                                     console.log(serviceAreaLayerNames[f] + " " + "set");
 
                                     if (layer.layers != null) {
                                         array.forEach(layer.layers, function (popUp) {
                                             if (subLyrs.id == popUp.id) {
+                                                if (popUp.layerDefinition) {
+                                                    if (popUp.layerDefinition.definitionExpression) {
+                                                        layDetails.definitionExpression = popUp.layerDefinition.definitionExpression;
+                                                    }
+                                                }
                                                 layDetails.popupInfo = popUp.popupInfo;
                                             }
                                         }, this);
@@ -313,6 +327,12 @@ define([
                                 layDetails.name = layer.title;
                                 layDetails.url = layer.layerObject.url;
                                 layDetails.layerOrder = f;
+                                if (layer.layerDefinition)
+                                {
+                                    if (layer.layerDefinition.definitionExpression) {
+                                        layDetails.definitionExpression = layer.layerDefinition.definitionExpression;
+                                    }
+                                }
                                 this.lookupLayers.push(layDetails);
                                 console.log(layer.title + " " + "set");
 
