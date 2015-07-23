@@ -631,7 +631,11 @@ define([
                     fldVal = fldVal.toString();
                     if (fldVal.indexOf("http://") >= 0 || fldVal.indexOf("https://") >= 0 || fldVal.indexOf("www.") >= 0) {
                       if (result.Layer.popupInfo.description === null) {
-                        resultFeature[result.Layer.name + "_" + layerFields[g].fieldName] = "<a target='_blank' href='" + fldVal + "'>" + i18n.popup.urlMoreInfo + "</a>"
+                        resultFeature[result.Layer.name + "_" + layerFields[g].fieldName + "_" + "Hyper"] = "<a target='_blank' href='" + fldVal + "'>" + i18n.popup.urlMoreInfo + "</a>"
+                        if (layFldTable.indexOf("{" + result.Layer.name + "_" + layerFields[g].fieldName + "}") >= 0) {
+                          layFldTable = layFldTable.replace("{" + result.Layer.name + "_" + layerFields[g].fieldName + "}", "{" + result.Layer.name + "_" + layerFields[g].fieldName + "_" + "Hyper" + "}");
+                        }
+                        resultFeature[result.Layer.name + "_" + layerFields[g].fieldName] = fldVal
                       }
                       else {
                         resultFeature[result.Layer.name + "_" + layerFields[g].fieldName] = fldVal;
