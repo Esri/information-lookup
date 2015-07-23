@@ -54,7 +54,7 @@ define([], function () {
     //When true the geocoder search box is displayed in the title area
     //When searchextent is true the geocoder will prioritize results within
     //the current map extent
-    "searchExtent": true,
+    //"searchExtent": true,
     "search":true,
     //Setup the app to support a custom url parameter. Use this if you want users
     //to be able to search for a string field in a layer. For example if the web map

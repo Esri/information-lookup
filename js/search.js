@@ -83,7 +83,7 @@ function (
         var searchOptions = {
           map: this.map,
           autoNavigate: false,
-          useMapExtent: this.config.searchExtent,
+          useMapExtent: true,
           itemData: this.config.response.itemInfo.itemData
         };
 

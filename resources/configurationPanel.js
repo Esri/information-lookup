@@ -25,7 +25,7 @@
             "supportedTypes": [
               "FeatureLayer",
               "FeatureCollection",
-              "DynamicLayer"
+              "MapServiceLayer"
             ],
             "geometryTypes": [
               "esriGeometryPolygon"
@@ -181,7 +181,6 @@
     {
       "category": "Search Settings",
       "fields": [
-       
         {
           "type": "paragraph",
           "value": "Enable search to allow users to find a location or data in the map. Configure the search settings to refine the experience in your app by setting the default search resource, placeholder text, etc."
@@ -191,12 +190,6 @@
           "fieldName": "search",
           "label": "Enable search tool"
         },
-         {
-           "type": "boolean",
-           "fieldName": "searchExtent",
-           "label": "Limit search to start up extent",
-           "tooltip": "Check on if you want to limit search to the start up extent"
-         },
         {
           "type": "search",
           "fieldName": "searchConfig",
@@ -209,7 +202,7 @@
       "fields": [
         {
           "type": "paragraph",
-          "value": "Setup the app to support a custom url parameter. For example if your map contains a feature layer with parcel information and you'd like to be able to find parcels using a url parameter you can use this section to do so. Select a layer and search field then define the name of a custom param. Once you've defined these values you can append the custom search to your application url using the custom parameter name you define. For example, if I set the custom param value to parcels a custom url would look like this index.html?parcel=3045"
+          "value": "Setup the app to support a custom url parameter. Only point layers are supported.  For example if your map contains a feature layer with parcel point information and you'd like to be able to find parcels using a url parameter you can use this section to do so. Select a layer and search field then define the name of a custom param. Once you've defined these values you can append the custom search to your application url using the custom parameter name you define. For example, if I set the custom param value to parcels a custom url would look like this index.html?parcel=3045"
         },
         {
           "placeHolder": "i.e. parcels",
@@ -259,7 +252,6 @@
     "splashText": "<center>Information Lookup is a configurable web application template that can be used to provide the general public, internal staff and other interested parties the with information about a location. If no features are found at that location, a general message is displayed. Optionally, the location entered can be stored in a point layer. The template can be configured using the ArcGIS Online Configuration dialog.</center>",
     "theme": "black",
     "basemapWidgetVisible": true,
-    "searchExtent":true,
-    "search":true
+    "search": true
   }
 }
