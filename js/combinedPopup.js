@@ -517,13 +517,18 @@ define([
         }
       }
       var link = dojo.create("a",
-            { "class": "action", "innerHTML": linkText, "href": "javascript:void(0);" },
+            { "class": "action link", "href": "javascript:void(0);" },
             dojo.query(".actionList", this.map.infoWindow.domNode)[0]);
+      var linkImg = dojo.create("img",
+          { "class": "linkImage" },
+          link);
 
       var email = dojo.create("a",
-            { "class": "action", "innerHTML": emailText, "href": "javascript:void(0);" },
+            { "class": "action email", "href": "javascript:void(0);" },
             dojo.query(".actionList", this.map.infoWindow.domNode)[0]);
-
+      var emailImg = dojo.create("img",
+       { "class": "emailImage" },
+       email);
       dojo.connect(link, "onclick", lang.hitch(this, function (evt) {
 
         var uri = window.location.href;
@@ -534,9 +539,7 @@ define([
         // Assemble the new uri with its query string attached.
         var queryStr = ioQuery.objectToQuery(query);
         uri = uri + "?" + queryStr;
-        //window.location.href = uri;
         window.open(uri);
-        //window.location.href = uri;
 
       }));
       dojo.connect(email, "onclick", lang.hitch(this, function (evt) {
@@ -574,7 +577,7 @@ define([
     _drawEnd: function (evt) {
       this.showPopup(evt.geometry);
     },
-    _processObject: function (obj, fieldName, layerName, matchName) {
+    _processObject: function (obj, fieldName, layerName, matchName, oid) {
       var matchForRec = matchName;
       var re = null;
       for (var key in obj) {
@@ -595,10 +598,10 @@ define([
 
             } else {
               if (obj[key] == fieldName && (matchName || key == "normalizeField")) {
-                obj[key] = layerName + "_" + fieldName;
+                obj[key] = layerName + "_" + oid + "_" + fieldName;
               } else {
                 re = new RegExp("{" + fieldName + "}", "g");
-                obj[key] = obj[key].replace(re, "{" + layerName + "_" + fieldName + "}").replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, "'");
+                obj[key] = obj[key].replace(re, "{" + layerName + "_" + oid + "_" + fieldName + "}").replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, "'");
               }
             }
           }
@@ -632,131 +635,168 @@ define([
             var allFields = [];
 
             var allDescriptions = "";
-            var popUpArray = [];
-            var mediaArray = [];
+            var popUpArray = {};
+            var mediaArray = {};
             var resultFeature = {};
 
-            popUpArray.length = this.results.length;
-            mediaArray.length = this.results.length;
+            //popUpArray.length = this.results.length;
+            //mediaArray.length = this.results.length;
+            console.log(this.results.length + " layers");
             array.forEach(this.results, function (result) {
-              if (result.Layer.popupInfo != null) {
-                var resetFieldNames = result.Layer.popupInfo.fieldInfos;
-                for (var r = 0, rl = resetFieldNames.length; r < rl; r++) {
-                  resetFieldNames[r].fieldName = resetFieldNames[r].fieldName.replace(result.Layer.name + "_", "");
+              mediaArray[result.Layer.layerOrder] = {};
+              popUpArray[result.Layer.layerOrder] = {};
+              console.log(result.results.length + " features found in " + result.Layer.name);
+              array.forEach(result.results, function (feature) {
+                console.log("Feature with OBJECTID: " + feature.attributes.OBJECTID + " in " + result.Layer.name);
 
-                }
+                if (result.Layer.popupInfo != null) {
+                  //var resetFieldNames = result.Layer.popupInfo.fieldInfos;
+                  //for (var r = 0, rl = resetFieldNames.length; r < rl; r++) {
+                  //  resetFieldNames[r].fieldName = resetFieldNames[r].fieldName.replace(result.Layer.name + "_", "");
 
-                //result.Layer.popupInfo.fieldInfos;
-                var layerFields = result.Layer.popupInfo.fieldInfos;
-                var layerDescription = result.Layer.popupInfo.description;
-                var popupTitle = result.Layer.popupInfo.title;
-                var mediaInfos = lang.clone(result.Layer.popupInfo.mediaInfos);
+                  //}
 
-                var layFldTable = "";
+                  //result.Layer.popupInfo.fieldInfos;
+                  var layerFields = lang.clone(result.Layer.popupInfo.fieldInfos);
 
-                for (var g = 0, gl = layerFields.length; g < gl; g++) {
-                  if (mediaInfos != null) {
-                    array.forEach(mediaInfos, function (mediaInfo) {
-                      mediaInfo = this._processObject(mediaInfo, layerFields[g].fieldName, result.Layer.name, false);
+                  var layerDescription = lang.clone(result.Layer.popupInfo.description);
+                  var popupTitle = lang.clone(result.Layer.popupInfo.title);
+                  var mediaInfos = lang.clone(result.Layer.popupInfo.mediaInfos);
 
-                    }, this);
-                  }
+                  var layFldTable = "";
 
-                  if (result.Layer.popupInfo.description == null) {
-                    re = new RegExp("{" + layerFields[g].fieldName + "}", "g");
+                  for (var g = 0, gl = layerFields.length; g < gl; g++) {
+                    if (mediaInfos != null) {
+                      array.forEach(mediaInfos, function (mediaInfo) {
+                        mediaInfo = this._processObject(mediaInfo, layerFields[g].fieldName, result.Layer.name, false, feature.attributes.OBJECTID);
 
-                    popupTitle = popupTitle.replace(re, "{" + result.Layer.name + "_" + layerFields[g].fieldName + "}");
-
-                    if (layerFields[g].visible === true) {
-
-                      //this.layerDescription = layerFields[g].fieldName + ": " + "{" + result.Layer.name + "_" + layerFields[g].fieldName + "}<br>";
-                      layFldTable = layFldTable + "<tr valign='top'>";
-                      if (layerFields[g].label != null) {
-                        layFldTable = layFldTable + "<td class='popName'>" + layerFields[g].label + "</td>";
-                      } else {
-                        layFldTable = layFldTable + "<td class='popName'>" + layerFields[g].fieldName + "</td>";
-                      }
-                      layFldTable = layFldTable + "<td class='popValue'>" + "{" + result.Layer.name + "_" + layerFields[g].fieldName + "}</td>";
-                      layFldTable = layFldTable + "</tr>";
-
+                      }, this);
                     }
 
-                  } else {
-                    re = new RegExp("{" + layerFields[g].fieldName + "}", "g");
+                    if (result.Layer.popupInfo.description == null) {
+                      re = new RegExp("{" + layerFields[g].fieldName + "}", "g");
 
-                    layerDescription = layerDescription.replace(re, "{" + result.Layer.name + "_" + layerFields[g].fieldName + "}");
+                      popupTitle = popupTitle.replace(re, "{" + result.Layer.name + "_" + feature.attributes.OBJECTID + "_" + layerFields[g].fieldName + "}");
 
-                  }
-                  var fldVal = result.results[0].attributes[layerFields[g].fieldName];
-                  if (fldVal != null) {
+                      if (layerFields[g].visible === true) {
 
-
-                    fldVal = fldVal.toString();
-                    if (fldVal.indexOf("http://") >= 0 || fldVal.indexOf("https://") >= 0 || fldVal.indexOf("www.") >= 0) {
-                      if (result.Layer.popupInfo.description === null) {
-                        resultFeature[result.Layer.name + "_" + layerFields[g].fieldName + "_" + "Hyper"] = "<a target='_blank' href='" + fldVal + "'>" + i18n.popup.urlMoreInfo + "</a>"
-                        if (layFldTable.indexOf("{" + result.Layer.name + "_" + layerFields[g].fieldName + "}") >= 0) {
-                          layFldTable = layFldTable.replace("{" + result.Layer.name + "_" + layerFields[g].fieldName + "}", "{" + result.Layer.name + "_" + layerFields[g].fieldName + "_" + "Hyper" + "}");
+                        //this.layerDescription = layerFields[g].fieldName + ": " + "{" + result.Layer.name + "_" + layerFields[g].fieldName + "}<br>";
+                        layFldTable = layFldTable + "<tr valign='top'>";
+                        if (layerFields[g].label != null) {
+                          layFldTable = layFldTable + "<td class='popName'>" + layerFields[g].label + "</td>";
+                        } else {
+                          layFldTable = layFldTable + "<td class='popName'>" + layerFields[g].fieldName + "</td>";
                         }
-                        resultFeature[result.Layer.name + "_" + layerFields[g].fieldName] = fldVal
+                        layFldTable = layFldTable + "<td class='popValue'>" + "{" + result.Layer.name + "_" + feature.attributes.OBJECTID + "_" + layerFields[g].fieldName + "}</td>";
+                        layFldTable = layFldTable + "</tr>";
+
+                      }
+
+                    } else {
+                      re = new RegExp("{" + layerFields[g].fieldName + "}", "g");
+
+                      layerDescription = layerDescription.replace(re, "{" + result.Layer.name + "_" + feature.attributes.OBJECTID + "_" + layerFields[g].fieldName + "}");
+
+                    }
+                    var fldVal = feature.attributes[layerFields[g].fieldName];
+                    if (fldVal != null) {
+
+
+                      fldVal = fldVal.toString();
+                      if (fldVal.indexOf("http://") >= 0 || fldVal.indexOf("https://") >= 0 || fldVal.indexOf("www.") >= 0) {
+                        if (result.Layer.popupInfo.description === null) {
+                          resultFeature[result.Layer.name + "_" + layerFields[g].fieldName + "_" + "Hyper"] = "<a target='_blank' href='" + fldVal + "'>" + i18n.popup.urlMoreInfo + "</a>"
+                          if (layFldTable.indexOf("{" + result.Layer.name + "_" + feature.attributes.OBJECTID + "_" + layerFields[g].fieldName + "}") >= 0) {
+                            layFldTable = layFldTable.replace("{" + result.Layer.name + "_" + feature.attributes.OBJECTID + "_" + layerFields[g].fieldName + "}", "{" + result.Layer.name + "_" + feature.attributes.OBJECTID + "_" + layerFields[g].fieldName + "_" + "Hyper" + "}");
+                          }
+                          resultFeature[result.Layer.name + "_" + feature.attributes.OBJECTID + "_" + layerFields[g].fieldName] = fldVal
+                        }
+                        else {
+                          resultFeature[result.Layer.name + "_" + feature.attributes.OBJECTID + "_" + layerFields[g].fieldName] = fldVal;
+                        }
                       }
                       else {
-                        resultFeature[result.Layer.name + "_" + layerFields[g].fieldName] = fldVal;
+                        resultFeature[result.Layer.name + "_" + feature.attributes.OBJECTID + "_" + layerFields[g].fieldName] = fldVal;
                       }
                     }
                     else {
-                      resultFeature[result.Layer.name + "_" + layerFields[g].fieldName] = fldVal;
+                      resultFeature[result.Layer.name + "_" + feature.attributes.OBJECTID + "_" + layerFields[g].fieldName] = fldVal;
                     }
-                  }
-                  else {
-                    resultFeature[result.Layer.name + "_" + layerFields[g].fieldName] = fldVal;
-                  }
-                  layerFields[g].fieldName = result.Layer.name + "_" + layerFields[g].fieldName;
+                    layerFields[g].fieldName = result.Layer.name + "_" + feature.attributes.OBJECTID + "_" + layerFields[g].fieldName;
 
+                  }
+                  if (result.Layer.popupInfo.description === null) {
+                    var popupTable = "<div class=''>";
+                    popupTable = popupTable + "<table class='popTable' cellpadding='0' cellspacing='0'>";
+                    popupTable = popupTable + "<tbody>";
+
+                    if (popupTitle !== "") {
+
+                      popupTable = popupTable + "<tr valign='top'>";
+                      popupTable = popupTable + "<td colspan='2'  class='headerPopUp'>" + popupTitle + "</td>";
+
+                      popupTable = popupTable + "</tr>";
+                      popupTable = popupTable + "<tr>";
+                      popupTable = popupTable + "<td colspan='2' class='hzLinePopUp'></td>";
+
+                      popupTable = popupTable + "</tr>";
+                    }
+
+                    popupTable = popupTable + layFldTable;
+                    popupTable = popupTable + "</tbody>";
+
+                    popupTable = popupTable + "</div>";
+                    layerDescription = popupTable;
+                  }
+
+                  allFields = allFields.concat(layerFields);
+
+                  mediaArray[result.Layer.layerOrder][feature.attributes.OBJECTID] = mediaInfos;
+                  popUpArray[result.Layer.layerOrder][feature.attributes.OBJECTID] = layerDescription;
                 }
-                if (result.Layer.popupInfo.description === null) {
-                  var popupTable = "<div class=''>";
-                  popupTable = popupTable + "<table class='popTable' cellpadding='0' cellspacing='0'>";
-                  popupTable = popupTable + "<tbody>";
-
-                  if (popupTitle !== "") {
-
-                    popupTable = popupTable + "<tr valign='top'>";
-                    popupTable = popupTable + "<td colspan='2'  class='headerPopUp'>" + popupTitle + "</td>";
-
-                    popupTable = popupTable + "</tr>";
-                    popupTable = popupTable + "<tr>";
-                    popupTable = popupTable + "<td colspan='2' class='hzLinePopUp'></td>";
-
-                    popupTable = popupTable + "</tr>";
-                  }
-
-                  popupTable = popupTable + layFldTable;
-                  popupTable = popupTable + "</tbody>";
-
-                  popupTable = popupTable + "</div>";
-                  layerDescription = popupTable;
-                }
-
-                allFields = allFields.concat(layerFields);
-
-                mediaArray[result.Layer.layerOrder] = mediaInfos;
-                popUpArray[result.Layer.layerOrder] = layerDescription;
-              }
-
+              });
             }, this);
 
             var finalMedArr = [];
+            for (var key in popUpArray) {
+              if (key !== null) {
+                if (popUpArray[key] != null) {
+                  for (var subkey in popUpArray[key]) {
+                    if (subkey !== null) {
+                      if (popUpArray[key][subkey] != null) {
+                        allDescriptions = allDescriptions === "" ? popUpArray[key][subkey] : allDescriptions + popUpArray[key][subkey];
+                      }
+                    }
+                  }
+                }
 
-            array.forEach(popUpArray, function (descr) {
-              if (descr != null) {
-                allDescriptions = allDescriptions === "" ? descr : allDescriptions + descr;
               }
-            }, this);
-            array.forEach(mediaArray, function (mediaInfos) {
-              finalMedArr.push.apply(finalMedArr, mediaInfos);
+            }
+            for (var key in mediaArray) {
+              if (key !== null) {
+                if (mediaArray[key] != null) {
+                  for (var subkey in mediaArray[key]) {
+                    if (subkey !== null) {
+                      if (mediaArray[key][subkey] != null) {
+                        finalMedArr.push.apply(finalMedArr, mediaArray[key][subkey]);
 
-            }, this);
+                      }
+                    }
+                  }
+                }
+
+              }
+            }
+         
+            //array.forEach(popUpArray, function (descr) {
+            //  if (descr != null) {
+            //    allDescriptions = allDescriptions === "" ? descr : allDescriptions + descr;
+            //  }
+            //}, this);
+            //array.forEach(mediaArray, function (mediaInfos) {
+            //  finalMedArr.push.apply(finalMedArr, mediaInfos);
+
+            //}, this);
 
             ////Make single Array of fields
             this.popupTemplate = new PopupTemplate({
@@ -783,7 +823,7 @@ define([
             this.map.infoWindow.setFeatures(featureArray);
             this.map.infoWindow.setTitle(this.config.serviceUnavailableTitle);
             this.map.infoWindow.setContent(this.config.serviceUnavailableMessage.replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, "'"));
-  
+
             //this.map.infoWindow.show(editGraphic.geometry);
             if (this.config.popupWidth != null && this.config.popupHeight != null) {
               this.map.infoWindow.resize(this.config.popupWidth, this.config.popupHeight);
@@ -807,7 +847,7 @@ define([
 
               this.map.graphics.add(editGraphic);
             }
-          
+
             this.map.infoWindow.setFeatures(featureArray);
             //this.map.infoWindow.show(editGraphic.geometry);
             if (this.config.popupWidth != null && this.config.popupHeight != null) {

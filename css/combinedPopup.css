@@ -1,4 +1,40 @@
-﻿.popTable {
+﻿.esriPopup .actionsPane .zoomTo {
+    display: none;
+}
+
+.esriPopup .actionsPane .email {
+    width: 30px;
+    padding-right: 2px;
+    padding-left: 15px;
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+.esriPopup .actionsPane .emailImage {
+    background-image: url(../images/email.png);
+    background-repeat: no-repeat;
+    width: 30px;
+}
+
+.esriPopup .actionsPane .link {
+    width: 30px;
+    padding-right: 2px;
+    padding-left: 2px;
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+.esriPopup .actionsPane .linkImage {
+    background-image: url(../images/link.png);
+    background-repeat: no-repeat;
+    width: 30px;
+}
+
+.esriPopup .titleButton.maximize {
+    display: none;
+}
+
+.popTable {
     -webkit-border-horizontal-spacing: 0px;
     -webkit-border-vertical-spacing: 0px;
     border-color: rgb(128, 128, 128);
