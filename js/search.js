@@ -152,7 +152,7 @@ function (
                   try {
                     if (response[0][0].hasOwnProperty('feature')) {
                       if (response[0][0].feature.hasOwnProperty('geometry')) {
-                        topic.publish("app/mapLocate", response[0][0].feature.geometry);
+                        topic.publish("app/mapLocate", { "geometry": response[0][0].feature.geometry, "geometryInfo": this.config.customUrlLayer.id });
                       }
                     }
                   }
@@ -179,12 +179,28 @@ function (
     },
     _showLocation: function (evt) {
       if (evt) {
+        var msg;
         if (evt.feature) {
-          topic.publish("app/mapLocate", evt.feature.geometry);
+          var msg = { "geometry": evt.feature.geometry, "geometryInfo": "Search" };
+          topic.publish("app/mapLocate", msg);
         }
         else if (evt.result) {
           if (evt.result.feature) {
-            topic.publish("app/mapLocate", evt.result.feature.geometry);
+
+            if (evt.source) {
+              if (evt.source.flayerId) {
+                msg = { "geometry": evt.result.feature.geometry, "geometryInfo": evt.source.flayerId };
+
+              } else {
+                msg = { "geometry": evt.result.feature.geometry, "geometryInfo": "Geocode" };
+
+              }
+
+            } else {
+              msg = { "geometry": evt.result.feature.geometry, "geometryInfo": "Geocode" };
+
+            }
+            topic.publish("app/mapLocate", msg);
           }
         }
       }

@@ -45,6 +45,39 @@
       ]
     },
     {
+      "category": "Search By Layer Settings",
+      "fields": [
+        {
+          "type": "paragraph",
+          "value": "By Default, when the mouse click location is used to lookup information at that location.  If you would like to use a feature from a layer at that location, set up the following parameters."
+        },
+        {
+          "type": "layerAndFieldSelector",
+          "fieldName": "searchByLayer",
+          "label": "Layer to search for features to lookup intersecting layers",
+          "tooltip": "Select the layer whos features will be used to find the lookup features",
+          "layerOptions": {
+            "supportedTypes": [
+              "FeatureLayer"
+            ]
+          }
+        },
+        {
+          "type": "string",
+          "fieldName": "noSearchFeatureTitle",
+          "label": "No Search Feature Popup Title:",
+          "tooltip": "Popup title when a feature in the search layer is not found"
+        },
+        {
+          "type": "string",
+          "fieldName": "noSearchFeatureMessage",
+          "label": "No Search Feature Popup Message:",
+          "tooltip": "Popup message when a feature in the search layer is not found",
+          "stringFieldOption": "richtext"
+        }
+      ]
+    },
+    {
       "category": "Save Settings",
       "fields": [
         {
@@ -91,6 +124,13 @@
           "label": "No value",
           "tooltip": "Value to set when the request location does not intersects a lookup feature",
           "stringFieldOption": "text"
+        },
+        {
+          "type": "string",
+          "fieldName": "serviceRequestLayerAvailibiltyFieldValueNoSearch",
+          "label": "No Search Layer feature value, only used when a search layer is specified",
+          "tooltip": "Value to set when the location does not find a search feature.",
+          "stringFieldOption": "text"
         }
       ]
     },
@@ -132,7 +172,7 @@
         {
           "type": "string",
           "fieldName": "serviceUnavailableMessage",
-          "label": "Unavailable Popup Message",
+          "label": "Unavailable Popup Message:",
           "tooltip": "Popup message when outside an area",
           "stringFieldOption": "richtext"
         }
@@ -227,11 +267,8 @@
           "layerOptions": {
             "supportedTypes": [
               "FeatureLayer"
-            ],
-            "geometryTypes": [
-              "esriGeometryPoint"
             ]
-          }
+                  }
         }
       ]
     }

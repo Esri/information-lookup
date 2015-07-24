@@ -37,11 +37,16 @@ define([], function () {
 
       }]
     },
-
-    "serviceAreaLayerNames": "Service Area",
+    "searchByLayer": [{
+      "id": "",
+      "fields": []
+    }],
+    "serviceAreaLayerNames": "Polygon1",
     "popupTitle": "Service Information",
-    "serviceUnavailableTitle": "Outside Utility Service Area",
+    "serviceUnavailableTitle": "Outside Service Area",
     "serviceUnavailableMessage": "The utility does not provide service to the selected location",
+    "noSearchFeatureTitle": "Not in a parcel",
+    "noSearchFeatureMessage": "BLAGLALG",
     "popupWidth": null,
     "popupHeight": null,
     "zoomLevel": 16,
@@ -50,6 +55,7 @@ define([], function () {
     "serviceRequestLayerAvailibiltyField": "REQSTATUS",
     "serviceRequestLayerAvailibiltyFieldValueAvail": "Intersected",
     "serviceRequestLayerAvailibiltyFieldValueNotAvail": "Not Intersected",
+    "serviceRequestLayerAvailibiltyFieldValueNoSearch": "No Search Feature",
     "showSplash": false,
     "splashText": "<center>Information Lookup is a configurable web application template that can be used to provide the general public, internal staff and other interested parties the with information about a location. If no features are found at that location, a general message is displayed. Optionally, the location entered can be stored in a point layer. The template can be configured using the ArcGIS Online Configuration dialog.</center>",
     "theme": "black",

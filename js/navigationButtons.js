@@ -124,8 +124,9 @@ function (
                 var point = new Geometry.Point({ "x": location.position.coords.longitude, "y": location.position.coords.latitude, " spatialReference": { " wkid": 4326 } });
 
                 this.map.centerAndZoom(point, this.zoomScale);
+                var msg = { "geometry": point, "geometryInfo": "GPS" };
 
-                topic.publish("app/mapLocate", point);
+                topic.publish("app/mapLocate", msg);
 
             }
 

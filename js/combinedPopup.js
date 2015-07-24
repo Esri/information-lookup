@@ -72,11 +72,13 @@ define([
       if (this.handler != null) {
         this.handler.remove();
       }
+      this.disableWebMapPopup();
       topic.subscribe("app/mapLocate", lang.hitch(this, this._mapLocate));
 
       this._initPopup();
       this._createToolbar();
       this._initGraphic();
+      this._initLayerSearch();
       this.map.infoWindow.on("hide", lang.hitch(this, this._infoHide));
       this._initShareLink();
       this.emit("ready", { "Name": "CombinedPopup" });
@@ -84,18 +86,56 @@ define([
         var e = this.config.location.split(",");
         if (e.length === 2) {
           var point = new Point(parseFloat(e[0]), parseFloat(e[1]), this.map.spatialReference);
-          this.showPopup(point);
+          this.showPopup(point,"LocationParam");
         }
 
       }
 
     },
+    disableWebMapPopup: function () {
+      if (this.map) {
+        this.map.setInfoWindowOnClick(false);
+      }
+    },
     _mapLocate: function () {
 
-      this.showPopup(arguments[0]);
+      this.showPopup(arguments[0].geometry, arguments[0].geometryInfo);
 
     },
-    showPopup: function (evt) {
+    showPopup: function (evt,info) {
+      this.event = evt;//this._getCenter(evt);
+
+      this.map.infoWindow.hide();
+      this.map.infoWindow.highlight = false;
+      if (this.showGraphic === true) {
+        this.map.graphics.clear();
+      }
+     
+      if (this.searchByLayer && info !== this.searchByLayer.id) {
+
+        this.searchLayerForPopup(evt);
+
+      } else {
+        this.showPopupGeo(evt);
+      }
+
+    },
+    _getCenter: function (geo) {
+      if (geo.type === "extent") {
+        return graphic.geometry.getCenter();
+      }
+      else if (geo.type === "polygon") {
+        return geo.getCentroid();
+      }
+      else if (geo.type === "polyline") {
+        return geo.getExtent().getCenter();
+      }
+      else {
+        return geo;
+      }
+    },
+    showPopupGeo: function (evt) {
+
       if (this.lookupLayers === undefined) {
         return;
       }
@@ -116,7 +156,7 @@ define([
       var query = new Query();
       var queryTask;
 
-      this.event = evt;
+
       this.results = [];
       if (this.lookupLayers == null) {
         return null;
@@ -124,15 +164,41 @@ define([
 
       this.defCnt = this.lookupLayers.length;
       var queryDeferred;
+      //var queryType, queryGeo;
+      //queryGeo = evt.geometry;
+      //if (evt.type === "extent") {
+      //  queryGeo = evt.geometry;
+      //}
+      //else if (evt.type === "polygon") {
+      //  queryGeo = evt.geometry;
+      //}
+      //else if (evt.type === "polyline") {
+      //  queryGeo = evt.geometry;
+      //}
+      //else if (evt.type === "point") {
+      //  queryGeo = new Extent({
+      //    "xmin": evt.x, "ymin": evt.y, "xmax": evt.x, "ymax": evt.y,
+      //    "spatialReference": evt.spatialReference
+      //  });
+      //}
+
       for (var f = 0, fl = this.lookupLayers.length; f < fl; f++) {
         if (this.lookupLayers[f].url == null) {
-          var extent = new Extent({
-            "xmin": evt.x, "ymin": evt.y, "xmax": evt.x, "ymax": evt.y,
-            "spatialReference": evt.spatialReference
-          });
+
           query = new Query();
-          query.geometry = extent;
-          query.geometryType = "esriGeometryExtent";
+
+          if (evt.type === "point") {
+            query.geometry = new Extent({
+              "xmin": evt.x, "ymin": evt.y, "xmax": evt.x, "ymax": evt.y,
+              "spatialReference": evt.spatialReference
+            });
+            query.geometryType = "esriGeometryExtent";
+          }
+          else {
+            query.geometry = evt;
+            query.geometryType = "esriGeometryExtent";
+          }
+
           query.outFields = ["*"];
           if (this.lookupLayers[f].definitionExpression) {
             query.where = this.lookupLayers[f].definitionExpression;
@@ -145,6 +211,7 @@ define([
             this.defCnt = this.defCnt - 1;
             if (this.defCnt === 0) {
               this._allQueriesComplate();
+              topic.publish("app\toggleIndicator", false);
             }
 
           }));
@@ -154,7 +221,7 @@ define([
           query.spatialRelationship = Query.SPATIAL_REL_INTERSECTS;
           query.geometry = evt;
           query.outSpatialReference = this.map.spatialReference;
-          query.geometryType = "esriGeometryPoint";
+          //query.geometryType = "esriGeometryPoint";
           query.outFields = ["*"];
           if (this.lookupLayers[f].definitionExpression) {
             query.where = this.lookupLayers[f].definitionExpression;
@@ -168,6 +235,7 @@ define([
             this.defCnt = this.defCnt - 1;
             if (this.defCnt === 0) {
               this._allQueriesComplate();
+              topic.publish("app\toggleIndicator", false);
             }
 
           }));
@@ -186,6 +254,43 @@ define([
       if (this.map.graphics != null) {
         this.map.graphics.clear();
       }
+    },
+    _initLayerSearch: function () {
+      this.searchByLayer = null;
+      if (this.config.searchByLayer) {
+        if (this.config.searchByLayer !== null) {
+          if (this.config.searchByLayer !== undefined) {
+            this.searchByLayer = this.map.getLayer(this.config.searchByLayer.id);
+            if (this.searchByLayer === null || this.searchByLayer === undefined) {
+              console.log(this.config.searchByLayer.id + " not found ");
+            }
+            else {
+              console.log(this.searchByLayer.name + " found and set as search layer");
+            }
+            
+          }
+        }
+      }
+    },
+    searchLayerForPopup: function (geo) {
+      var layerQuery = new Query();
+      layerQuery.spatialRelationship = Query.SPATIAL_REL_INTERSECTS;
+      layerQuery.geometry = geo;
+      layerQuery.outSpatialReference = this.map.spatialReference;
+      layerQuery.returnGeometry = true;
+      //this.layerQuery.outFields = ["*"];
+      if (this.searchByLayer.definitionExpression) {
+        layerQuery.where = this.searchByLayer.definitionExpression;
+      }
+
+      var layerQueryTask = new QueryTask(this.searchByLayer.url);
+      layerQueryTask.on("complete", lang.hitch(this, this._layerSearchComplete));
+      layerQueryTask.on("error", lang.hitch(this, function (error) {
+        console.log(error);
+
+      }));
+
+      layerQueryTask.execute(layerQuery);
     },
     _initPopup: function () {
 
@@ -575,7 +680,7 @@ define([
 
     },
     _drawEnd: function (evt) {
-      this.showPopup(evt.geometry);
+      this.showPopup(evt.geometry,"MapClick");
     },
     _processObject: function (obj, fieldName, layerName, matchName, oid) {
       var matchForRec = matchName;
@@ -610,6 +715,22 @@ define([
       return obj;
 
     },
+    _layerSearchComplete: function (result) {
+      if (result) {
+        if (result.featureSet) {
+          if (result.featureSet.features) {
+            if (result.featureSet.features.length > 0) {
+
+              this.showPopupGeo(result.featureSet.features[0].geometry);
+              return;
+            }
+          }
+        }
+      }
+      this._showNoSearchFeatureFound();
+
+
+    },
     _queryComplete: function (lookupLayer) {
 
       return function (result) {
@@ -629,6 +750,7 @@ define([
     _allQueriesComplate: function () {
       try {
         if (this.results != null) {
+
           var atts = {};
           var re = null;
           if (this.results.length > 0) {
@@ -787,7 +909,7 @@ define([
 
               }
             }
-         
+
             //array.forEach(popUpArray, function (descr) {
             //  if (descr != null) {
             //    allDescriptions = allDescriptions === "" ? descr : allDescriptions + descr;
@@ -811,7 +933,7 @@ define([
 
           if (this.results.length === 0) {
 
-            var editGraphic = new Graphic(this.event, this.editSymbol, null, null);
+            var editGraphic = new Graphic(this.event, null, null, null);
             this.map.infoWindow.highlight = false;
             this.map.infoWindow._highlighted = undefined;
 
@@ -839,7 +961,7 @@ define([
 
           } else {
 
-            editGraphic = new Graphic(this.event, this.editSymbolAvailable, resultFeature, this.popupTemplate);
+            editGraphic = new Graphic(this.event, null, resultFeature, this.popupTemplate);
             featureArray.push(editGraphic);
             this.map.infoWindow.highlight = false;
             this.map.infoWindow._highlighted = undefined;
@@ -863,9 +985,10 @@ define([
               this._logRequest(this.event, atts);
             }
           }
-          var def = this.map.centerAndZoom(this.event, this.config.zoomLevel);
+          var centr = this._getCenter(this.event);
+          var def = this.map.centerAndZoom(centr, this.config.zoomLevel);
           def.addCallback(lang.hitch(this, function () {
-            this.map.infoWindow.show(editGraphic.geometry);
+            this.map.infoWindow.show(centr);
 
           }));
         }
@@ -873,6 +996,57 @@ define([
       } catch (err) {
         console.log(err);
       }
+    },
+    _showNoSearchFeatureFound: function () {
+      var editGraphic = new Graphic(this.event, null, null, null);
+      this.map.infoWindow.highlight = false;
+      this.map.infoWindow._highlighted = undefined;
+
+      if (this.showGraphic === true) {
+        this.map.graphics.add(editGraphic);
+      }
+      featureArray = [];
+      featureArray.push(editGraphic);
+
+      this.map.infoWindow.setFeatures(featureArray);
+      if (this.config.noSearchFeatureTitle) {
+        this.map.infoWindow.setTitle(this.config.noSearchFeatureTitle);
+      }
+      else {
+        this.map.infoWindow.setTitle(this.config.serviceUnavailableTitle);
+      }
+      if (this.config.noSearchFeatureMessage) {
+        this.map.infoWindow.setContent(this.config.noSearchFeatureMessage.replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, "'"));
+      }
+      else {
+        this.map.infoWindow.setContent(this.config.serviceUnavailableMessage.replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, "'"));
+      }
+
+
+      //this.map.infoWindow.show(editGraphic.geometry);
+      if (this.config.popupWidth != null && this.config.popupHeight != null) {
+        this.map.infoWindow.resize(this.config.popupWidth, this.config.popupHeight);
+      } else if (this.config.popupWidth != null) {
+        this.map.infoWindow.resize(this.config.popupWidth, this.map.infoWindow._maxHeight);
+      } else {
+        this.map.infoWindow.resize();
+      }
+      if (this.config.storeLocation === true && this.config.editingAllowed) {
+        if (this.config.serviceRequestLayerAvailibiltyFieldValueNoSearch) {
+          atts[this.config.serviceRequestLayerAvailibiltyField] = this.config.serviceRequestLayerAvailibiltyFieldValueNoSearch;
+
+        }
+        else {
+          atts[this.config.serviceRequestLayerAvailibiltyField] = this.config.serviceRequestLayerAvailibiltyFieldValueNotAvail;
+        }
+
+        this._logRequest(this.event, atts);
+      }
+      var def = this.map.centerAndZoom(this.event, this.config.zoomLevel);
+      def.addCallback(lang.hitch(this, function () {
+        this.map.infoWindow.show(editGraphic.geometry);
+
+      }));
     },
     _processResults: function (features) {
       return dojo.map(features, function (feature) {

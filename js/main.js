@@ -59,7 +59,7 @@ function (
       // any url parameters and any application specific configuration information.
       this._toggleIndicatorListener = topic.subscribe("app\toggleIndicator", this._toggleIndicator);
       this._errorListener = topic.subscribe("app\error", this.reportError);
-      topic.subscribe("app/mapLocate", lang.hitch(this, this._mapLocate));
+      //topic.subscribe("app/mapLocate", lang.hitch(this, this._mapLocate));
 
       if (config) {
         this.config = config;
@@ -188,7 +188,7 @@ function (
     },
     _mapLocate: function () {
 
-        this.map.centerAt(arguments[0]);
+        //this.map.centerAt(arguments[0]);
 
     },
     _controlLoaded: function (evt) {
