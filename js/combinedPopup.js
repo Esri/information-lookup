@@ -11,6 +11,7 @@ define([
     "dojo/on",
     "dojo/topic",
     "dojo/json",
+    "dojo/io-query",
     "esri/geometry",
     "esri/geometry/Extent",
     "esri/geometry/Point",
@@ -35,6 +36,7 @@ define([
     on,
     topic,
     JSON,
+    ioQuery,
     Geometry,
     Extent,
     Point,
@@ -76,7 +78,7 @@ define([
       this._createToolbar();
       this._initGraphic();
       this.map.infoWindow.on("hide", lang.hitch(this, this._infoHide));
-
+      this._initShareLink();
       this.emit("ready", { "Name": "CombinedPopup" });
       if (this.config.location) {
         var e = this.config.location.split(",");
@@ -500,6 +502,67 @@ define([
       this.toolbar.on("draw-end", lang.hitch(this, this._drawEnd));
 
     },
+    _initShareLink: function () {
+      var linkText = "Link";
+      var emailText = "Email";
+
+      if (i18n) {
+        if (i18n.share) {
+          if (i18n.share.link) {
+            linkText = i18n.share.link;
+          }
+          if (i18n.share.email) {
+            emailText = i18n.share.email;
+          }
+        }
+      }
+      var link = dojo.create("a",
+            { "class": "action", "innerHTML": linkText, "href": "javascript:void(0);" },
+            dojo.query(".actionList", this.map.infoWindow.domNode)[0]);
+
+      var email = dojo.create("a",
+            { "class": "action", "innerHTML": emailText, "href": "javascript:void(0);" },
+            dojo.query(".actionList", this.map.infoWindow.domNode)[0]);
+
+      dojo.connect(link, "onclick", lang.hitch(this, function (evt) {
+
+        var uri = window.location.href;
+        var geostring = this.map.infoWindow.features[0].geometry.x + "," + this.map.infoWindow.features[0].geometry.y;
+        var query = {
+          location: geostring
+        };
+        // Assemble the new uri with its query string attached.
+        var queryStr = ioQuery.objectToQuery(query);
+        uri = uri + "?" + queryStr;
+        //window.location.href = uri;
+        window.open(uri);
+        //window.location.href = uri;
+
+      }));
+      dojo.connect(email, "onclick", lang.hitch(this, function (evt) {
+
+        var uri = window.location.href;
+        var geostring = this.map.infoWindow.features[0].geometry.x + "," + this.map.infoWindow.features[0].geometry.y;
+        var query = {
+          location: geostring
+        };
+        // Assemble the new uri with its query string attached.
+        var queryStr = ioQuery.objectToQuery(query);
+        uri = uri + "?" + queryStr;
+        mailURL = "mailto:%20?subject={title}&body={url}";
+
+        var fullLink = lang.replace(mailURL, {
+          url: encodeURIComponent(uri),
+          title: encodeURIComponent(document.title)
+
+        });
+
+        window.location.href = fullLink;
+
+
+      }));
+
+    },
     _initGraphic: function () {
       this.editSymbol = new SimpleMarkerSymbol().setStyle(SimpleMarkerSymbol.STYLE_PATH).setPath("M16,22.375L7.116,28.83l3.396-10.438l-8.883-6.458l10.979,0.002L16.002,1.5l3.391,10.434h10.981l-8.886,6.457l3.396,10.439L16,22.375L16,22.375z").setSize(24).setColor(new dojo.Color([255, 0, 0]));
       this.editSymbol.setOutline(new SimpleMarkerSymbol().setStyle(SimpleMarkerSymbol.STYLE_PATH).setPath("M16,22.375L7.116,28.83l3.396-10.438l-8.883-6.458l10.979,0.002L16.002,1.5l3.391,10.434h10.981l-8.886,6.457l3.396,10.439L16,22.375L16,22.375zM22.979,26.209l-2.664-8.205l6.979-5.062h-8.627L16,4.729l-2.666,8.206H4.708l6.979,5.07l-2.666,8.203L16,21.146L22.979,26.209L22.979,26.209z").setSize(26).setColor(new dojo.Color([0, 255, 0])));
@@ -720,6 +783,7 @@ define([
             this.map.infoWindow.setFeatures(featureArray);
             this.map.infoWindow.setTitle(this.config.serviceUnavailableTitle);
             this.map.infoWindow.setContent(this.config.serviceUnavailableMessage.replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, "'"));
+  
             //this.map.infoWindow.show(editGraphic.geometry);
             if (this.config.popupWidth != null && this.config.popupHeight != null) {
               this.map.infoWindow.resize(this.config.popupWidth, this.config.popupHeight);
@@ -743,7 +807,7 @@ define([
 
               this.map.graphics.add(editGraphic);
             }
-
+          
             this.map.infoWindow.setFeatures(featureArray);
             //this.map.infoWindow.show(editGraphic.geometry);
             if (this.config.popupWidth != null && this.config.popupHeight != null) {

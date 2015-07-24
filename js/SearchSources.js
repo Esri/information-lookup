@@ -85,8 +85,12 @@ declare, lang, array, dojoJson, domConstruct, esriLang, Locator, FeatureLayer, S
           this.sources.push(esriSource);
           s.destroy();
         } else if (esriLang.isDefined(geocoder.singleLineFieldName)) {
+         
           geocoder.locator = new Locator(geocoder.url);
+          
           this.sources.push(geocoder);
+        } else {
+          console.log(geocoder.url + " is missing the singleLineFieldName parameter");
         }
       }));
     },

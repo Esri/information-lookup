@@ -25,7 +25,12 @@ define({
         },
         popup: {
             urlMoreInfo: "More Info"
+        },
+        share: {
+          link: "Link",
+          email:"Email"
         }
+
 
     }),
     "ar": 1,
