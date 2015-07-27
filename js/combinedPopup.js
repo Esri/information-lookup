@@ -638,7 +638,9 @@ define([
 
         var uri =  window.location.href;
         var params = {};
-        var geostring = this.map.infoWindow.features[0].geometry.x + "," + this.map.infoWindow.features[0].geometry.y;
+        var geo = this._getCenter(this.map.infoWindow.features[0].geometry);
+
+        var geostring = geo.x + "," + geo.y;
 
         if (uri.indexOf('?') >= 0) {
           var urlParam = uri.split('?');
@@ -647,7 +649,13 @@ define([
       
         }
         params.location = geostring;
-      
+        if (this.config.customUrlParam && this.config.customUrlParam !== null) {
+          if (this.config.customUrlParam in params) {
+
+            delete params[this.config.customUrlParam];
+          }
+
+        }
         // Assemble the new uri with its query string attached.
         var queryStr = ioQuery.objectToQuery(params);
         uri = uri + "?" + queryStr;
@@ -658,7 +666,9 @@ define([
 
         var uri = window.location.href;
         var params = {};
-        var geostring = this.map.infoWindow.features[0].geometry.x + "," + this.map.infoWindow.features[0].geometry.y;
+        var geo = this._getCenter(this.map.infoWindow.features[0].geometry);
+
+        var geostring = geo.x + "," + geo.y;
 
         if (uri.indexOf('?') >= 0) {
           var urlParam = uri.split('?');
@@ -667,6 +677,14 @@ define([
 
         }
         params.location = geostring;
+        if (this.config.customUrlParam && this.config.customUrlParam !== null)
+        {
+          if (this.config.customUrlParam in params) {
+
+            delete params[this.config.customUrlParam];
+          }
+
+        }
 
         // Assemble the new uri with its query string attached.
         var queryStr = ioQuery.objectToQuery(params);
