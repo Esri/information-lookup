@@ -90,7 +90,7 @@ define([
         }
 
       }
-
+     
     },
     disableWebMapPopup: function () {
       if (this.map) {
@@ -636,13 +636,20 @@ define([
        email);
       dojo.connect(link, "onclick", lang.hitch(this, function (evt) {
 
-        var uri = window.location.href;
+        var uri =  window.location.href;
+        var params = {};
         var geostring = this.map.infoWindow.features[0].geometry.x + "," + this.map.infoWindow.features[0].geometry.y;
-        var query = {
-          location: geostring
-        };
+
+        if (uri.indexOf('?') >= 0) {
+          var urlParam = uri.split('?');
+          uri = urlParam[0];
+          params = dojo.queryToObject(urlParam[1]);
+      
+        }
+        params.location = geostring;
+      
         // Assemble the new uri with its query string attached.
-        var queryStr = ioQuery.objectToQuery(query);
+        var queryStr = ioQuery.objectToQuery(params);
         uri = uri + "?" + queryStr;
         window.open(uri);
 
@@ -650,12 +657,19 @@ define([
       dojo.connect(email, "onclick", lang.hitch(this, function (evt) {
 
         var uri = window.location.href;
+        var params = {};
         var geostring = this.map.infoWindow.features[0].geometry.x + "," + this.map.infoWindow.features[0].geometry.y;
-        var query = {
-          location: geostring
-        };
+
+        if (uri.indexOf('?') >= 0) {
+          var urlParam = uri.split('?');
+          uri = urlParam[0];
+          params = dojo.queryToObject(urlParam[1]);
+
+        }
+        params.location = geostring;
+
         // Assemble the new uri with its query string attached.
-        var queryStr = ioQuery.objectToQuery(query);
+        var queryStr = ioQuery.objectToQuery(params);
         uri = uri + "?" + queryStr;
         mailURL = "mailto:%20?subject={title}&body={url}";
 
