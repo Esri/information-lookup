@@ -4,7 +4,7 @@ define([], function () {
   //default web map, default app color theme and more. These values can be overwritten by template configuration settings
   //and url parameters.
   var defaults = {
-    "appid": "decf99ad674a4a2990c76f6b77a6a809",
+    "appid": "",
     "webmap": "796077118881469e8db06ccc6efd90b6",
     "oauthappid": null, //"AFTKRmv16wj14N3z",
     //Group templates must support a group url parameter. This will contain the id of the group.
@@ -60,6 +60,7 @@ define([], function () {
     "splashText": "<center>Information Lookup is a configurable web application template that can be used to provide the general public, internal staff and other interested parties the with information about a location. If no features are found at that location, a general message is displayed. Optionally, the location entered can be stored in a point layer. The template can be configured using the ArcGIS Online Configuration dialog.</center>",
     "theme": "black",
     "basemapWidgetVisible": true,
+    "showUI":true,
     //When true the geocoder search box is displayed in the title area
     //When searchextent is true the geocoder will prioritize results within
     //the current map extent
@@ -79,6 +80,7 @@ define([], function () {
       "id": "",
       "fields": []
     }]
+    
   };
   return defaults;
 });

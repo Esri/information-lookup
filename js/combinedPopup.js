@@ -977,7 +977,7 @@ define([
             this.map.infoWindow.setFeatures(featureArray);
             this.map.infoWindow.setTitle(this.config.serviceUnavailableTitle);
             this.map.infoWindow.setContent(this.config.serviceUnavailableMessage.replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, "'"));
-
+            
             //this.map.infoWindow.show(editGraphic.geometry);
             if (this.config.popupWidth != null && this.config.popupHeight != null) {
               this.map.infoWindow.resize(this.config.popupWidth, this.config.popupHeight);
@@ -1019,8 +1019,12 @@ define([
           }
           var centr = this._getCenter(this.event);
           var def = this.map.centerAndZoom(centr, this.config.zoomLevel);
+          //this.map.infoWindow.set("popupWindow", false);
+          
           def.addCallback(lang.hitch(this, function () {
-            this.map.infoWindow.show(centr);
+           
+            dijit.byId("leftPane").set("content", this.map.infoWindow.getSelectedFeature().getContent());
+            //this.map.infoWindow.show(centr);
 
           }));
         }

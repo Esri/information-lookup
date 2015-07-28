@@ -31,6 +31,7 @@ define([
     "application/navigationButtons",
     "application/combinedPopup",
     "application/search",
+     "application/drawer",
     "dojo/domReady!"
 ],
 function (
@@ -48,7 +49,8 @@ function (
     BasemapButton,
     NavigationButtons,
     CombinedPopup,
-    Search
+    Search,
+    Drawer
 ) {
   return declare(null, {
     config: {},
@@ -64,7 +66,23 @@ function (
       if (config) {
         this.config = config;
         var itemInfo = this.config.itemInfo || this.config.webmap;
-        this._checkEditing();
+
+        this._drawer = new Drawer({
+          showDrawerSize: 850, // Pixel size when the drawer is automatically opened
+          borderContainer: "border_container", // border container node id
+          contentPaneCenter: "cp_center", // center content pane node id
+          contentPaneSide: "cp_left", // side content pane id
+          toggleButton: "toggle_button", // button node to toggle drawer id
+          topBar: "top_bar",// top bar id
+          direction: "ltr", // i18n direction "ltr" or "rtl"
+          theme:"white"
+        });
+        on(this._drawer, "load", lang.hitch(this, this._initDrawer));
+
+        // startup drawer
+        this._drawer.startup();
+    
+       this._checkEditing();
         try {
 
           this.config = config;
@@ -127,6 +145,15 @@ function (
       }
       return promise;
     },
+    _initDrawer: function () {
+      if (this.config.showUI){
+        if (this.config.showUI == true) {
+          return;
+        }
+      }
+      this._drawer.hide();
+    },
+
     reportError: function (error) {
       // remove loading class from body
       domClass.remove(document.body, "app-loading");

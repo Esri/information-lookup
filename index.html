@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="css/search.css">
     <link rel="stylesheet" href="css/navigationButtons.css">
     <link rel="stylesheet" href="css/combinedPopup.css">
+    <link rel="stylesheet" type="text/css" href="css/drawer.css">
     <!--[if gte IE 9]>
       <style type="text/css">
         .gradient {
@@ -29,14 +30,53 @@
 
 </head>
 <body class="claro app-loading">
-    <div id="searchDiv"></div>
+
     <div class="loading-indicator">
         <div class="loading-message" id="loading_message"></div>
     </div>
-    <div id="splash"></div>
-    <div id="mapButtons" class="map-buttons"></div>
-    <div id="basemapDiv"></div>
-    <div id="mapDiv" dir="ltr"></div>
+    <div id="border_container" class="border-container-outer">
+        <div id="splash"></div>
+        <div id="cp_left" class="content-pane-left">
+            <div data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="gutters:false"
+                 style="width: 100%;height:100%;">
+                <div id="leftPane" data-dojo-type="dijit/layout/ContentPane"
+                     data-dojo-props="region:'center'">
+
+                </div>
+            </div>
+        </div>
+        <div id="cp_center" class="content-pane-center">
+            <!--<div id="top_bar" class="top-bar">
+                <div id="toggle_button" class="hamburger-button"></div>
+            </div>
+            <div id="mapDiv" dir="ltr">
+
+                <div id="searchDiv"></div>
+                <div id="mapButtons" class="map-buttons"></div>
+                <div id="basemapDiv"></div>
+            </div>-->
+            <div data-dojo-type="dijit.layout.BorderContainer" class="border-container-inner" data-dojo-props="gutters:false" id="border_container_inner">
+                <div data-dojo-type="dijit.layout.ContentPane" class="content-pane-inner-top" data-dojo-props="region:'top', splitter:false" id=" center_panel_1">
+
+                    <div id="top_bar" class="top-bar">
+                        <div id="toggle_button" class="hamburger-button"></div>
+                    </div>
+                </div>
+                <div data-dojo-type="dijit.layout.ContentPane" class="content-pane-inner-center" data-dojo-props="region:'center', splitter:false" id=" content_pane_inner_center">
+                    <div id="mapDiv" dir="ltr">
+
+                        <div id="searchDiv"></div>
+                        <div id="mapButtons" class="map-buttons"></div>
+                        <div id="basemapDiv"></div>
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+    </div>
+
     <script type="text/javascript">
         var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
         var dojoConfig = {
