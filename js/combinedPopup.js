@@ -53,8 +53,9 @@ define([
     config: {},
     map: null,
     layers: null,
+    contentWindow:null,
     options: {
-      showGraphic: true
+      contentID:null
     },
     constructor: function (map, config, options) {
       this.map = map;
@@ -63,13 +64,16 @@ define([
      
       var defaults = lang.mixin({}, this.options, options);
       // properties
-      this.showGraphic = defaults.showGraphic;
+      //this.showGraphic = defaults.showGraphic;
 
     },
     startup: function () {
       //disconnect the popup handler
       this.disableWebMapPopup();
       topic.subscribe("app/mapLocate", lang.hitch(this, this._mapLocate));
+      if (this.options.contentID) {
+        this.contentWindow = dijit.byId(this.options.contentID)
+      }
 
       this._initPopup();
       this._createToolbar();
@@ -974,8 +978,7 @@ define([
             this.map.infoWindow.setFeatures(featureArray);
             this.map.infoWindow.setTitle(this.config.serviceUnavailableTitle);
             this.map.infoWindow.setContent(this.config.serviceUnavailableMessage.replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, "'"));
-            
-            //this.map.infoWindow.show(editGraphic.geometry);
+           //this.map.infoWindow.show(editGraphic.geometry);
             if (this.config.popupWidth != null && this.config.popupHeight != null) {
               this.map.infoWindow.resize(this.config.popupWidth, this.config.popupHeight);
             } else if (this.config.popupWidth != null) {
@@ -1019,9 +1022,13 @@ define([
           //
           
           def.addCallback(lang.hitch(this, function () {
+            if (this.contentWindow) {
+              this.contentWindow.set("content", this.map.infoWindow.getSelectedFeature().getContent());
+              topic.publish("app\contentSet", false);
+            }else{
+              this.map.infoWindow.show(centr);
+            }
            
-            dijit.byId("leftPane").set("content", this.map.infoWindow.getSelectedFeature().getContent());
-            //this.map.infoWindow.show(centr);
 
           }));
         }

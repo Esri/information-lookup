@@ -190,6 +190,12 @@ function (
       try {
         console.log("map loaded");
         //search control
+        var contentID = null;
+        if (this.config.showUI) {
+          if (this.config.showUI == true) {
+            contentID = 'leftPane';
+          }
+        }
         this.search = new Search(
             {
               config: this.config,
@@ -199,7 +205,10 @@ function (
             });
         this.search.startup();
 
-        this.popup = new CombinedPopup(this.map, this.config);
+        this.popup = new CombinedPopup(this.map, this.config,
+          {
+            contentID: contentID
+          });
 
         this.popup.startup();
         this.popup.enableMapClick();

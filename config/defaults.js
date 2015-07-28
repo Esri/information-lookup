@@ -56,7 +56,7 @@ define([], function () {
     "serviceRequestLayerAvailibiltyFieldValueAvail": "Intersected",
     "serviceRequestLayerAvailibiltyFieldValueNotAvail": "Not Intersected",
     "serviceRequestLayerAvailibiltyFieldValueNoSearch": "No Search Feature",
-    "showSplash": false,
+    "showSplash": true,
     "splashText": "<center>Information Lookup is a configurable web application template that can be used to provide the general public, internal staff and other interested parties the with information about a location. If no features are found at that location, a general message is displayed. Optionally, the location entered can be stored in a point layer. The template can be configured using the ArcGIS Online Configuration dialog.</center>",
     "theme": "white",
     "uidirection": "left",
