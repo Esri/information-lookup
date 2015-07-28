@@ -2,7 +2,7 @@
 
 
 .content-pane-inner-top{
-    height: 34px;
+    height: 80px;
     padding: 0 !important;
     margin: 0 !important;
     border: 0 !important;
@@ -15,6 +15,10 @@
     border: 0 !important;
 }
 
+.right .top-bar {
+    left: auto;
+    right: 0;
+}
 .top-bar {
     width: 100%;
     height: 98%;
@@ -30,8 +34,9 @@
     background: url(../images/menu-white.png) no-repeat center center;
 }
 
-.black .content-pane-left {
+.black .content-pane-display {
     background: #000;
+    border-color: #808080;
 }
 
 .white .top-bar {
@@ -44,10 +49,26 @@
     background: url(../images/menu-black.png) no-repeat center center;
 }
 
-.white .content-pane-left {
+.white .content-pane-display {
     background: #fff;
+    border-color: #808080;
+  
+}
+.blue .top-bar {
+    
+    background: #6d7ae2;
+    border-bottom: 1px solid #808080;
 }
 
+.blue .hamburger-button {
+    background: url(../images/menu-black.png) no-repeat center center;
+}
+
+.blue .content-pane-display {
+   background: #6d7ae2;
+    border-color: #808080;
+  
+}
 .hidden .content-pane-inner-top {
     visibility: hidden;
     display: none;
@@ -58,12 +79,7 @@
     display: none;
 }
 
-.esriRTL .top-bar {
-    left: auto;
-    right: 0;
-}
-
-.esriRTL .app-title {
+.right .app-title {
     float: right;
 }
 
@@ -76,7 +92,7 @@
     width: 34px;
 }
 
-.esriRTL .hamburger-button {
+.right .hamburger-button {
     float: right;
 }
 
@@ -112,8 +128,23 @@
     -ms-transition: width 250ms ease;
     -o-transition: width 250ms ease;
     transition: width 250ms ease;
+  
 }
 
+.left .content-pane-display {
+    width:100%;
+      
+ 
+     border-right-width:1px;
+    border-right-style:solid;
+}
+
+.right .content-pane-display {
+    width:100%;
+      
+     border-left-width:1px;
+    border-left-style:solid;
+}
 .app-loading .content-pane-left {
     width: 280px;
 }
@@ -122,13 +153,9 @@
     width: 280px;
     overflow: auto;
     overflow-x: hidden;
-    border-right: 1px solid #ddd;
+   
 }
 
-.esriRTL .drawer-open .content-pane-left {
-    border-right: 0;
-    border-left: 1px solid #ddd;
-}
 
 .content-pane-center {
     width: 100%;

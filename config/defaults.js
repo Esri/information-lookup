@@ -58,7 +58,8 @@ define([], function () {
     "serviceRequestLayerAvailibiltyFieldValueNoSearch": "No Search Feature",
     "showSplash": false,
     "splashText": "<center>Information Lookup is a configurable web application template that can be used to provide the general public, internal staff and other interested parties the with information about a location. If no features are found at that location, a general message is displayed. Optionally, the location entered can be stored in a point layer. The template can be configured using the ArcGIS Online Configuration dialog.</center>",
-    "theme": "black",
+    "theme": "white",
+    "uidirection": "left",
     "basemapWidgetVisible": true,
     "showUI":true,
     //When true the geocoder search box is displayed in the title area

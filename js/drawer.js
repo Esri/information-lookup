@@ -34,7 +34,7 @@ function (
       direction: 'ltr',
       mapResizeTimeout: 260,
       mapResizeStepTimeout: 25,
-      theme:"white"
+      theme: "white"
     },
     // lifecycle: 1
     constructor: function (options) {
@@ -56,17 +56,10 @@ function (
         toggleButtonSelected: 'toggle-button-selected',
         drawerOpen: "drawer-open",
         drawerOpenComplete: "drawer-open-complete",
-        hidden: "hidden",
-        theme: {
-          white: "white",
-          black: "black"
-        }
+        hidden: "hidden"
+        
       };
-      //var ss = document.createElement("link");
-      //ss.type = "text/css";
-      //ss.rel = "stylesheet";
-      //ss.href = "css/drawer-" + this.get("theme") + ".css";
-      //document.getElementsByTagName("head")[0].appendChild(ss);
+    
     },
     // start widget. called by user
     startup: function () {
@@ -202,9 +195,11 @@ function (
         this._borderContainer.addChild(this._contentPaneCenter);
         // panel side
         var side = 'left';
-        if (this.get("direction") === 'rtl') {
+        if (this.get("direction") === 'right') {
           side = 'right';
+         
         }
+        this._setSide(side);
         // left panel
         this._contentPaneSide = new ContentPane({
           region: side,
@@ -275,15 +270,15 @@ function (
     },
     hide: function () {
       domClass.add(document.body, this.css.hidden);
-       
+
+    },
+    _setSide: function (side) {
+
+      domClass.add(document.body, side);
     },
     _loadtheme: function () {
-      if (this.get("theme") == 'black') {
-        domClass.add(document.body, this.css.theme.black);
-      }
-      else {
-        domClass.add(document.body, this.css.theme.white);
-      }
+      
+      domClass.add(document.body, this.get("theme"));
 
     }
   });

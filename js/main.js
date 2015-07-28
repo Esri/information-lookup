@@ -74,8 +74,8 @@ function (
           contentPaneSide: "cp_left", // side content pane id
           toggleButton: "toggle_button", // button node to toggle drawer id
           topBar: "top_bar",// top bar id
-          direction: "ltr", // i18n direction "ltr" or "rtl"
-          theme:"white"
+          direction: this.config.uidirection, // left or right
+          theme:this.config.theme
         });
         on(this._drawer, "load", lang.hitch(this, this._initDrawer));
 
@@ -199,7 +199,7 @@ function (
             });
         this.search.startup();
 
-        this.popup = new CombinedPopup(this.map, this.config, this.layers, this.handler);
+        this.popup = new CombinedPopup(this.map, this.config);
 
         this.popup.startup();
         this.popup.enableMapClick();

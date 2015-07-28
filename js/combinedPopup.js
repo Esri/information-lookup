@@ -53,15 +53,14 @@ define([
     config: {},
     map: null,
     layers: null,
-    handler: null,
     options: {
       showGraphic: true
     },
-    constructor: function (map, config, layers, handler, options) {
+    constructor: function (map, config, options) {
       this.map = map;
       this.config = config;
-      this.layers = layers;
-      this.handler = handler;
+      this.layers = this.config.response.itemInfo.itemData.operationalLayers;
+     
       var defaults = lang.mixin({}, this.options, options);
       // properties
       this.showGraphic = defaults.showGraphic;
@@ -69,9 +68,6 @@ define([
     },
     startup: function () {
       //disconnect the popup handler
-      if (this.handler != null) {
-        this.handler.remove();
-      }
       this.disableWebMapPopup();
       topic.subscribe("app/mapLocate", lang.hitch(this, this._mapLocate));
 
@@ -95,6 +91,7 @@ define([
     disableWebMapPopup: function () {
       if (this.map) {
         this.map.setInfoWindowOnClick(false);
+        //this.map.infoWindow.set("popupWindow", false);
       }
     },
     _mapLocate: function () {
@@ -1019,7 +1016,7 @@ define([
           }
           var centr = this._getCenter(this.event);
           var def = this.map.centerAndZoom(centr, this.config.zoomLevel);
-          //this.map.infoWindow.set("popupWindow", false);
+          //
           
           def.addCallback(lang.hitch(this, function () {
            
