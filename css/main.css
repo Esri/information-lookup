@@ -65,72 +65,17 @@ left: 15px;
 
 
 .hzLinePopUp {
-    border: none;
-    border-top: 1px solid #333333;
+    border-top-width:1px;
+    border-top-style:solid;
     margin-top: 6px;
     margin-bottom: 6px;
+
 }
 
 .headerPopUp {
     font-weight: bold;
 }
 
-.attTable {
-    -webkit-border-horizontal-spacing: 0px;
-    -webkit-border-vertical-spacing: 0px;
-    border-color: rgb(128, 128, 128);
-    border-collapse: collapse;
-    color: rgb(51, 51, 51);
-    direction: ltr;
-    display: table;
-    font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
-    font-size: 12px;
-    font-style: normal;
-    font-variant: normal;
-    font-weight: normal;
-    height: 168px;
-    line-height: normal;
-    visibility: visible;
-    width: 310px;
-}
-
-.attrName {
-    border-collapse: collapse;
-    color: rgb(136, 136, 136);
-    direction: ltr;
-    display: table-cell;
-    font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
-    font-size: 12px;
-    font-style: normal;
-    font-variant: normal;
-    font-weight: normal;
-    height: 14px;
-    line-height: normal;
-    margin: 0 0 0 0;
-    padding: 2px 5px 5px 2px;
-    vertical-align: top;
-    visibility: visible;
-    width: 90px;
-}
-
-.attrValue {
-    border-collapse: collapse;
-    color: rgb(51, 51, 51);
-    direction: ltr;
-    display: table-cell;
-    font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
-    font-size: 12px;
-    font-style: normal;
-    font-variant: normal;
-    font-weight: normal;
-    height: 14px;
-    line-height: normal;
-    margin: 0 0 0 0;
-    padding: 2px 2px 5px 2px;
-    vertical-align: top;
-    visibility: visible;
-    width: 136px;
-}
 /*---------------------------------------------------------------------------------------------------------*/
 
 .showContainer {
@@ -183,3 +128,106 @@ left: 15px;
     transition: height 0.5s ease-in;
     height: 100%;
 }
+
+.side-bar-icon {
+  font-size: 30px;
+  line-height: 30px;
+  float: left;
+  cursor: pointer;
+  margin: 0 10px 0 0;
+  text-decoration: none;
+  display: block; }
+
+.side-bar-icon:visited {
+  color: rgba(0, 0, 0, 0.5); }
+
+.esriRTL .side-bar-icon {
+  float: right;
+  margin: 0 0 0 10px; }
+
+.sside-bar-icon:hover {
+  color: rgba(0, 0, 0, 0.8); }
+
+/*Icon Fonts*/
+@font-face {
+  font-family: 'tool-icons';
+  src: url('../fonts/tool-icons.eot?23344103');
+  src: url('../fonts/tool-icons.eot?23344103#iefix') format('embedded-opentype'), url('../fonts/tool-icons.woff?23344103') format('woff'), url('../fonts/tool-icons.ttf?23344103') format('truetype'), url('../fonts/tool-icons.svg?23344103#tool-icons') format('svg');
+  font-weight: normal;
+  font-style: normal; }
+
+/* Chrome hack: SVG is rendered more smooth in Windozze. 100% magic, uncomment if you need it. */
+/* Note, that will break hinting! In other OS-es font will be not as sharp as it could be */
+/*
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  @font-face {
+    font-family: 'tool-icons';
+    src: url('../fonts/tool-icons.svg?23344103#tool-icons') format('svg');  }
+}
+*/
+[class^="icon-"]:before, [class*=" icon-"]:before {
+  font-family: "tool-icons";
+  font-style: normal;
+  font-weight: normal;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  width: 1em;
+  margin-right: 0.2em;
+  text-align: center;
+  /* opacity: .8; */
+  /* For safety - reset parent styles, that can break glyph codes*/
+  font-variant: normal;
+  text-transform: none;
+  /* fix buttons height, for twitter bootstrap */
+  line-height: 1em;
+  /* Animation center compensation - margins should be symmetric */
+  /* remove if not needed */
+  margin-left: 0.2em;
+  /* you can be more comfortable with increased icons size */
+  /* font-size: 120%; */
+  /* Uncomment for 3D effect */
+  /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */ }
+
+.icon-home-1:before {
+  content: '\e800'; }
+
+/* ' ' */
+.icon-menu:before {
+  content: '\e801'; }
+
+/* '' */
+.icon-twitter:before {
+  content: '\e802'; }
+
+/* '' */
+.icon-facebook-squared:before {
+  content: '\e803'; }
+
+/* '' */
+.icon-gplus:before {
+  content: '\e804'; }
+
+/* '' */
+.icon-mail-alt:before {
+  content: '\e805'; }
+
+/* '' */
+.icon-link:before {
+  content: '\e806'; }
+
+/* '' */
+.icon-buffer:before {
+  content: '\e80b'; }
+
+/* '' */
+.icon-target:before {
+  content: '\e80c'; }
+
+/* '' */
+.icon-angle-down:before {
+  content: '\e809'; }
+
+/* '  ' */
+.icon-check-1:before {
+  content: '\2713'; }

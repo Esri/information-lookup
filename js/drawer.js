@@ -299,8 +299,7 @@ function (
     },
     _loadtheme: function () {
       
-      domClass.add(document.body, this.get("theme"));
-
+    
     }
   });
   return Widget;

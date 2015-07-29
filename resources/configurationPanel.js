@@ -182,6 +182,52 @@
       "category": "App Settings",
       "fields": [
         {
+          "type": "string",
+          "fieldName": "title",
+          "label": "Title:",
+          "tooltip": "Title to show in the UI"
+        },
+        {
+          "type": "boolean",
+          "fieldName": "showUI",
+          "label": "Show a title bar",
+          "tooltip": "Check on if you want to display the header bar"
+        },
+        {
+          "type": "boolean",
+          "fieldName": "popupSide",
+          "label": "Show the pop up on the side panel",
+          "tooltip": "Check on if you want to display the pop up details in a side panel"
+        },
+        {
+          "type": "string",
+          "fieldName": "uidirection",
+          "tooltip": "Side to show the side pop up",
+          "label": "Pop up side:",
+          "options": [
+            {
+              "label": "Left",
+              "value": "Left"
+            },
+            {
+              "label": "Right",
+              "value": "Right"
+            }
+          ]
+        },
+        {
+          "type": "color",
+          "fieldName": "color",
+          "tooltip": "Font color",
+          "label": "Font color:"
+        },
+        {
+          "type": "color",
+          "fieldName": "backcolor",
+          "tooltip": "UI color",
+          "label": "Theme Color:"
+        },
+        {
           "type": "boolean",
           "fieldName": "showSplash",
           "label": "Display Splash Screen on Startup",
@@ -193,28 +239,6 @@
           "label": "Splash Screen message",
           "tooltip": "Message to display when application is loaded",
           "stringFieldOption": "richtext"
-        },
-        {
-          "type": "string",
-          "fieldName": "theme",
-          "tooltip": "Color schema for the splash screen",
-          "label": "Splash Screen Theme:",
-          "options": [
-            {
-              "label": "Black",
-              "value": "black"
-            },
-            {
-              "label": "Blue",
-              "value": "blue"
-            }
-          ]
-        },
-        {
-          "type": "boolean",
-          "fieldName": "basemapWidgetVisible",
-          "label": "Show the basemap selector button",
-          "tooltip": "Check on if you want to display the basemap selector"
         }
       ]
     },
@@ -268,7 +292,7 @@
             "supportedTypes": [
               "FeatureLayer"
             ]
-                  }
+          }
         }
       ]
     }
@@ -289,6 +313,12 @@
     "splashText": "<center>Information Lookup is a configurable web application template that can be used to provide the general public, internal staff and other interested parties the with information about a location. If no features are found at that location, a general message is displayed. Optionally, the location entered can be stored in a point layer. The template can be configured using the ArcGIS Online Configuration dialog.</center>",
     "theme": "black",
     "basemapWidgetVisible": true,
-    "search": true
+    "search": true,
+    "title":"Information Lookup",
+    "color": "#FFFFFF",
+    "backcolor":"#000000",
+    "uidirection": "left",
+    "showUI": false,
+    "popupSide": false,
   }
 }

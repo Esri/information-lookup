@@ -10,17 +10,11 @@
     margin-left: 2px;
     margin-right: 2px;
     border: none;
+    color:#333333 !important;
+    text-decoration:none !important;
+    font-size: 24px !important;
 }
 
-.esriPopup .actionsPane .emailImage {
-    background-image: url(../images/email.png);
-    background-repeat: no-repeat;
-    width: 0px;
-    height: 0px;
-    outline: none;
-    padding: 15px 15px 15px 15px;
-    margin: 0 auto 5px auto;
-}
 
 .esriPopup .actionsPane .link {
     width: 30px;
@@ -30,16 +24,9 @@
     margin-left: 2px;
     margin-right: 2px;
     border: none;
-}
-
-.esriPopup .actionsPane .linkImage {
-    background-image: url(../images/link.png);
-    background-repeat: no-repeat;
-    width: 0px;
-    height: 0px;
-    outline: none;
-    padding: 15px 15px 15px 15px;
-    margin: 0 auto 5px auto;
+    color:#333333 !important;
+    text-decoration:none !important;
+    font-size: 24px !important
 }
 
 .esriPopup .titleButton.maximize {

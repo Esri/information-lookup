@@ -12,6 +12,7 @@ define([
     "dojo/topic",
     "dojo/json",
     "dojo/io-query",
+     "dojo/query",
     "esri/geometry",
     "esri/geometry/Extent",
     "esri/geometry/Point",
@@ -40,6 +41,7 @@ define([
     topic,
     JSON,
     ioQuery,
+    djquery,
     Geometry,
     Extent,
     Point,
@@ -714,18 +716,18 @@ define([
         }
       }
       var link = dojo.create("a",
-            { "class": "action link", "href": "javascript:void(0);" },
+            { "class": "action link icon-link", "href": "javascript:void(0);" },
             dojo.query(".actionList", this.map.infoWindow.domNode)[0]);
-      var linkImg = dojo.create("img",
-          { "class": "linkImage" },
-          link);
+      //var linkImg = dojo.create("img",
+      //    { "class": "icon-link" },
+      //    link);
 
       var email = dojo.create("a",
-            { "class": "action email", "href": "javascript:void(0);" },
+            { "class": "action email icon-mail-alt", "href": "javascript:void(0);" },
             dojo.query(".actionList", this.map.infoWindow.domNode)[0]);
-      var emailImg = dojo.create("img",
-       { "class": "emailImage" },
-       email);
+      //var emailImg = dojo.create("img",
+      // { "class": "emailImage" },
+      // email);
       dojo.connect(link, "onclick", lang.hitch(this, this._linkclick));
       dojo.connect(email, "onclick", lang.hitch(this, this._emailclick));
 
@@ -914,12 +916,12 @@ define([
                   if (popupTitle !== "") {
 
                     popupTable = popupTable + "<tr valign='top'>";
-                    popupTable = popupTable + "<td colspan='2'  class='headerPopUp'>" + popupTitle + "</td>";
+                    popupTable = popupTable + "<td colspan='2' class='headerPopUp'>" + popupTitle + "</td>";
 
                     popupTable = popupTable + "</tr>";
                     popupTable = popupTable + "<tr>";
+                    //popupTable = popupTable + "<td colspan='2' class='hzLinePopUp' style='border-color: "+ this.config.color.toString() + " !important'></td>";
                     popupTable = popupTable + "<td colspan='2' class='hzLinePopUp'></td>";
-
                     popupTable = popupTable + "</tr>";
                   }
 
@@ -935,7 +937,7 @@ define([
                 mediaArray[result.Layer.layerOrder][feature.attributes.OBJECTID] = mediaInfos;
                 popUpArray[result.Layer.layerOrder][feature.attributes.OBJECTID] = layerDescription;
               }
-            });
+            }, this);
           }, this);
 
           var finalMedArr = [];
@@ -1022,10 +1024,15 @@ define([
         //
 
         def.addCallback(lang.hitch(this, function () {
+        
           if (this.contentWindow) {
             this.contentWindow.set("content", content);
+            djquery(".hzLinePopUp").style("border-color", this.config.color.toString() + " !important");
+
+            djquery(".esriViewPopup .hzLine").style("border-color", this.config.color.toString() + " !important");
             topic.publish("app\contentSet", false);
           } else {
+          
             this.map.infoWindow.show(centr);
           }
 
@@ -1086,6 +1093,10 @@ define([
       def.addCallback(lang.hitch(this, function () {
         if (this.contentWindow) {
           this.contentWindow.set("content", this.map.infoWindow.getSelectedFeature().getContent());
+          djquery(".hzLinePopUp").style("border-color", this.config.color.toString() + " !important");
+
+          djquery(".esriViewPopup .hzLine").style("border-color", this.config.color.toString() + " !important");
+          
           topic.publish("app\contentSet", false);
         } else {
           this.map.infoWindow.show(centr);
@@ -1121,7 +1132,7 @@ define([
 
     },
     _createSymbols: function () {
-      this.markerSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_SQUARE, 20, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([0, 255, 255]), 1), new Color([0, 0, 0, 0]));
+      this.markerSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_SQUARE, 20, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([0, 255, 255]), 2), new Color([0, 0, 0, 0]));
 
       // lineSymbol used for freehand polyline, polyline and line. 
       this.lineSymbol = new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([0, 255, 255]), 1)

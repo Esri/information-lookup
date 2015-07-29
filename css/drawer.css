@@ -32,113 +32,11 @@
    height: 64px;
    line-height: 64px;
 }
-.black .top-bar {
-    background: #000;
-    background: rgba(0, 0, 0, 0.9);
-    border-bottom: 1px solid #808080;
-    color: white;
+
+.esriViewPopup .hzLine {
+    border-top:1px solid #333333
 }
 
-.black .hamburger-button {
-    background: url(../images/menu-white.png) no-repeat center center;
-}
-
-.black .content-pane-display {
-    background: #000;
-    border-color: #b5abab;
-    color: white;
-}
-
-.black .esriViewPopup .hzLine {
-    border-color: ActiveBorder;
-}
-
-.black .hzLinePopUp {
-    border-color: ActiveBorder;
-}
-.black .emailImage {
- background: url(../images/email-white.png) no-repeat center center;
-}
-.black .linkImage {
- background: url(../images/link-white.png) no-repeat center center;
-}
-
-.white .top-bar {
-    background: #fff;
-    background: rgba(255, 255, 255, 0.9);
-    border-bottom: 1px solid #808080;
-    color: black;
-}
-
-.white .hamburger-button {
-    background: url(../images/menu-black.png) no-repeat center center;
-}
-
-.white .content-pane-display {
-    background: #fff;
-    border-color: #808080;
-    color: black;
-}
-
-.white .esriViewPopup .hzLine {
-    border-color: black;
-}
-
-.white .hzLinePopUp {
-    border-color: black;
-}
-.white .emailImage {
- background: url(../images/email-black.png) no-repeat center center;
-}
-.white .linkImage {
- background: url(../images/link-black.png) no-repeat center center;
-}
-
-
-.blue .top-bar {
-    background: #82b0f1;
-    border-bottom: 1px solid #808080;
-    color: white;
-}
-
-.blue .hamburger-button {
-    background: url(../images/menu-black.png) no-repeat center center;
-}
-.blue .emailImage {
- background: url(../images/email-black.png) no-repeat center center;
-}
-.blue .linkImage {
- background: url(../images/link-black.png) no-repeat center center;
-}
-
-.blue .content-pane-display {
-    background: #82b0f1;
-    border-color: #808080;
-    color: white;
-}
-.blue .content-pane-btn {
-    background: #82b0f1;
-    border-color: #808080;
-    color: white;
-}
-
-.blue .esriViewPopup .hzLine {
-    border-color: #808080;
-}
-
-.blue .hzLinePopUp {
-    border-color: #808080;
-}
-
-.blue .esriPopup .titlePane {
-    background: #82b0f1;
-    color: white;
-}
-
-.blue .esriPopup .titleButton {
-    background: #82b0f1;
-    color: white;
-}
 
 .hideBar .content-pane-inner-top {
     visibility: hidden;
@@ -164,8 +62,9 @@
     padding: 0;
     margin: 0;
     cursor: pointer;
-    height: 64px;
-    width: 64px;
+    vertical-align:middle;
+    line-height:64px;
+    font-size:32pt;
 }
 
 .right .hamburger-button {
@@ -208,12 +107,26 @@
 }
 
 .left .content-pane-display {
-    width: 100%;
+   
     border-right-width: 1px;
     border-right-style: solid;
 }
 
 .right .content-pane-display {
+   
+    border-left-width: 1px;
+    border-left-style: solid;
+}
+.content-pane-display {
+    width: 100%;
+}
+.left .content-pane-btn  {
+    width: 100%;
+    border-right-width: 1px;
+    border-right-style: solid;
+}
+
+.right .content-pane-btn {
     width: 100%;
     border-left-width: 1px;
     border-left-style: solid;
@@ -238,7 +151,7 @@
     border: 0;
 }
 .content-pane-btn {
-    height: 50px;
+    height: 32px;
     width: 100%;
     padding-top: 0;
     margin: 0;
@@ -246,13 +159,13 @@
     text-align:center;
 }
 
-.nav3 {
+.sidebar-button-pane {
    
     padding-left: 20px;
     padding-right: 20px;
     text-align:center;
 }
-.icons{
+/*.icons{
     display:inline-block;
     margin-left: auto;
     margin-right: auto;
@@ -260,8 +173,8 @@
     height: 50px; 
     padding-right:20px;
     padding-left:20px;
-}
-   }
+}*/
+   
 @media screen and (max-width: 850px) {
     .app-loading .content-pane-left {
         width: 0px;

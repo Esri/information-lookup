@@ -26,7 +26,8 @@ define([
     "dojo/dom-class",
     "dojo/on",
     "dojo/topic",
-    "application/splashscreen",
+    "dojo/query",
+    "application/splash",
     "application/basemapButton",
     "application/navigationButtons",
     "application/combinedPopup",
@@ -45,6 +46,7 @@ function (
     domClass,
     on,
     topic,
+    query,
     SplashScreen,
     BasemapButton,
     NavigationButtons,
@@ -76,14 +78,14 @@ function (
           topBar: "top_bar",// top bar id
           direction: this.config.uidirection, // left or right
           theme: this.config.theme,
-          title:this.config.title
+          title: this.config.title
         });
         on(this._drawer, "load", lang.hitch(this, this._initDrawer));
 
         // startup drawer
         this._drawer.startup();
-    
-       this._checkEditing();
+
+        this._checkEditing();
         try {
 
           this.config = config;
@@ -91,8 +93,35 @@ function (
           document.title = this.config.i18n.page.title;
 
           if (this.config.showSplash) {
-            this.splash = new SplashScreen(this.map, this.config);
+            this.splash = new SplashScreen(
+              {
+                domNode: 'splash',
+                config: this.config
+              });
             this.splash.startup();
+            if (this.config.theme === "black") {
+
+              query(".splashTextContainer").style("backgroundColor", "#000000");
+              query(".splashTextContent").style("color", "#ffffff");
+
+            }
+            else if (this.config.theme === "white") {
+
+              query(".splashTextContainer").style("backgroundColor", "#ffffff");
+              query(".splashTextContent").style("color", "#000000");
+
+            }
+            else if (this.config.theme === "blue") {
+
+              query(".splashTextContainer").style("backgroundColor", "#82b0f1");
+              query(".splashTextContent").style("color", "#000000");
+
+            }
+            else {
+              query(".splashTextContainer").style("backgroundColor", this.config.backcolor.toString());
+              query(".splashTextContent").style("color", this.config.color.toString());
+
+            }
           }
 
         }
@@ -147,7 +176,7 @@ function (
       return promise;
     },
     _initDrawer: function () {
-      if (this.config.showUI !== undefined && this.config.showUI == false){
+      if (this.config.showUI !== undefined && this.config.showUI == false) {
         this._drawer.hideBar();
         this._drawer.hideSide();
         return;
@@ -159,8 +188,8 @@ function (
           return;
         }
       }
-     
-     
+
+
     },
 
     reportError: function (error) {
@@ -201,8 +230,8 @@ function (
         //search control
         var contentID = null;
         if (this.config.showUI && this.config.popupSide && this.config.showUI == true && this.config.popupSide == true) {
-            contentID = 'leftPane';
-        
+          contentID = 'leftPane';
+
         }
         this.search = new Search(
             {
@@ -225,6 +254,29 @@ function (
 
         topic.publish("app/mapLoaded", this.map);
         this._drawer.toggle();
+        domClass.add(document.body, this.config.theme);
+
+        if (this.config.backcolor && this.config.color) {
+          query(".top-bar").style("backgroundColor", this.config.backcolor.toString());
+          query(".top-bar").style("color", this.config.color.toString());
+
+          query(".content-pane-display").style("backgroundColor", this.config.backcolor.toString());
+          query(".content-pane-display").style("color", this.config.color.toString());
+
+          query(".top-bar").style("border-bottom", this.config.color.toString());
+          query(".content-pane-display").style("border-color", this.config.color.toString());
+
+          query(".content-pane-btn").style("backgroundColor", this.config.backcolor.toString());
+          query(".content-pane-btn").style("border-color", this.config.color.toString());
+
+          //query(".esriPopup .pointer").style("backgroundColor", this.config.backcolor.toString());
+          query(".esriPopup .titlePane").style("backgroundColor", this.config.backcolor.toString());
+
+          query(".esriPopup .titlePane").style("color", this.config.color.toString());
+          query(".esriPopup .titleButton").style("color", this.config.color.toString());
+
+          query(".sidebar-button-pane").style("color", this.config.color.toString());
+        }
       }
       catch (e) {
         this.reportError(e);
@@ -232,7 +284,7 @@ function (
     },
     _mapLocate: function () {
 
-        //this.map.centerAt(arguments[0]);
+      //this.map.centerAt(arguments[0]);
 
     },
     _controlLoaded: function (evt) {
@@ -272,7 +324,7 @@ function (
 
     },
 
-    
+
     // create a map based on the input web map id
     _createWebMap: function (itemInfo) {
       // set extent from config/url
@@ -307,7 +359,7 @@ function (
         // Start writing code
         /* ---------------------------------------- */
         /*  Map is ready. Start writing code        */
-        /* ---------------------------------------- */   
+        /* ---------------------------------------- */
         this._mapLoaded();
         /* ---------------------------------------- */
         /*                                          */

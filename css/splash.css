@@ -1,0 +1,50 @@
+﻿.divSplashScreenContainer {
+    top: 0;
+    left: 0;
+    background: rgba(224,224,224,0.65);
+    position: absolute;
+    z-index: 1003;
+    width: 100%;
+    height: 100%;
+}
+
+.splashTextContainer {
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-box-shadow: 0 0 10px #000000;
+    -moz-box-shadow: 0 0 10px #000000;
+    -o-box-shadow: 0 0 10px #000000;
+    box-shadow: 0 0 10px #000000;
+    
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin:auto;
+    position: absolute;
+    overflow: auto;
+   
+}
+
+.splashTextContainerMobile {
+    width: 95%;
+    height: 95%;
+  
+}
+
+.splashTextContainerWeb {
+    width: 350px;
+    height: 290px;
+  
+}
+
+.splashTextContent {
+    
+    overflow: hidden;
+    width: 100%;
+    height: 95%;
+    margin-top:4px;
+    font-size:larger;
+   
+}
