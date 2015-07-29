@@ -75,7 +75,8 @@ function (
           toggleButton: "toggle_button", // button node to toggle drawer id
           topBar: "top_bar",// top bar id
           direction: this.config.uidirection, // left or right
-          theme:this.config.theme
+          theme: this.config.theme,
+          title:this.config.title
         });
         on(this._drawer, "load", lang.hitch(this, this._initDrawer));
 

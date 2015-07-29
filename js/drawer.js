@@ -36,7 +36,8 @@ function (
       direction: 'ltr',
       mapResizeTimeout: 260,
       mapResizeStepTimeout: 25,
-      theme: "white"
+      theme: "white",
+      title:""
     },
     // lifecycle: 1
     constructor: function (options) {
@@ -52,6 +53,7 @@ function (
       this.set("mapResizeTimeout", defaults.mapResizeTimeout);
       this.set("mapResizeStepTimeout", defaults.mapResizeStepTimeout);
       this.set("theme", defaults.theme);
+      this.set("title", defaults.title);
       // classes
       this.css = {
         toggleButton: 'toggle-button',
@@ -170,6 +172,7 @@ function (
       // setup events
       this._removeEvents();
       // required nodes
+      dom.byId("title_text").innerHTML = this.get("title");
       this._borderContainerNode = dom.byId(this.get("borderContainer"));
       this._contentPaneCenterNode = dom.byId(this.get("contentPaneCenter"));
       this._contentPaneSideNode = dom.byId(this.get("contentPaneSide"));

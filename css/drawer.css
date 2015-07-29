@@ -24,8 +24,14 @@
 .top-bar {
     width: 100%;
     height: 98%;
+ 
 }
-
+.app-title  {
+   font-size:x-large;
+   
+   height: 64px;
+   line-height: 64px;
+}
 .black .top-bar {
     background: #000;
     background: rgba(0, 0, 0, 0.9);
