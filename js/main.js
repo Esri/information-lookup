@@ -146,12 +146,20 @@ function (
       return promise;
     },
     _initDrawer: function () {
-      if (this.config.showUI){
-        if (this.config.showUI == true) {
+      if (this.config.showUI !== undefined && this.config.showUI == false){
+        this._drawer.hideBar();
+        this._drawer.hideSide();
+        return;
+      }
+      if (this.config.showUI && this.config.showUI == true) {
+        if (this.config.popupSide !== undefined && this.config.popupSide == false) {
+
+          this._drawer.hideSide();
           return;
         }
       }
-      this._drawer.hide();
+     
+     
     },
 
     reportError: function (error) {
@@ -191,10 +199,9 @@ function (
         console.log("map loaded");
         //search control
         var contentID = null;
-        if (this.config.showUI) {
-          if (this.config.showUI == true) {
+        if (this.config.showUI && this.config.popupSide && this.config.showUI == true && this.config.popupSide == true) {
             contentID = 'leftPane';
-          }
+        
         }
         this.search = new Search(
             {
@@ -216,7 +223,7 @@ function (
         this._toggleIndicator(false);
 
         topic.publish("app/mapLoaded", this.map);
-
+        this._drawer.toggle();
       }
       catch (e) {
         this.reportError(e);

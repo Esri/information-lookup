@@ -1,12 +1,13 @@
 ﻿/* Drawer */
 
 
-.content-pane-inner-top{
+.content-pane-inner-top {
     height: 64px;
     padding: 0 !important;
     margin: 0 !important;
     border: 0 !important;
 }
+
 .content-pane-inner-center {
     width: 100%;
     height: 100%;
@@ -19,15 +20,17 @@
     left: auto;
     right: 0;
 }
+
 .top-bar {
     width: 100%;
     height: 98%;
-   
 }
+
 .black .top-bar {
     background: #000;
     background: rgba(0, 0, 0, 0.9);
     border-bottom: 1px solid #808080;
+    color: white;
 }
 
 .black .hamburger-button {
@@ -36,13 +39,29 @@
 
 .black .content-pane-display {
     background: #000;
-    border-color: #808080;
+    border-color: #b5abab;
+    color: white;
+}
+
+.black .esriViewPopup .hzLine {
+    border-color: ActiveBorder;
+}
+
+.black .hzLinePopUp {
+    border-color: ActiveBorder;
+}
+.black .emailImage {
+ background: url(../images/email-white.png) no-repeat center center;
+}
+.black .linkImage {
+ background: url(../images/link-white.png) no-repeat center center;
 }
 
 .white .top-bar {
     background: #fff;
     background: rgba(255, 255, 255, 0.9);
     border-bottom: 1px solid #808080;
+    color: black;
 }
 
 .white .hamburger-button {
@@ -52,29 +71,80 @@
 .white .content-pane-display {
     background: #fff;
     border-color: #808080;
-  
+    color: black;
 }
+
+.white .esriViewPopup .hzLine {
+    border-color: black;
+}
+
+.white .hzLinePopUp {
+    border-color: black;
+}
+.white .emailImage {
+ background: url(../images/email-black.png) no-repeat center center;
+}
+.white .linkImage {
+ background: url(../images/link-black.png) no-repeat center center;
+}
+
+
 .blue .top-bar {
-    
     background: #82b0f1;
     border-bottom: 1px solid #808080;
+    color: white;
 }
 
 .blue .hamburger-button {
     background: url(../images/menu-black.png) no-repeat center center;
 }
+.blue .emailImage {
+ background: url(../images/email-black.png) no-repeat center center;
+}
+.blue .linkImage {
+ background: url(../images/link-black.png) no-repeat center center;
+}
 
 .blue .content-pane-display {
-   background: #82b0f1;
+    background: #82b0f1;
     border-color: #808080;
-  
+    color: white;
 }
-.hidden .content-pane-inner-top {
+.blue .content-pane-btn {
+    background: #82b0f1;
+    border-color: #808080;
+    color: white;
+}
+
+.blue .esriViewPopup .hzLine {
+    border-color: #808080;
+}
+
+.blue .hzLinePopUp {
+    border-color: #808080;
+}
+
+.blue .esriPopup .titlePane {
+    background: #82b0f1;
+    color: white;
+}
+
+.blue .esriPopup .titleButton {
+    background: #82b0f1;
+    color: white;
+}
+
+.hideBar .content-pane-inner-top {
     visibility: hidden;
     display: none;
 }
 
-.hidden .content-pane-left {
+.hideSide .content-pane-left {
+    visibility: hidden;
+    display: none;
+}
+
+.hideSide .hamburger-button {
     visibility: hidden;
     display: none;
 }
@@ -104,7 +174,8 @@
     border: 0;
     overflow: hidden;
 }
-.border-container-inner{
+
+.border-container-inner {
     width: 100%;
     height: 100%;
     padding: 0;
@@ -128,23 +199,20 @@
     -ms-transition: width 250ms ease;
     -o-transition: width 250ms ease;
     transition: width 250ms ease;
-  
 }
 
 .left .content-pane-display {
-    width:100%;
-      
- 
-     border-right-width:1px;
-    border-right-style:solid;
+    width: 100%;
+    border-right-width: 1px;
+    border-right-style: solid;
 }
 
 .right .content-pane-display {
-    width:100%;
-      
-     border-left-width:1px;
-    border-left-style:solid;
+    width: 100%;
+    border-left-width: 1px;
+    border-left-style: solid;
 }
+
 .app-loading .content-pane-left {
     width: 280px;
 }
@@ -153,7 +221,6 @@
     width: 280px;
     overflow: auto;
     overflow-x: hidden;
-   
 }
 
 
@@ -164,7 +231,31 @@
     margin: 0;
     border: 0;
 }
+.content-pane-btn {
+    height: 50px;
+    width: 100%;
+    padding-top: 0;
+    margin: 0;
+    border: 0;
+    text-align:center;
+}
 
+.nav3 {
+   
+    padding-left: 20px;
+    padding-right: 20px;
+    text-align:center;
+}
+.icons{
+    display:inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50px; 
+    height: 50px; 
+    padding-right:20px;
+    padding-left:20px;
+}
+   }
 @media screen and (max-width: 850px) {
     .app-loading .content-pane-left {
         width: 0px;

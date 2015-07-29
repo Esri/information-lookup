@@ -35,25 +35,24 @@
         <div class="loading-message" id="loading_message"></div>
     </div>
     <div id="border_container" class="border-container-outer">
-       
-        <div id="cp_left" class="content-pane-left">
-           
-            <div id="leftPane" class="content-pane-display"  data-dojo-type="dijit/layout/ContentPane"
-                 data-dojo-props="region:'center'">
 
+        <div id="cp_left" class="content-pane-left">
+            <div data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="gutters:false" id="border_container_left">
+                <div id="leftPane" class="content-pane-display" data-dojo-type="dijit.layout.ContentPane"
+                     data-dojo-props="region:'center'">
+
+                </div>
+                <div id="bottomPane" class="content-pane-btn" data-dojo-type="dijit.layout.ContentPane"
+                     data-dojo-props="region:'bottom'">
+                    <div class="nav3">
+                        <div id='linkImage' class='icons linkImage'></div>
+                        <div id='emailImage' class='icons emailImage'></div>
+                    </div>
+                </div>
             </div>
-           
         </div>
         <div id="cp_center" class="content-pane-center">
-            <!--<div id="top_bar" class="top-bar">
-                <div id="toggle_button" class="hamburger-button"></div>
-            </div>
-            <div id="mapDiv" dir="ltr">
-
-                <div id="searchDiv"></div>
-                <div id="mapButtons" class="map-buttons"></div>
-                <div id="basemapDiv"></div>
-            </div>-->
+           
             <div data-dojo-type="dijit.layout.BorderContainer" class="border-container-inner" data-dojo-props="gutters:false" id="border_container_inner">
                 <div data-dojo-type="dijit.layout.ContentPane" class="content-pane-inner-top" data-dojo-props="region:'top', splitter:false" id=" center_panel_1">
 

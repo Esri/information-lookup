@@ -9,7 +9,8 @@
     "dijit/layout/BorderContainer",
     "dijit/layout/ContentPane",
     "dojo/Deferred",
-    "dojo/window"
+    "dojo/window",
+    "dojo/topic"
 ],
 function (
     Evented,
@@ -20,7 +21,8 @@ function (
     dom, domClass,
     BorderContainer, ContentPane,
     Deferred,
-    win
+    win,
+    topic
 ) {
   var Widget = declare([_WidgetBase, Evented], {
     declaredClass: "application.Drawer",
@@ -55,8 +57,7 @@ function (
         toggleButton: 'toggle-button',
         toggleButtonSelected: 'toggle-button-selected',
         drawerOpen: "drawer-open",
-        drawerOpenComplete: "drawer-open-complete",
-        hidden: "hidden"
+        drawerOpenComplete: "drawer-open-complete"
         
       };
     
@@ -225,11 +226,24 @@ function (
         // fix layout
         this.resize();
         // set loaded property
+        dojo.query('#linkImage').onclick(function (evt) {
+          topic.publish("app\linkImage", false);
+        });
+        dojo.query('#emailImage').onclick(function (evt) {
+          topic.publish("app\emailImage", false);
+        });
+        topic.subscribe("app\contentSet", lang.hitch(this, this._showPanel));
         this.set("loaded", true);
         // emit loaded event
         this.emit("load", {});
       } else {
         console.log('Drawer::Missing required node');
+      }
+    },
+    _showPanel: function(){
+      var currentlyOpen = domClass.contains(document.body, this.css.drawerOpen);
+      if (currentlyOpen === false){
+        this.toggle();
       }
     },
     _windowResized: function () {
@@ -268,8 +282,12 @@ function (
         }
       }
     },
-    hide: function () {
-      domClass.add(document.body, this.css.hidden);
+    hideBar: function () {
+      domClass.add(document.body, "hideBar");
+
+    },
+    hideSide: function () {
+      domClass.add(document.body, "hideSide");
 
     },
     _setSide: function (side) {
