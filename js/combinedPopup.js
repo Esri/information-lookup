@@ -25,6 +25,7 @@ define([
     "esri/tasks/QueryTask",
     "esri/tasks/query",
     "esri/dijit/PopupTemplate",
+    "esri/geometry/webMercatorUtils",
     "dojo/string",
     "dojo/i18n!application/nls/resources"
 
@@ -54,6 +55,7 @@ define([
     QueryTask,
     Query,
     PopupTemplate,
+    webMercatorUtils,
     String,
     i18n
 ) {
@@ -983,9 +985,11 @@ define([
             }
           }
           allDescriptions = "<div>" + allDescriptions + "</div>"
-          
+          var mp = webMercatorUtils.webMercatorToGeographic(centr);
+
           if (this.config.popPreMessage !== null) {
             var tmpMsg = this.config.popPreMessage.replace(/{IL_XCOORD}/gi, centr.x).replace(/{IL_YCOORD}/gi, centr.y);
+            tmpMsg = tmpMsg.replace(/{IL_LAT}/gi, mp.y).replace(/{IL_LONG}/gi, mp.x);
             for (var key in resultSum) {
               if (key !== null) {
              
@@ -999,6 +1003,8 @@ define([
           }
           if (this.config.popPostMessage !== null) {
             var tmpMsg = this.config.popPostMessage.replace(/{IL_XCOORD}/gi, centr.x).replace(/{IL_YCOORD}/gi, centr.y);
+            tmpMsg = tmpMsg.replace(/{IL_LAT}/gi, mp.y).replace(/{IL_LONG}/gi, mp.x);
+
             for (var key in resultSum) {
               if (key !== null) {
 
