@@ -4,7 +4,7 @@ define([], function () {
   //default web map, default app color theme and more. These values can be overwritten by template configuration settings
   //and url parameters.
   var defaults = {
-    "appid": "",
+    "appid": "16c3c6448ec243febc863f804afd01bb",
     "webmap": "796077118881469e8db06ccc6efd90b6",
     "oauthappid": null, //"AFTKRmv16wj14N3z",
     //Group templates must support a group url parameter. This will contain the id of the group.
@@ -62,7 +62,9 @@ define([], function () {
     "uidirection": "left",
     "showUI": false,
     "popupSide": false,
-    "title":"Information Lookup",
+    "title": "Information Lookup",
+    "popPreMessage": null,
+    "popPostMessage": null,
     "basemapWidgetVisible": true,
    
     //When true the geocoder search box is displayed in the title area

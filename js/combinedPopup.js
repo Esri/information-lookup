@@ -670,7 +670,7 @@ define([
       if (this.map === null || this.map.infoWindow === null || this.map.infoWindow === undefined || this.map.infoWindow.features === null || this.map.infoWindow.features === undefined) {
         return;
       }
-     
+
       if (this.map.infoWindow.features.length === 0) {
         return;
       }
@@ -781,7 +781,7 @@ define([
         if (result.featureSet) {
           if (result.featureSet.features) {
             if (result.featureSet.features.length > 0) {
-              this.event = esult.featureSet.features[0].geometry;
+              this.event = result.featureSet.features[0].geometry;
               this.showPopupGeo(result.featureSet.features[0].geometry);
               return;
             }
@@ -820,18 +820,30 @@ define([
         var mediaArray = {};
         var resultFeature = {};
         var valToStore = null;
+        var resultSum = {};
+        for (f = 0, fl = this.lookupLayers.length; f < fl; f++) {
+          resultSum[this.lookupLayers[f].name] = 0;
+        }
+            
+        var centr = this._getCenter(this.event);
         if (this.results != null && this.results.length > 0) {
 
           //popUpArray.length = this.results.length;
           //mediaArray.length = this.results.length;
           console.log(this.results.length + " layers");
           array.forEach(this.results, function (result) {
+         
             mediaArray[result.Layer.layerOrder] = {};
             popUpArray[result.Layer.layerOrder] = {};
             console.log(result.results.length + " features found in " + result.Layer.name);
             array.forEach(result.results, function (feature) {
               console.log("Feature with OBJECTID: " + feature.attributes.OBJECTID + " in " + result.Layer.name);
-
+              if (result.Layer.name in resultSum) {
+                resultSum[result.Layer.name] = resultSum[result.Layer.name] + 1;
+              }
+              else {
+                resultSum[result.Layer.name] = 1;
+              }
               if (result.Layer.popupInfo != null) {
                 //var resetFieldNames = result.Layer.popupInfo.fieldInfos;
                 //for (var r = 0, rl = resetFieldNames.length; r < rl; r++) {
@@ -909,7 +921,7 @@ define([
 
                 }
                 if (result.Layer.popupInfo.description === null) {
-                  var popupTable = "<div class=''>";
+                  var popupTable = "<div>";
                   popupTable = popupTable + "<table class='popTable' cellpadding='0' cellspacing='0'>";
                   popupTable = popupTable + "<tbody>";
 
@@ -926,7 +938,7 @@ define([
                   }
 
                   popupTable = popupTable + layFldTable;
-                  popupTable = popupTable + "</tbody>";
+                  popupTable = popupTable + "</tbody></table>";
 
                   popupTable = popupTable + "</div>";
                   layerDescription = popupTable;
@@ -970,7 +982,34 @@ define([
 
             }
           }
+          allDescriptions = "<div>" + allDescriptions + "</div>"
+          
+          if (this.config.popPreMessage !== null) {
+            var tmpMsg = this.config.popPreMessage.replace(/{IL_XCOORD}/gi, centr.x).replace(/{IL_YCOORD}/gi, centr.y);
+            for (var key in resultSum) {
+              if (key !== null) {
+             
+                var find = "{" + key + "}";
+                var regex = new RegExp(find, "g");
+                tmpMsg = tmpMsg.replace(regex, resultSum[key]);
+                
+              }
+            }
+            allDescriptions = "<div>" + tmpMsg + "</div>" + allDescriptions;
+          }
+          if (this.config.popPostMessage !== null) {
+            var tmpMsg = this.config.popPostMessage.replace(/{IL_XCOORD}/gi, centr.x).replace(/{IL_YCOORD}/gi, centr.y);
+            for (var key in resultSum) {
+              if (key !== null) {
 
+                var find = "{" + key + "}";
+                var regex = new RegExp(find, "g");
+                tmpMsg = tmpMsg.replace(regex, resultSum[key]);
+
+              }
+            }
+            allDescriptions = allDescriptions + "<div>" + tmpMsg + "</div>";
+          }
 
           ////Make single Array of fields
           this.popupTemplate = new PopupTemplate({
@@ -1015,16 +1054,16 @@ define([
         }
         if (this.config.storeLocation === true && this.config.editingAllowed) {
           atts[this.config.serviceRequestLayerAvailibiltyField] = valToStore;
-          this._logRequest(this.event, atts);
+          this._logRequest(cent, atts);
         }
         content = this.map.infoWindow.getSelectedFeature().getContent();
 
-        var centr = this._getCenter(this.event);
+        
         var def = this.map.centerAndZoom(centr, this.config.zoomLevel);
         //
 
         def.addCallback(lang.hitch(this, function () {
-        
+
           if (this.contentWindow) {
             this.contentWindow.set("content", content);
             djquery(".hzLinePopUp").style("border-color", this.config.color.toString() + " !important");
@@ -1032,7 +1071,7 @@ define([
             djquery(".esriViewPopup .hzLine").style("border-color", this.config.color.toString() + " !important");
             topic.publish("app\contentSet", false);
           } else {
-          
+
             this.map.infoWindow.show(centr);
           }
 
@@ -1045,9 +1084,32 @@ define([
       }
     },
     _showNoSearchFeatureFound: function () {
-      var editGraphic = new Graphic(this.event, this._getSymbol(), null, null);
-      this.map.infoWindow.highlight = false;
-      this.map.infoWindow._highlighted = undefined;
+      var centr = this._getCenter(this.event);
+
+      var title;
+      if (this.config.noSearchFeatureTitle) {
+        title = this.config.noSearchFeatureTitle;
+      }
+      else {
+        title = this.config.serviceUnavailableTitle;
+      }
+      var desc;
+      if (this.config.noSearchFeatureMessage) {
+       desc = this.config.noSearchFeatureMessage.replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, "'");
+      }
+      else {
+        desc = this.config.serviceUnavailableMessage.replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, "'");
+      }
+
+      this.popupTemplate = new PopupTemplate({
+        title: title,
+        fieldInfos: null,
+        description: desc,
+        mediaInfos: null
+      });
+      var editGraphic = new Graphic(this.event, this._getSymbol(), null, this.popupTemplate);
+      // this.map.infoWindow.highlight = false;
+      //this.map.infoWindow._highlighted = undefined;
 
       if (this.showGraphic === true) {
         this.map.graphics.add(editGraphic);
@@ -1056,19 +1118,8 @@ define([
       featureArray.push(editGraphic);
 
       this.map.infoWindow.setFeatures(featureArray);
-      if (this.config.noSearchFeatureTitle) {
-        this.map.infoWindow.setTitle(this.config.noSearchFeatureTitle);
-      }
-      else {
-        this.map.infoWindow.setTitle(this.config.serviceUnavailableTitle);
-      }
-      if (this.config.noSearchFeatureMessage) {
-        this.map.infoWindow.setContent(this.config.noSearchFeatureMessage.replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, "'"));
-      }
-      else {
-        this.map.infoWindow.setContent(this.config.serviceUnavailableMessage.replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, "'"));
-      }
-
+     
+    
 
       //this.map.infoWindow.show(editGraphic.geometry);
       if (this.config.popupWidth != null && this.config.popupHeight != null) {
@@ -1087,16 +1138,15 @@ define([
           atts[this.config.serviceRequestLayerAvailibiltyField] = this.config.serviceRequestLayerAvailibiltyFieldValueNotAvail;
         }
 
-        this._logRequest(this.event, atts);
+        this._logRequest(centr, atts);
       }
       var def = this.map.centerAndZoom(this.event, this.config.zoomLevel);
       def.addCallback(lang.hitch(this, function () {
         if (this.contentWindow) {
           this.contentWindow.set("content", this.map.infoWindow.getSelectedFeature().getContent());
           djquery(".hzLinePopUp").style("border-color", this.config.color.toString() + " !important");
-
           djquery(".esriViewPopup .hzLine").style("border-color", this.config.color.toString() + " !important");
-          
+
           topic.publish("app\contentSet", false);
         } else {
           this.map.infoWindow.show(centr);

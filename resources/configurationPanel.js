@@ -175,6 +175,20 @@
           "label": "Unavailable Popup Message:",
           "tooltip": "Popup message when outside an area",
           "stringFieldOption": "richtext"
+        },
+        {
+          "type": "string",
+          "fieldName": "popPreMessage",
+          "label": "Text to add to the beginning of the results",
+          "tooltip": "Text to add to the beginning of the results",
+          "stringFieldOption": "richtext"
+        },
+        {
+          "type": "string",
+          "fieldName": "popPostMessage",
+          "label": "Text to add to the end of the results",
+          "tooltip": "Text to add to the end of the results",
+          "stringFieldOption": "richtext"
         }
       ]
     },
@@ -207,11 +221,11 @@
           "options": [
             {
               "label": "Left",
-              "value": "Left"
+              "value": "left"
             },
             {
               "label": "Right",
-              "value": "Right"
+              "value": "right"
             }
           ]
         },
@@ -314,11 +328,13 @@
     "theme": "black",
     "basemapWidgetVisible": true,
     "search": true,
-    "title":"Information Lookup",
+    "title": "Information Lookup",
     "color": "#FFFFFF",
-    "backcolor":"#000000",
+    "backcolor": "#000000",
     "uidirection": "left",
     "showUI": false,
     "popupSide": false,
+    "popPostMessage": "",
+    "popPreMessage": ""
   }
 }
