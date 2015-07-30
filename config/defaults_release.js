@@ -5,7 +5,7 @@ define([], function () {
   //and url parameters.
   var defaults = {
     "appid": "",
-    "webmap": "796077118881469e8db06ccc6efd90b6",
+    "webmap": "25660c0facdb419191c8b2dec5da74d7",
     "oauthappid": null, //"AFTKRmv16wj14N3z",
     //Group templates must support a group url parameter. This will contain the id of the group.
     //group: "",
@@ -40,12 +40,12 @@ define([], function () {
       "id": "",
       "fields": []
     }],
-    "serviceAreaLayerNames": "Polygon1",
+    "serviceAreaLayerNames": "Service Area",
     "popupTitle": "Service Information",
     "serviceUnavailableTitle": "Outside Service Area",
-    "serviceUnavailableMessage": "The utility does not provide service to the selected location",
-    "noSearchFeatureTitle": "Not in a parcel",
-    "noSearchFeatureMessage": "BLAGLALG",
+    "serviceUnavailableMessage": "No information is available at the selected location",
+    "noSearchFeatureTitle": "No search feature",
+    "noSearchFeatureMessage": "A search feature to use to lookup information was not found, please select a new location.",
     "popupWidth": null,
     "popupHeight": null,
     "zoomLevel": 16,
@@ -64,7 +64,7 @@ define([], function () {
     "popupSide": false,
     "title": "Information Lookup",
     "popPreMessage": null,
-  "popPostMessage": null,
+    "popPostMessage": null,
     "basemapWidgetVisible": true,
 
     //When true the geocoder search box is displayed in the title area
