@@ -125,16 +125,6 @@ function (
       array.forEach(geocoders, function (geocoder) {
         if (geocoder.url.indexOf(".arcgis.com/arcgis/rest/services/World/GeocodeServer") > -1) {
           geocoder.placefinding = true;
-          if (this.config.i18n) {
-            if (this.config.i18n.geocoder) {
-              if (this.config.i18n.geocoder.defaultText) {
-
-                geocoder.placeholder = this.config.i18n.geocoder.defaultText;
-
-              }
-            }
-          }
-          geocoder.suggest = true;
         }
 
       }, this);

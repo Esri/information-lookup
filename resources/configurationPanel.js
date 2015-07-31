@@ -47,14 +47,14 @@
           "stringFieldOption": "richtext"
         },
         {
-          "label": "Zoom level for location",
+          "label": "Max Zoom level for lookup",
           "fieldName": "zoomLevel",
           "type": "number",
           "constraints": {
             "min": 0,
             "places": 0
           },
-          "tooltip": "Sets the map zoom level to this level after location is entered"
+          "tooltip": "Sets the max auto zoom level for the map after a lookup"
         }
       ]
     },

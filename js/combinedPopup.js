@@ -151,6 +151,20 @@ define([
         return geo;
       }
     },
+    _getExtent: function (geo) {
+      if (geo.type === "extent") {
+        return geo;
+      }
+      else if (geo.type === "polygon") {
+        return geo.getExtent();
+      }
+      else if (geo.type === "polyline") {
+        return geo.getExtent();
+      }
+      else {
+        return null;
+      }
+    },
     showPopupGeo: function (evt) {
 
       if (this.lookupLayers === undefined) {
@@ -655,14 +669,23 @@ define([
         params = dojo.queryToObject(urlParam[1]);
 
       }
-      params.location = geostring;
-      if (this.config.customUrlParam && this.config.customUrlParam !== null) {
-        if (this.config.customUrlParam in params) {
+      for (var key in params) {
+        if (key !== null) {
+          if (key !== "appid") {
+            delete params[key];
 
-          delete params[this.config.customUrlParam];
+          }
         }
-
       }
+      params.location = geostring;
+
+      //if (this.config.customUrlParam && this.config.customUrlParam !== null) {
+      //  if (this.config.customUrlParam in params) {
+
+      //    delete params[this.config.customUrlParam];
+      //  }
+
+      //}
 
       // Assemble the new uri with its query string attached.
       var queryStr = ioQuery.objectToQuery(params);
@@ -702,14 +725,22 @@ define([
         params = dojo.queryToObject(urlParam[1]);
 
       }
-      params.location = geostring;
-      if (this.config.customUrlParam && this.config.customUrlParam !== null) {
-        if (this.config.customUrlParam in params) {
+      for (var key in params) {
+        if (key !== null) {
+          if (key !== "appid") {
+            delete params[key];
 
-          delete params[this.config.customUrlParam];
+          }
         }
-
       }
+      params.location = geostring;
+      //if (this.config.customUrlParam && this.config.customUrlParam !== null) {
+      //  if (this.config.customUrlParam in params) {
+
+      //    delete params[this.config.customUrlParam];
+      //  }
+
+      //}
       // Assemble the new uri with its query string attached.
       var queryStr = ioQuery.objectToQuery(params);
       uri = uri + "?" + queryStr;
@@ -812,6 +843,136 @@ define([
 
       };
     },
+    _getPopupForResult: function (feature,layer) {
+      var resultFeature = {};
+      if (layer.popupInfo != null) {
+        var layerFields = lang.clone(layer.popupInfo.fieldInfos);
+
+        var layerDescription = lang.clone(layer.popupInfo.description);
+        var popupTitle = lang.clone(layer.popupInfo.title);
+        var mediaInfos = lang.clone(layer.popupInfo.mediaInfos);
+
+        var layFldTable = "";
+
+        for (var g = 0, gl = layerFields.length; g < gl; g++) {
+          if (mediaInfos != null) {
+            array.forEach(mediaInfos, function (mediaInfo) {
+              mediaInfo = this._processObject(mediaInfo,
+                layerFields[g].fieldName, layer.name,
+                false, feature.attributes.OBJECTID);
+
+            }, this);
+          }
+
+          if (layer.popupInfo.description == null) {
+            re = new RegExp("{" + layerFields[g].fieldName + "}", "g");
+
+            popupTitle = popupTitle.replace(re, "{" +
+              layer.name + "_" + feature.attributes.OBJECTID + "_" +
+              layerFields[g].fieldName + "}");
+
+            if (layerFields[g].visible === true) {
+
+              layFldTable = layFldTable + "<tr valign='top'>";
+              if (layerFields[g].label != null) {
+                layFldTable = layFldTable + "<td class='popName'>" +
+                  layerFields[g].label + "</td>";
+              } else {
+                layFldTable = layFldTable + "<td class='popName'>" +
+                  layerFields[g].fieldName + "</td>";
+              }
+              layFldTable = layFldTable + "<td class='popValue'>" +
+                "{" + layer.name + "_" +
+                feature.attributes.OBJECTID + "_" +
+                layerFields[g].fieldName + "}</td>";
+              layFldTable = layFldTable + "</tr>";
+
+            }
+
+          } else {
+            re = new RegExp("{" + layerFields[g].fieldName + "}", "g");
+
+            layerDescription = layerDescription.replace(re, "{" + layer.name + "_" +
+              feature.attributes.OBJECTID + "_" + layerFields[g].fieldName + "}");
+
+          }
+          var fldVal = feature.attributes[layerFields[g].fieldName];
+          if (fldVal != null) {
+
+
+            fldVal = fldVal.toString();
+            if (fldVal.indexOf("http://") >= 0 || fldVal.indexOf("https://") >= 0 ||
+              fldVal.indexOf("www.") >= 0) {
+              if (layer.popupInfo.description === null) {
+                resultFeature[layer.name + "_" +
+                  layerFields[g].fieldName + "_" + "Hyper"] =
+                  "<a target='_blank' href='" + fldVal + "'>" +
+                  i18n.popup.urlMoreInfo + "</a>";
+                if (layFldTable.indexOf("{" + layer.name +
+                  "_" + feature.attributes.OBJECTID +
+                  "_" + layerFields[g].fieldName + "}") >= 0) {
+                  layFldTable = layFldTable.replace("{" + layer.name + "_" +
+                    feature.attributes.OBJECTID +
+                    "_" + layerFields[g].fieldName + "}", "{" + layer.name + "_" +
+                    feature.attributes.OBJECTID + "_" + layerFields[g].fieldName + "_" +
+                    "Hyper" + "}");
+                }
+                resultFeature[layer.name + "_" + feature.attributes.OBJECTID + "_" +
+                  layerFields[g].fieldName] = fldVal;
+              }
+              else {
+                resultFeature[layer.name + "_" + feature.attributes.OBJECTID + "_" +
+                  layerFields[g].fieldName] = fldVal;
+              }
+            }
+            else {
+              resultFeature[layer.name + "_" + feature.attributes.OBJECTID + "_" +
+                layerFields[g].fieldName] = fldVal;
+            }
+          }
+          else {
+            resultFeature[layer.name + "_" + feature.attributes.OBJECTID + "_" +
+              layerFields[g].fieldName] = fldVal;
+          }
+          layerFields[g].fieldName = layer.name + "_" +
+            feature.attributes.OBJECTID +
+            "_" + layerFields[g].fieldName;
+
+        }
+        if (layer.popupInfo.description === null) {
+          var popupTable = "<div>";
+          popupTable = popupTable +
+            "<table class='popTable' cellpadding='0' cellspacing='0'>";
+          popupTable = popupTable + "<tbody>";
+
+          if (popupTitle !== "") {
+
+            popupTable = popupTable + "<tr valign='top'>";
+            popupTable = popupTable + "<td colspan='2' class='headerPopUp'>" +
+              popupTitle + "</td>";
+
+            popupTable = popupTable + "</tr>";
+            popupTable = popupTable + "<tr>";
+
+            popupTable = popupTable + "<td colspan='2' class='hzLinePopUp theme'></td>";
+            popupTable = popupTable + "</tr>";
+          }
+
+          popupTable = popupTable + layFldTable;
+          popupTable = popupTable + "</tbody></table>";
+
+          popupTable = popupTable + "</div>";
+          layerDescription = popupTable;
+        }
+        return {
+          fields: layerFields,
+          media: mediaInfos,
+          desc: layerDescription,
+          feature: resultFeature
+        }
+      
+      }
+    },
     _allQueriesComplate: function () {
       try {
 
@@ -835,145 +996,26 @@ define([
           //popUpArray.length = this.results.length;
           //mediaArray.length = this.results.length;
           console.log(this.results.length + " layers");
+          
           array.forEach(this.results, function (result) {
-
-            mediaArray[result.Layer.layerOrder] = {};
-            popUpArray[result.Layer.layerOrder] = {};
-            console.log(result.results.length + " features found in " + result.Layer.name);
+            var layer = result.Layer;
+            mediaArray[layer.layerOrder] = {};
+            popUpArray[layer.layerOrder] = {};
+            console.log(result.results.length + " features found in " + layer.name);
             array.forEach(result.results, function (feature) {
               console.log("Feature with OBJECTID: " + feature.attributes.OBJECTID +
-                " in " + result.Layer.name);
-              if (result.Layer.name in resultSum) {
-                resultSum[result.Layer.name] = resultSum[result.Layer.name] + 1;
+                " in " + layer.name);
+              if (layer.name in resultSum) {
+                resultSum[layer.name] = resultSum[layer.name] + 1;
               }
               else {
                 resultSum[result.Layer.name] = 1;
               }
-              if (result.Layer.popupInfo != null) {
-                var layerFields = lang.clone(result.Layer.popupInfo.fieldInfos);
-
-                var layerDescription = lang.clone(result.Layer.popupInfo.description);
-                var popupTitle = lang.clone(result.Layer.popupInfo.title);
-                var mediaInfos = lang.clone(result.Layer.popupInfo.mediaInfos);
-
-                var layFldTable = "";
-
-                for (var g = 0, gl = layerFields.length; g < gl; g++) {
-                  if (mediaInfos != null) {
-                    array.forEach(mediaInfos, function (mediaInfo) {
-                      mediaInfo = this._processObject(mediaInfo,
-                        layerFields[g].fieldName, result.Layer.name,
-                        false, feature.attributes.OBJECTID);
-
-                    }, this);
-                  }
-
-                  if (result.Layer.popupInfo.description == null) {
-                    re = new RegExp("{" + layerFields[g].fieldName + "}", "g");
-
-                    popupTitle = popupTitle.replace(re, "{" +
-                      result.Layer.name + "_" + feature.attributes.OBJECTID + "_" +
-                      layerFields[g].fieldName + "}");
-
-                    if (layerFields[g].visible === true) {
-
-                      layFldTable = layFldTable + "<tr valign='top'>";
-                      if (layerFields[g].label != null) {
-                        layFldTable = layFldTable + "<td class='popName'>" +
-                          layerFields[g].label + "</td>";
-                      } else {
-                        layFldTable = layFldTable + "<td class='popName'>" +
-                          layerFields[g].fieldName + "</td>";
-                      }
-                      layFldTable = layFldTable + "<td class='popValue'>" +
-                        "{" + result.Layer.name + "_" +
-                        feature.attributes.OBJECTID + "_" +
-                        layerFields[g].fieldName + "}</td>";
-                      layFldTable = layFldTable + "</tr>";
-
-                    }
-
-                  } else {
-                    re = new RegExp("{" + layerFields[g].fieldName + "}", "g");
-
-                    layerDescription = layerDescription.replace(re, "{" + result.Layer.name + "_" +
-                      feature.attributes.OBJECTID + "_" + layerFields[g].fieldName + "}");
-
-                  }
-                  var fldVal = feature.attributes[layerFields[g].fieldName];
-                  if (fldVal != null) {
-
-
-                    fldVal = fldVal.toString();
-                    if (fldVal.indexOf("http://") >= 0 || fldVal.indexOf("https://") >= 0 ||
-                      fldVal.indexOf("www.") >= 0) {
-                      if (result.Layer.popupInfo.description === null) {
-                        resultFeature[result.Layer.name + "_" +
-                          layerFields[g].fieldName + "_" + "Hyper"] =
-                          "<a target='_blank' href='" + fldVal + "'>" +
-                          i18n.popup.urlMoreInfo + "</a>";
-                        if (layFldTable.indexOf("{" + result.Layer.name +
-                          "_" + feature.attributes.OBJECTID +
-                          "_" + layerFields[g].fieldName + "}") >= 0) {
-                          layFldTable = layFldTable.replace("{" + result.Layer.name + "_" +
-                            feature.attributes.OBJECTID +
-                            "_" + layerFields[g].fieldName + "}", "{" + result.Layer.name + "_" +
-                            feature.attributes.OBJECTID + "_" + layerFields[g].fieldName + "_" +
-                            "Hyper" + "}");
-                        }
-                        resultFeature[result.Layer.name + "_" + feature.attributes.OBJECTID + "_" +
-                          layerFields[g].fieldName] = fldVal;
-                      }
-                      else {
-                        resultFeature[result.Layer.name + "_" + feature.attributes.OBJECTID + "_" +
-                          layerFields[g].fieldName] = fldVal;
-                      }
-                    }
-                    else {
-                      resultFeature[result.Layer.name + "_" + feature.attributes.OBJECTID + "_" +
-                        layerFields[g].fieldName] = fldVal;
-                    }
-                  }
-                  else {
-                    resultFeature[result.Layer.name + "_" + feature.attributes.OBJECTID + "_" +
-                      layerFields[g].fieldName] = fldVal;
-                  }
-                  layerFields[g].fieldName = result.Layer.name + "_" +
-                    feature.attributes.OBJECTID +
-                    "_" + layerFields[g].fieldName;
-
-                }
-                if (result.Layer.popupInfo.description === null) {
-                  var popupTable = "<div>";
-                  popupTable = popupTable +
-                    "<table class='popTable' cellpadding='0' cellspacing='0'>";
-                  popupTable = popupTable + "<tbody>";
-
-                  if (popupTitle !== "") {
-
-                    popupTable = popupTable + "<tr valign='top'>";
-                    popupTable = popupTable + "<td colspan='2' class='headerPopUp'>" +
-                      popupTitle + "</td>";
-
-                    popupTable = popupTable + "</tr>";
-                    popupTable = popupTable + "<tr>";
-
-                    popupTable = popupTable + "<td colspan='2' class='hzLinePopUp theme'></td>";
-                    popupTable = popupTable + "</tr>";
-                  }
-
-                  popupTable = popupTable + layFldTable;
-                  popupTable = popupTable + "</tbody></table>";
-
-                  popupTable = popupTable + "</div>";
-                  layerDescription = popupTable;
-                }
-
-                allFields = allFields.concat(layerFields);
-
-                mediaArray[result.Layer.layerOrder][feature.attributes.OBJECTID] = mediaInfos;
-                popUpArray[result.Layer.layerOrder][feature.attributes.OBJECTID] = layerDescription;
-              }
+              var popDet = this._getPopupForResult(feature,layer);
+              allFields = allFields.concat(popDet.fields);
+              resultFeature = lang.mixin( resultFeature,popDet.feature);
+              mediaArray[result.Layer.layerOrder][feature.attributes.OBJECTID] = popDet.media;
+              popUpArray[result.Layer.layerOrder][feature.attributes.OBJECTID] = popDet.desc;
             }, this);
           }, this);
 
@@ -1089,12 +1131,24 @@ define([
           this._logRequest(centr, atts);
         }
         content = this.map.infoWindow.getSelectedFeature().getContent();
+        var def;
+        var ext = this._getExtent(this.event);
+        if (ext === null) {
+          def = this.map.centerAndZoom(centr, this.config.zoomLevel);
 
+        } else {
+          if (this.map._fixExtent(ext, true).lod.level > this.config.zoomLevel) {
+            def = this.map.centerAndZoom(centr, this.config.zoomLevel);
+          }
+          else{
+            def = this.map.setExtent(ext, true);
+          }
+         
 
-        var def = this.map.centerAndZoom(centr, this.config.zoomLevel);
+        }
         //
 
-        def.addCallback(lang.hitch(this, function () {
+        def.addCallback(lang.hitch(this, function (results) {
 
           if (this.contentWindow) {
             this.contentWindow.set("content", content);
@@ -1173,7 +1227,20 @@ define([
 
         this._logRequest(centr, atts);
       }
-      var def = this.map.centerAndZoom(this.event, this.config.zoomLevel);
+      var ext = this._getExtent(this.event);
+      if (ext === null) {
+        def = this.map.centerAndZoom(centr, this.config.zoomLevel);
+
+      } else {
+        if (this.map._fixExtent(ext, true).lod.level > this.config.zoomLevel) {
+          def = this.map.centerAndZoom(centr, this.config.zoomLevel);
+        }
+        else {
+          def = this.map.setExtent(ext, true);
+        }
+
+
+      }
       def.addCallback(lang.hitch(this, function () {
         if (this.contentWindow) {
           this.contentWindow.set("content",

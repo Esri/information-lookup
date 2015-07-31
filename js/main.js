@@ -90,9 +90,13 @@ function (
         try {
 
           this.config = config;
+          if (this.config.title) {
+            document.title = this.config.title;
+          } else {
+            document.title = this.config.i18n.page.title;
 
-          document.title = this.config.i18n.page.title;
-
+          }
+          
           if (this.config.showSplash) {
             this.splash = new SplashScreen(
               {
