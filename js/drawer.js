@@ -1,43 +1,49 @@
 ﻿define([
-    "dojo/Evented",
-    "dojo/_base/declare",
-    "dojo/_base/lang",
-    "dijit/_WidgetBase",
-    "dojo/on",
-    "dojo/dom",
-    "dojo/dom-class",
-    "dijit/layout/BorderContainer",
-    "dijit/layout/ContentPane",
-    "dojo/Deferred",
-    "dojo/window",
-    "dojo/topic"
+  "dojo/Evented",
+  "dojo",
+  "dojo/_base/declare",
+  "dojo/_base/lang",
+  "dijit/_WidgetBase",
+  "dojo/on",
+  "dojo/dom",
+  "dojo/dom-class",
+  "dijit/layout/BorderContainer",
+  "dijit/layout/ContentPane",
+  "dojo/Deferred",
+  "dojo/window",
+  "dojo/topic",
+  "dojo/dom-style",
+  "dojo/query",
 ],
 function (
-    Evented,
-    declare,
-    lang,
-    _WidgetBase,
-    on,
-    dom, domClass,
-    BorderContainer, ContentPane,
-    Deferred,
-    win,
-    topic
+  Evented,
+  dojo,
+  declare,
+  lang,
+  _WidgetBase,
+  on,
+  dom, domClass,
+  BorderContainer, ContentPane,
+  Deferred,
+  win,
+  topic,
+  domStyle,
+  query
 ) {
   var Widget = declare([_WidgetBase, Evented], {
     declaredClass: "application.Drawer",
     options: {
-      showDrawerSize: 850,
-      borderContainer: null,
-      contentPaneCenter: null,
-      contentPaneSide: null,
-      toggleButton: null,
-      topBar: null,
-      direction: 'ltr',
-      mapResizeTimeout: 260,
-      mapResizeStepTimeout: 25,
-      theme: "white",
-      title:""
+      showDrawerSize : 850,
+      borderContainer : null,
+      contentPaneCenter : null,
+      contentPaneSide : null,
+      toggleButton : null,
+      topBar : null,
+      direction : "ltr",
+      mapResizeTimeout : 260,
+      mapResizeStepTimeout : 25,
+      pageIcon : null,
+      title : ""
     },
     // lifecycle: 1
     constructor: function (options) {
@@ -49,25 +55,24 @@ function (
       this.set("contentPaneCenter", defaults.contentPaneCenter);
       this.set("contentPaneSide", defaults.contentPaneSide);
       this.set("toggleButton", defaults.toggleButton);
+      this.set("pageIconDiv", defaults.pageIconDiv);
       this.set("direction", defaults.direction);
       this.set("mapResizeTimeout", defaults.mapResizeTimeout);
       this.set("mapResizeStepTimeout", defaults.mapResizeStepTimeout);
-      this.set("theme", defaults.theme);
       this.set("title", defaults.title);
       // classes
       this.css = {
-        toggleButton: 'toggle-button',
-        toggleButtonSelected: 'toggle-button-selected',
+        toggleButton: "toggle-button",
+        toggleButtonSelected: "toggle-button-selected",
         drawerOpen: "drawer-open",
         drawerOpenComplete: "drawer-open-complete"
-        
+
       };
-    
+
     },
     // start widget. called by user
     startup: function () {
       this._init();
-      this._loadtheme();
     },
     // connections/subscriptions will be cleaned up during the destroy() lifecycle phase
     destroy: function () {
@@ -80,7 +85,7 @@ function (
         this._borderContainer.layout();
       }
       // drawer status resize
-      this.emit('resize', {});
+      this.emit("resize", {});
     },
     /* ---------------- */
     /* Public Events */
@@ -104,7 +109,7 @@ function (
       // whether drawer is now opened or closed
       var nowOpen;
       // if add is set
-      if (typeof add !== 'undefined') {
+      if (typeof add !== "undefined") {
         nowOpen = domClass.toggle(document.body, this.css.drawerOpen, add);
       } else {
         nowOpen = domClass.toggle(document.body, this.css.drawerOpen, !currentlyOpen);
@@ -198,10 +203,10 @@ function (
         }, this._contentPaneCenterNode);
         this._borderContainer.addChild(this._contentPaneCenter);
         // panel side
-        var side = 'left';
-        if (this.get("direction") === 'right') {
-          side = 'right';
-         
+        var side = "left";
+        if (this.get("direction") === "right") {
+          side = "right";
+
         }
         this._setSide(side);
         // left panel
@@ -215,12 +220,12 @@ function (
         // start border container
         this._borderContainer.startup();
         // drawer button
-        var toggleClick = on(this._toggleNode, 'click', lang.hitch(this, function () {
+        var toggleClick = on(this._toggleNode, "click", lang.hitch(this, function () {
           this.toggle();
         }));
         this._events.push(toggleClick);
         // window size event
-        var winResize = on(window, 'resize', lang.hitch(this, function () {
+        var winResize = on(window, "resize", lang.hitch(this, function () {
           this._windowResized();
         }));
         this._events.push(winResize);
@@ -229,23 +234,23 @@ function (
         // fix layout
         this.resize();
         // set loaded property
-        dojo.query('#linkImage').onclick(function (evt) {
-          topic.publish("app\linkImage", false);
+        dojo.query("#linkImage").onclick(function (evt) {
+          topic.publish("app.linkImage", false);
         });
-        dojo.query('#emailImage').onclick(function (evt) {
-          topic.publish("app\emailImage", false);
+        dojo.query("#emailImage").onclick(function (evt) {
+          topic.publish("app.emailImage", false);
         });
-        topic.subscribe("app\contentSet", lang.hitch(this, this._showPanel));
+        topic.subscribe("app.contentSet", lang.hitch(this, this._showPanel));
         this.set("loaded", true);
         // emit loaded event
         this.emit("load", {});
       } else {
-        console.log('Drawer::Missing required node');
+        console.log("Drawer::Missing required node");
       }
     },
-    _showPanel: function(){
+    _showPanel: function () {
       var currentlyOpen = domClass.contains(document.body, this.css.drawerOpen);
-      if (currentlyOpen === false){
+      if (currentlyOpen === false) {
         this.toggle();
       }
     },
@@ -286,21 +291,36 @@ function (
       }
     },
     hideBar: function () {
-      domClass.add(document.body, "hideBar");
+      //domClass.add(document.body, "hideBar");
+      var myNode = query("#content_pane_inner_top")[0];
 
+      domStyle.set(myNode,
+        {
+          "visibility": "hidden",
+          "display": "none"
+        });
     },
     hideSide: function () {
-      domClass.add(document.body, "hideSide");
+      var myNode = query("#cp_left")[0];
+      domStyle.set(myNode,
+        {
+          "visibility": "hidden",
+          "display": "none"
+        });
+      myNode = query("#toggle_button")[0];
+
+      domStyle.set(myNode,
+        {
+          "visibility": "hidden",
+          "display": "none"
+        });
+      //domClass.add(document.body, "hideSide");
 
     },
     _setSide: function (side) {
 
       domClass.add(document.body, side);
     },
-    _loadtheme: function () {
-      
-    
-    }
   });
   return Widget;
 });

@@ -1,50 +1,50 @@
 define([
-    "dojo/Evented",
-    "dojo",
-    "dojo/ready",
-    "dojo/_base/declare",
-    "dojo/_base/lang",
-    "dojo/_base/array",
-    "dojo/on",
-    "esri",
-    "esri/dijit/Search",
-    "esri/tasks/locator",
-    "esri/lang",
-    "esri/layers/FeatureLayer",
-    "dojo/dom",
-    "dojo/topic",
-    "dojo/i18n!application/nls/resources",
-    "application/SearchSources",
-    "esri/urlUtils"
+  "dojo/Evented",
+  "dojo",
+  "dojo/ready",
+  "dojo/_base/declare",
+  "dojo/_base/lang",
+  "dojo/_base/array",
+  "dojo/on",
+  "esri",
+  "esri/dijit/Search",
+  "esri/tasks/locator",
+  "esri/lang",
+  "esri/layers/FeatureLayer",
+  "dojo/dom",
+  "dojo/topic",
+  "dojo/i18n!application/nls/resources",
+  "application/SearchSources",
+  "esri/urlUtils"
 ],
 function (
-    Evented,
-    dojo,
-    ready,
-    declare,
-    lang,
-    array,
-    on,
-    esri,
-    Search,
-    Locator,
-    esriLang,
-    FeatureLayer,
-    dom,
-    topic,
-    i18n,
-    SearchSources,
-    urlUtils
+  Evented,
+  dojo,
+  ready,
+  declare,
+  lang,
+  array,
+  on,
+  esri,
+  Search,
+  Locator,
+  esriLang,
+  FeatureLayer,
+  dom,
+  topic,
+  i18n,
+  SearchSources,
+  urlUtils
     ) {
   return declare([Evented], {
 
-    options: {
-      domNode: null,
-      config: null,
-      map: null,
+    options : {
+      domNode : null,
+      config : null,
+      map : null,
     },
 
-    constructor: function (options) {
+    constructor : function (options) {
       // mix in settings and defaults
       var defaults = lang.mixin({}, this.options, options);
       // properties
@@ -57,20 +57,20 @@ function (
       this.href = defaults.href;
     },
     // start widget. called by user
-    startup: function () {
+    startup : function () {
       this._init();
     },
 
     /* ---------------- */
     /* Private Functions */
     /* ---------------- */
-    _init: function () {
+    _init : function () {
       this._removeEvents();
 
       this._addSearch();
 
     },
-    _removeEvents: function () {
+    _removeEvents : function () {
       if (this._events && this._events.length) {
         for (var i = 0; i < this._events.length; i++) {
           this._events[i].remove();
@@ -78,19 +78,20 @@ function (
       }
       this._events = [];
     },
-    _addSearch: function () {
-      if (this.config.search == true) {
+    _addSearch : function () {
+      if (this.config.search === true) {
         var searchOptions = {
-          map: this.map,
-          autoNavigate: false,
-          useMapExtent: true,
-          itemData: this.config.response.itemInfo.itemData
+          map : this.map,
+          autoNavigate : false,
+          useMapExtent : true,
+          itemData : this.config.response.itemInfo.itemData
         };
 
         if (this.config.searchConfig) {
           searchOptions.applicationConfiguredSources = this.config.searchConfig.sources || [];
         } else {
-          var configuredSearchLayers = (this.config.searchLayers instanceof Array) ? this.config.searchLayers : JSON.parse(this.config.searchLayers);
+          var configuredSearchLayers = (this.config.searchLayers instanceof Array) ?
+            this.config.searchLayers : JSON.parse(this.config.searchLayers);
           searchOptions.configuredSearchLayers = configuredSearchLayers;
           searchOptions.geocoders = this.config.helperServices.geocode;
         }
@@ -113,7 +114,8 @@ function (
       }
 
       //Feature Search
-      if (this.config.customUrlLayer.id !== null && this.config.customUrlLayer.fields.length > 0 && this.config.customUrlParam !== null) {
+      if (this.config.customUrlLayer.id !== null && this.config.customUrlLayer.fields.length > 0 &&
+        this.config.customUrlParam !== null) {
         require(["esri/dijit/Search"], lang.hitch(this, function (Search) {
           var source = null,
               value = null,
@@ -122,7 +124,7 @@ function (
           var urlObject = urlUtils.urlToObject(this.href);
           urlObject.query = urlObject.query || {};
           urlObject.query = esriLang.stripTags(urlObject.query);
-          //Support find or custom url param 
+          //Support find or custom url param
           if (urlObject.query[this.config.customUrlParam.toLowerCase()]) {
             value = urlObject.query[this.config.customUrlParam.toLowerCase()];
 
@@ -131,15 +133,15 @@ function (
 
               var searchFields = this.config.customUrlLayer.fields[0].fields;
               source = {
-                exactMatch: true,
-                outFields: ["*"],
-                featureLayer: searchLayer,
-                displayField: searchFields[0],
-                searchFields: searchFields
+                exactMatch : true,
+                outFields : ["*"],
+                featureLayer : searchLayer,
+                displayField : searchFields[0],
+                searchFields : searchFields
               };
             }
             var urlSearch = new Search({
-              map: this.map
+              map : this.map
             });
             //urlSearch.on("search-results", lang.hitch(this, this._showLocation));
 
@@ -150,9 +152,12 @@ function (
               urlSearch.search(value).then(lang.hitch(this, function (response) {
                 if (response) {
                   try {
-                    if (response[0][0].hasOwnProperty('feature')) {
-                      if (response[0][0].feature.hasOwnProperty('geometry')) {
-                        topic.publish("app/mapLocate", { "geometry": response[0][0].feature.geometry, "geometryInfo": this.config.customUrlLayer.id });
+                    if (response[0][0].hasOwnProperty("feature")) {
+                      if (response[0][0].feature.hasOwnProperty("geometry")) {
+                        topic.publish("app.mapLocate", {
+                          "geometry" : response[0][0].feature.geometry,
+                          "geometryInfo" : this.config.customUrlLayer.id
+                        });
                       }
                     }
                   }
@@ -173,34 +178,46 @@ function (
 
     },
 
-    _clear: function (evt) {
+    _clear : function (evt) {
       this.emit("clear", evt);
 
     },
-    _showLocation: function (evt) {
+    _showLocation : function (evt) {
       if (evt) {
         var msg;
         if (evt.feature) {
-          var msg = { "geometry": evt.feature.geometry, "geometryInfo": "Search" };
-          topic.publish("app/mapLocate", msg);
+          msg = {
+            "geometry" : evt.feature.geometry,
+            "geometryInfo" : "Search"
+          };
+          topic.publish("app.mapLocate", msg);
         }
         else if (evt.result) {
           if (evt.result.feature) {
 
             if (evt.source) {
               if (evt.source.flayerId) {
-                msg = { "geometry": evt.result.feature.geometry, "geometryInfo": evt.source.flayerId };
+                msg = {
+                  "geometry" : evt.result.feature.geometry,
+                  "geometryInfo" : evt.source.flayerId
+                };
 
               } else {
-                msg = { "geometry": evt.result.feature.geometry, "geometryInfo": "Geocode" };
+                msg = {
+                  "geometry" : evt.result.feature.geometry,
+                  "geometryInfo" : "Geocode"
+                };
 
               }
 
             } else {
-              msg = { "geometry": evt.result.feature.geometry, "geometryInfo": "Geocode" };
+              msg = {
+                "geometry" : evt.result.feature.geometry,
+                "geometryInfo" : "Geocode"
+              };
 
             }
-            topic.publish("app/mapLocate", msg);
+            topic.publish("app.mapLocate", msg);
           }
         }
       }

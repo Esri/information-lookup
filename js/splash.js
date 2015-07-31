@@ -1,16 +1,16 @@
 ﻿define([
-    "dojo/Evented",
-    "dojo",
-    "dojo/ready",
-    "dojo/_base/declare",
-    "dojo/_base/lang",
-    "dojo/on",
-    "dojo/dom",
-    "dojo/dom-class",
-    "dojo/dom-construct",   
-    "dojo/Deferred",
-    "dojo/window",
-    "dojo/topic"
+  "dojo/Evented",
+  "dojo",
+  "dojo/ready",
+  "dojo/_base/declare",
+  "dojo/_base/lang",
+  "dojo/on",
+  "dojo/dom",
+  "dojo/dom-class",
+  "dojo/dom-construct",
+  "dojo/Deferred",
+  "dojo/window",
+  "dojo/topic"
 ],
 function (
    Evented,
@@ -27,62 +27,61 @@ function (
     topic
 ) {
   return declare([Evented], {
-    
-    options: {
-      domNode: null,
-      config: null
+    options : {
+      domNode : null,
+      config : null
     },
-    deviceInfo:{
-      isMobileDevice:false,
-      isiOS:false,
-      lessthanios6:false,
-      isAndroidDevice: false,
-      isTablet:false,
-      isBrowser: true
+    deviceInfo : {
+      isMobileDevice : false,
+      isiOS : false,
+      lessthanios6 : false,
+      isAndroidDevice : false,
+      isTablet : false,
+      isBrowser : true
 
     },
     // lifecycle: 1
-    constructor: function (options) {
+    constructor : function (options) {
       // mix in settings and defaults
       this.options = lang.mixin({}, this.options, options);
 
 
     },
     // start widget. called by user
-    startup: function () {
-      this._checkDevice()
+    startup : function () {
+      this._checkDevice();
 
       this.splashContainer = domConstruct.create("div", {
-        id: 'divSplashScreenContainer',
-        class: 'divSplashScreenContainer'
+        id : "divSplashScreenContainer",
+        class : "divSplashScreenContainer"
       }, dojo.byId(this.options.domNode));
-     
-      var deviceClass = 'splashTextContainerWeb'
+
+      var deviceClass = "splashTextContainerWeb";
       if (this.deviceInfo.isMobileDevice) {
-        deviceClass = 'splashTextContainerMobile'
+        deviceClass = "splashTextContainerMobile";
       }
       var splashTextContainer = domConstruct.create("div", {
-        id: 'splashTextContainer',
-        class: 'splashTextContainer ' + deviceClass
+        id : "splashTextContainer",
+        class : "splashTextContainer " + deviceClass
       }, this.splashContainer, "first");
       var splashTextContent = domConstruct.create("div", {
-        id: 'splashTextContent',
-        class: 'splashTextContent ' + deviceClass
+        id : "splashTextContent",
+        class : "splashTextContent " + deviceClass
       }, splashTextContainer, "first");
       dojo.connect(this.splashContainer, "onclick", lang.hitch(this, this._closeSplash));
 
       splashTextContent.innerHTML = this.options.config.splashText;
 
     },
-    _closeSplash: function () {
+    _closeSplash : function () {
       this.splashContainer.style.display = "none";
 
     },
     // connections/subscriptions will be cleaned up during the destroy() lifecycle phase
-    destroy: function () {
+    destroy : function () {
       this.inherited(arguments);
     },
-    _checkDevice: function () {
+    _checkDevice : function () {
 
       var userAgent = window.navigator.userAgent;
 
@@ -96,19 +95,16 @@ function (
           }
         });
       }
-      if ((userAgent.indexOf("Android") >= 0 && userAgent.indexOf("Mobile") >= 0) || userAgent.indexOf("iPhone") >= 0) {
+      if ((userAgent.indexOf("Android") >= 0 && userAgent.indexOf("Mobile") >= 0) ||
+        userAgent.indexOf("iPhone") >= 0) {
         this.deviceInfo.isMobileDevice = true;
         if ((userAgent.indexOf("Android") >= 0)) {
           this.deviceInfo.isAndroidDevice = true;
         }
-        
-      } else if ((userAgent.indexOf("iPad") >= 0) || (userAgent.indexOf("Android") >= 0)) {
+      }else if ((userAgent.indexOf("iPad") >= 0) || (userAgent.indexOf("Android") >= 0)) {
         this.deviceInfo.isTablet = true;
-        
-      } else {
+      }else {
         this.deviceInfo.isBrowser = true;
-        
-
       }
     }
   });

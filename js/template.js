@@ -156,19 +156,28 @@ define([
     _completeApplication: function () {
       // ArcGIS.com allows you to set an application extent on the application item. Overwrite the
       // existing web map extent with the application item extent when set.
-      if (this.config.appid && this.config.application_extent && this.config.application_extent.length > 0 && this.config.itemInfo && this.config.itemInfo.item && this.config.itemInfo.item.extent) {
+      if (this.config.appid && this.config.application_extent &&
+        this.config.application_extent.length > 0 &&
+        this.config.itemInfo &&
+        this.config.itemInfo.item &&
+        this.config.itemInfo.item.extent) {
         this.config.itemInfo.item.extent = [
-              [
-                  parseFloat(this.config.application_extent[0][0]), parseFloat(this.config.application_extent[0][1])
-              ],
-              [
-                  parseFloat(this.config.application_extent[1][0]), parseFloat(this.config.application_extent[1][1])
-              ]
+          [
+            parseFloat(this.config.application_extent[0][0]),
+            parseFloat(this.config.application_extent[0][1])
+          ],
+          [
+            parseFloat(this.config.application_extent[1][0]),
+            parseFloat(this.config.application_extent[1][1])
+          ]
         ];
       }
       // Set the geometry helper service to be the app default.
-      if (this.config.helperServices && this.config.helperServices.geometry && this.config.helperServices.geometry.url) {
-        esriConfig.defaults.geometryService = new GeometryService(this.config.helperServices.geometry.url);
+      if (this.config.helperServices &&
+        this.config.helperServices.geometry &&
+        this.config.helperServices.geometry.url) {
+        esriConfig.defaults.geometryService = new GeometryService(
+          this.config.helperServices.geometry.url);
       }
     },
     _mixinAll: function () {
@@ -176,7 +185,9 @@ define([
       mix in all the settings we got!
       {} <- i18n <- organization <- application <- group info <- group items <- webmap <- custom url params <- standard url params.
       */
-      lang.mixin(this.config, this.i18nConfig, this.orgConfig, this.appConfig, this.groupInfoConfig, this.groupItemConfig, this.itemConfig, this.customUrlConfig, this.urlConfig);
+      lang.mixin(this.config, this.i18nConfig, this.orgConfig, this.appConfig,
+        this.groupInfoConfig, this.groupItemConfig, this.itemConfig,
+        this.customUrlConfig, this.urlConfig);
     },
     _createPortal: function () {
       var deferred = new Deferred();
@@ -250,8 +261,10 @@ define([
         if (appLocation !== -1) {
           // hosted or portal
           instance = location.pathname.substr(0, appLocation); //get the portal instance name
-          this.config.sharinghost = location.protocol + "//" + location.host + instance;
-          this.config.proxyurl = location.protocol + "//" + location.host + instance + "/sharing/proxy";
+          this.config.sharinghost = location.protocol + "//" +
+            location.host + instance;
+          this.config.proxyurl = location.protocol + "//" +
+            location.host + instance + "/sharing/proxy";
         }
       }
       arcgisUtils.arcgisUrl = this.config.sharinghost + "/sharing/rest/content/items";
@@ -515,7 +528,12 @@ define([
             cfg.units = response.user.units;
           } else if (response.units) { //org level units
             cfg.units = response.units;
-          } else if ((response.user && response.user.region && response.user.region === "US") || (response.user && !response.user.region && response.region === "US") || (response.user && !response.user.region && !response.region) || (!response.user && response.ipCntryCode === "US") || (!response.user && !response.ipCntryCode && kernel.locale === "en-us")) {
+          } else if ((response.user && response.user.region && response.user.region === "US") ||
+            (response.user && !response.user.region && response.region === "US") ||
+            (response.user && !response.user.region && !response.region) ||
+            (!response.user && response.ipCntryCode === "US") ||
+            (!response.user && !response.ipCntryCode && kernel.locale === "en-us"))
+          {
             // use feet/miles only for the US and if nothing is set for a user
             cfg.units = "english";
           }

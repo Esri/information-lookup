@@ -1,0 +1,26 @@
+{
+  "requireOperatorBeforeLineBreak": true,
+  "maximumLineLength": {
+    "value": 100,
+    "allowComments": true,
+    "allowRegex": true
+  },
+  "validateIndentation": 2,
+  "disallowMultipleLineStrings": true,
+  "disallowMixedSpacesAndTabs": true,
+  "disallowTrailingWhitespace": true,
+  "requireSpaceAfterKeywords": [
+    "return"
+  ],
+  "requireSpaceBeforeBinaryOperators": ["=",
+    "+",
+    "-",
+    "/",
+    "*",
+    "==",
+    "===",
+    "!=",
+    "!=="
+],
+  "requireSpaceAfterBinaryOperators": true
+}

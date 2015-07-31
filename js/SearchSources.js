@@ -1,21 +1,40 @@
-define(["dojo/_base/declare", "dojo/_base/lang", "dojo/_base/array", "dojo/_base/json", "dojo/dom-construct", "esri/lang", "esri/tasks/locator", "esri/layers/FeatureLayer", "esri/dijit/Search"], function (
-declare, lang, array, dojoJson, domConstruct, esriLang, Locator, FeatureLayer, Search) {
+define([
+  "dojo/_base/declare",
+  "dojo/_base/lang",
+  "dojo/_base/array",
+  "dojo/_base/json",
+  "dojo/dom-construct",
+  "esri/lang",
+  "esri/tasks/locator",
+  "esri/layers/FeatureLayer",
+  "esri/dijit/Search"
+],
+function (
+  declare,
+  lang,
+  array,
+  dojoJson,
+  domConstruct,
+  esriLang,
+  Locator,
+  FeatureLayer,
+  Search
+) {
   return declare(null, {
 
-    constructor: function (parameters) {
+    constructor : function (parameters) {
 
       var defaults = {
-        sources: [],
-        map: null,
-        //the map 
-        useMapExtent: false,
+        sources : [],
+        map : null,
+        useMapExtent : false,
         //When true we restrict world locator to the map extent
-        geocoders: [],
-        esriSource: null,
+        geocoders : [],
+        esriSource : null,
         //Geocoders defined in helper services
-        itemData: null,
+        itemData : null,
         //web map item info includes operational layers and info about searches configured on web map
-        configuredSearchLayers: []
+        configuredSearchLayers : []
       };
 
       lang.mixin(this, defaults, parameters);
@@ -23,24 +42,24 @@ declare, lang, array, dojoJson, domConstruct, esriLang, Locator, FeatureLayer, S
 
     /* Public Methods */
 
-    createOptions: function () {
+    createOptions : function () {
       return {
-        map: this.map,
-        sources: this._createSources(),
-        activeSourceIndex: this._getActiveSource()
+        map : this.map,
+        sources : this._createSources(),
+        activeSourceIndex : this._getActiveSource()
       };
     },
 
     /* Private Methods */
 
     //optional array of additional search layers to configure from the application config process
-    _createSources: function () {
+    _createSources : function () {
       if (this.applicationConfiguredSources) {
         this._createAppConfigSources();
       } else {
-        //Create services from org helper services 
+        //Create services from org helper services
         //Create locators defined in web map item
-        //Create configured services. 
+        //Create configured services.
         this._createHelperServiceSources();
         if (this.itemData) {
           this._createWebMapItemSources();
@@ -53,7 +72,7 @@ declare, lang, array, dojoJson, domConstruct, esriLang, Locator, FeatureLayer, S
       return this.sources;
     },
 
-    _getActiveSource: function () {
+    _getActiveSource : function () {
       var activeIndex = 0;
       if (this.sources && this.sources.length > 1) {
         activeIndex = "all";
@@ -66,15 +85,15 @@ declare, lang, array, dojoJson, domConstruct, esriLang, Locator, FeatureLayer, S
       });
       return activeIndex;
     },
-    _createHelperServiceSources: function () {
+    _createHelperServiceSources : function () {
       var geocoders = lang.clone(this.geocoders);
       array.forEach(geocoders, lang.hitch(this, function (geocoder) {
         if (geocoder.url.indexOf(".arcgis.com/arcgis/rest/services/World/GeocodeServer") > -1) {
           var s = new Search();
           var esriSource = s.defaultSource;
           esriSource.hasEsri = true;
-          //Some orgs have the Esri world locator added with 
-          //a custom name defined. Use that name. 
+          //Some orgs have the Esri world locator added with
+          //a custom name defined. Use that name.
           if (geocoder.name) {
             esriSource.name = geocoder.name;
           }
@@ -84,20 +103,20 @@ declare, lang, array, dojoJson, domConstruct, esriLang, Locator, FeatureLayer, S
           }
           this.sources.push(esriSource);
           s.destroy();
-        } else if (esriLang.isDefined(geocoder.singleLineFieldName)) {
-         
+        }else if (esriLang.isDefined(geocoder.singleLineFieldName)) {
           geocoder.locator = new Locator(geocoder.url);
-          
           this.sources.push(geocoder);
-        } else {
+        }else {
           console.log(geocoder.url + " is missing the singleLineFieldName parameter");
         }
       }));
     },
 
-    _createWebMapItemSources: function () {
-      if (this.itemData && this.itemData.applicationProperties && this.itemData.applicationProperties.viewing && this.itemData.applicationProperties.viewing.search) {
-        //search is configured on the web map item 
+    _createWebMapItemSources : function () {
+      if (this.itemData && this.itemData.applicationProperties &&
+        this.itemData.applicationProperties.viewing &&
+        this.itemData.applicationProperties.viewing.search) {
+        //search is configured on the web map item
         var searchOptions = this.itemData.applicationProperties.viewing.search;
         array.forEach(searchOptions.layers, lang.hitch(this, function (searchLayer) {
           //get the title specified in the item
@@ -124,11 +143,12 @@ declare, lang, array, dojoJson, domConstruct, esriLang, Locator, FeatureLayer, S
             }
             //Get existing layer or create new one
             var mapLayer = this.map.getLayer(layer.id);
-            if (mapLayer && (mapLayer.type === "Feature Layer" || mapLayer.type === "FeatureLayer")) {
+            if (mapLayer && (mapLayer.type === "Feature Layer" ||
+              mapLayer.type === "FeatureLayer")) {
               source.featureLayer = mapLayer;
             } else {
               source.featureLayer = new FeatureLayer(url, {
-                outFields: ["*"]
+                outFields : ["*"]
               });
             }
             source.name = name;
@@ -142,7 +162,7 @@ declare, lang, array, dojoJson, domConstruct, esriLang, Locator, FeatureLayer, S
         }));
       }
     },
-    _createAppConfigSources: function () {
+    _createAppConfigSources : function () {
       // Configured via the new Search Configuation widget
       var configSource = lang.clone(this.applicationConfiguredSources);
       array.forEach(configSource, lang.hitch(this, function (source) {
@@ -155,7 +175,7 @@ declare, lang, array, dojoJson, domConstruct, esriLang, Locator, FeatureLayer, S
           }
           if (!featureLayer && source.url) {
             featureLayer = new FeatureLayer(source.url, {
-              outFields: ["*"]
+              outFields : ["*"]
             });
           }
           source.featureLayer = featureLayer;
@@ -167,8 +187,8 @@ declare, lang, array, dojoJson, domConstruct, esriLang, Locator, FeatureLayer, S
       }));
 
     },
-    _createConfiguredSources: function () {
-      // Old configuration using layer/field picker 
+    _createConfiguredSources : function () {
+      // Old configuration using layer/field picker
       array.forEach(this.configuredSearchLayers, lang.hitch(this, function (layer) {
         var mapLayer = this.map.getLayer(layer.id);
         if (mapLayer) {

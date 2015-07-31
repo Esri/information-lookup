@@ -65,6 +65,7 @@ define([], function () {
     "title": "Information Lookup",
     "popPreMessage": null,
     "popPostMessage": null,
+    "pageIcon": '',
     "basemapWidgetVisible": true,
 
     //When true the geocoder search box is displayed in the title area

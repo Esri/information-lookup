@@ -1,63 +1,62 @@
 
 define([
-    "dojo/Evented",
-    "dojo",
-    "dijit",
-    "esri",
-    "dojo/ready",
-    "dojo/_base/declare",
-    "dojo/_base/lang",
-    "dojo/_base/array",
-    "dojo/on",
-    "dojo/topic",
-    "dojo/json",
-    "dojo/io-query",
-     "dojo/query",
-    "esri/geometry",
-    "esri/geometry/Extent",
-    "esri/geometry/Point",
-    "esri/graphic",
-    "esri/toolbars/draw",
-    "esri/symbols/SimpleMarkerSymbol",
-     "esri/symbols/SimpleLineSymbol",
-      "esri/symbols/SimpleFillSymbol",
-      "esri/Color",
-    "esri/tasks/QueryTask",
-    "esri/tasks/query",
-    "esri/dijit/PopupTemplate",
-    "esri/geometry/webMercatorUtils",
-    "dojo/string",
-    "dojo/i18n!application/nls/resources"
-
+  "dojo/Evented",
+  "dojo",
+  "dijit",
+  "esri",
+  "dojo/ready",
+  "dojo/_base/declare",
+  "dojo/_base/lang",
+  "dojo/_base/array",
+  "dojo/on",
+  "dojo/topic",
+  "dojo/json",
+  "dojo/io-query",
+  "dojo/query",
+  "esri/geometry",
+  "esri/geometry/Extent",
+  "esri/geometry/Point",
+  "esri/graphic",
+  "esri/toolbars/draw",
+  "esri/symbols/SimpleMarkerSymbol",
+  "esri/symbols/SimpleLineSymbol",
+  "esri/symbols/SimpleFillSymbol",
+  "esri/Color",
+  "esri/tasks/QueryTask",
+  "esri/tasks/query",
+  "esri/dijit/PopupTemplate",
+  "esri/geometry/webMercatorUtils",
+  "dojo/string",
+  "dojo/i18n!application/nls/resources"
 ], function (
-    Evented,
-    dojo,
-    dijit,
-    esri,
-    ready,
-    declare,
-    lang,
-    array,
-    on,
-    topic,
-    JSON,
-    ioQuery,
-    djquery,
-    Geometry,
-    Extent,
-    Point,
-    Graphic,
-    Draw,
-    SimpleMarkerSymbol,
-    SimpleLineSymbol,
-    SimpleFillSymbol,
-    Color,
-    QueryTask,
-    Query,
-    PopupTemplate,
-    webMercatorUtils,
-    String,
-    i18n
+  Evented,
+  dojo,
+  dijit,
+  esri,
+  ready,
+  declare,
+  lang,
+  array,
+  on,
+  topic,
+  JSON,
+  ioQuery,
+  djquery,
+  Geometry,
+  Extent,
+  Point,
+  Graphic,
+  Draw,
+  SimpleMarkerSymbol,
+  SimpleLineSymbol,
+  SimpleFillSymbol,
+  Color,
+  QueryTask,
+  Query,
+  PopupTemplate,
+  webMercatorUtils,
+  String,
+  i18n
 ) {
   return declare([Evented], {
     config: {},
@@ -81,11 +80,11 @@ define([
       //disconnect the popup handler
       this._createSymbols();
       this.disableWebMapPopup();
-      topic.subscribe("app/mapLocate", lang.hitch(this, this._mapLocate));
-      topic.subscribe("app\linkImage", lang.hitch(this, this._linkclick));
-      topic.subscribe("app\emailImage", lang.hitch(this, this._emailclick));
+      topic.subscribe("app.mapLocate", lang.hitch(this, this._mapLocate));
+      topic.subscribe("app.linkImage", lang.hitch(this, this._linkclick));
+      topic.subscribe("app.emailImage", lang.hitch(this, this._emailclick));
       if (this.options.contentID) {
-        this.contentWindow = dijit.byId(this.options.contentID)
+        this.contentWindow = dijit.byId(this.options.contentID);
         this.showGraphic = true;
       }
       else {
@@ -94,7 +93,6 @@ define([
 
       this._initPopup();
       this._createToolbar();
-      this._initGraphic();
       this._initLayerSearch();
       this.map.infoWindow.on("hide", lang.hitch(this, this._infoHide));
       this._initShareLink();
@@ -141,7 +139,7 @@ define([
     },
     _getCenter: function (geo) {
       if (geo.type === "extent") {
-        return graphic.geometry.getCenter();
+        return geo.getCenter();
       }
       else if (geo.type === "polygon") {
         return geo.getCentroid();
@@ -164,14 +162,14 @@ define([
       if (this.lookupLayers.length === 0) {
         return;
       }
-      topic.publish("app\toggleIndicator", true);
+      topic.publish("app.toggleIndicator", true);
       this.map.infoWindow.hide();
       //this.map.infoWindow.highlight = false;
       if (this.showGraphic === true) {
         this.map.graphics.clear();
       }
 
-      //query to determine popup 
+      //query to determine popup
       var query = new Query();
       var queryTask;
 
@@ -230,7 +228,7 @@ define([
             this.defCnt = this.defCnt - 1;
             if (this.defCnt === 0) {
               this._allQueriesComplate();
-              topic.publish("app\toggleIndicator", false);
+              topic.publish("app.toggleIndicator", false);
             }
 
           }));
@@ -254,7 +252,7 @@ define([
             this.defCnt = this.defCnt - 1;
             if (this.defCnt === 0) {
               this._allQueriesComplate();
-              topic.publish("app\toggleIndicator", false);
+              topic.publish("app.toggleIndicator", false);
             }
 
           }));
@@ -342,17 +340,11 @@ define([
       }
       else {
         serviceAreaLayerNames = [];
-        layers = dojo.fromJson(this.config.serviceAreaLayerNamesSelector);
+        var layers = dojo.fromJson(this.config.serviceAreaLayerNamesSelector);
         array.forEach(layers, function (layer) {
           serviceAreaLayerNames.push(layer.id);
         });
-
-
-
       }
-
-
-
       this.lookupLayers = [];
       var layDetails = {};
       var f = 0, fl = 0;
@@ -368,7 +360,9 @@ define([
               array.forEach(layer.featureCollection.layers, function (subLyrs) {
                 if (subLyrs.layerObject != null) {
 
-                  if (subLyrs.layerObject.name == serviceAreaLayerNames[f] || subLyrs.id == serviceAreaLayerNames[f]) {
+                  if (subLyrs.layerObject.name == serviceAreaLayerNames[f] ||
+                    subLyrs.id == serviceAreaLayerNames[f])
+                  {
                     serviceAreaLayerNames[f] = subLyrs.layerObject.name;
                     layDetails.name = subLyrs.layerObject.name;
                     layDetails.layerOrder = f;
@@ -376,7 +370,8 @@ define([
                     layDetails.layer = subLyrs;
                     if (subLyrs.layerDefinition) {
                       if (subLyrs.layerDefinition.definitionExpression) {
-                        layDetails.definitionExpression = subLyrs.layerDefinition.definitionExpression;
+                        layDetails.definitionExpression =
+                          subLyrs.layerDefinition.definitionExpression;
                       }
                     }
                     console.log(serviceAreaLayerNames[f] + " " + "set");
@@ -401,7 +396,8 @@ define([
           } else if (layer.layerObject != null) {
             if (layer.layerObject.layerInfos != null) {
               array.forEach(layer.layerObject.layerInfos, function (subLyrs) {
-                matches = false;
+                var matches = false;
+                var serName;
                 if (subLyrs.name == serviceAreaLayerNames[f]) {
                   matches = true;
                 }
@@ -409,7 +405,7 @@ define([
                   matches = true;
                 }
                 else if (serviceAreaLayerNames[f].indexOf(".") > 0) {
-                  serName = serviceAreaLayerNames[f].split('.')
+                  serName = serviceAreaLayerNames[f].split(".");
                   if (layer.id == serName[0]) {
                     if (subLyrs.id == serName[1]) {
                       matches = true;
@@ -429,7 +425,8 @@ define([
                       if (subLyrs.id == popUp.id) {
                         if (popUp.layerDefinition) {
                           if (popUp.layerDefinition.definitionExpression) {
-                            layDetails.definitionExpression = popUp.layerDefinition.definitionExpression;
+                            layDetails.definitionExpression =
+                              popUp.layerDefinition.definitionExpression;
                           }
                         }
                         layDetails.popupInfo = popUp.popupInfo;
@@ -499,7 +496,8 @@ define([
                 }, this);
 
                 if (fnd === false) {
-                  alert(i18n.error.fieldNotFound + ": " + this.config.serviceRequestLayerAvailibiltyField);
+                  alert(i18n.error.fieldNotFound + ": " +
+                    this.config.serviceRequestLayerAvailibiltyField);
 
                   console.log("Field not found.");
 
@@ -518,7 +516,8 @@ define([
                 }, this);
 
                 if (fnd === false) {
-                  alert(i18n.error.fieldNotFound + ": " + this.config.serviceRequestLayerAvailibiltyField);
+                  alert(i18n.error.fieldNotFound + ": " +
+                    this.config.serviceRequestLayerAvailibiltyField);
 
                   console.log("Field not found.");
 
@@ -531,7 +530,9 @@ define([
 
       var useLegacyConfig = false;
 
-      if (this.lookupLayers.length === 0 && this.config.serviceAreaLayerName != null) {
+      if (this.lookupLayers.length === 0 &&
+        this.config.serviceAreaLayerName != null)
+      {
         layDetails = {};
 
         array.forEach(this.layers, function (layer) {
@@ -610,7 +611,10 @@ define([
 
         }
       }
-      if (this.serviceRequestLayerName === undefined && this.config.storeLocation === true && this.config.editingAllowed) {
+      if (this.serviceRequestLayerName === undefined &&
+        this.config.storeLocation === true &&
+        this.config.editingAllowed)
+      {
         if (this.config.serviceRequestLayerName.id !== undefined) {
           alert(i18n.error.layerNotFound + ": " + this.config.serviceRequestLayerName.id);
         } else {
@@ -627,7 +631,12 @@ define([
 
     },
     _emailclick: function () {
-      if (this.map === null || this.map.infoWindow === null || this.map.infoWindow === undefined || this.map.infoWindow.features === null || this.map.infoWindow.features === undefined) {
+      if (this.map === null ||
+        this.map.infoWindow === null ||
+        this.map.infoWindow === undefined ||
+        this.map.infoWindow.features === null ||
+        this.map.infoWindow.features === undefined)
+      {
         return;
       }
 
@@ -640,8 +649,8 @@ define([
 
       var geostring = geo.x + "," + geo.y;
 
-      if (uri.indexOf('?') >= 0) {
-        var urlParam = uri.split('?');
+      if (uri.indexOf("?") >= 0) {
+        var urlParam = uri.split("?");
         uri = urlParam[0];
         params = dojo.queryToObject(urlParam[1]);
 
@@ -658,7 +667,7 @@ define([
       // Assemble the new uri with its query string attached.
       var queryStr = ioQuery.objectToQuery(params);
       uri = uri + "?" + queryStr;
-      mailURL = "mailto:%20?subject={title}&body={url}";
+      var mailURL = "mailto:%20?subject={title}&body={url}";
 
       var fullLink = lang.replace(mailURL, {
         url: encodeURIComponent(uri),
@@ -669,7 +678,12 @@ define([
 
     },
     _linkclick: function () {
-      if (this.map === null || this.map.infoWindow === null || this.map.infoWindow === undefined || this.map.infoWindow.features === null || this.map.infoWindow.features === undefined) {
+      if (this.map === null ||
+        this.map.infoWindow === null ||
+        this.map.infoWindow === undefined ||
+        this.map.infoWindow.features === null ||
+        this.map.infoWindow.features === undefined)
+      {
         return;
       }
 
@@ -682,8 +696,8 @@ define([
 
       var geostring = geo.x + "," + geo.y;
 
-      if (uri.indexOf('?') >= 0) {
-        var urlParam = uri.split('?');
+      if (uri.indexOf("?") >= 0) {
+        var urlParam = uri.split("?");
         uri = urlParam[0];
         params = dojo.queryToObject(urlParam[1]);
 
@@ -720,26 +734,13 @@ define([
       var link = dojo.create("a",
             { "class": "action link icon-link", "href": "javascript:void(0);" },
             dojo.query(".actionList", this.map.infoWindow.domNode)[0]);
-      //var linkImg = dojo.create("img",
-      //    { "class": "icon-link" },
-      //    link);
 
       var email = dojo.create("a",
             { "class": "action email icon-mail-alt", "href": "javascript:void(0);" },
             dojo.query(".actionList", this.map.infoWindow.domNode)[0]);
-      //var emailImg = dojo.create("img",
-      // { "class": "emailImage" },
-      // email);
+
       dojo.connect(link, "onclick", lang.hitch(this, this._linkclick));
       dojo.connect(email, "onclick", lang.hitch(this, this._emailclick));
-
-    },
-    _initGraphic: function () {
-      this.editSymbol = new SimpleMarkerSymbol().setStyle(SimpleMarkerSymbol.STYLE_PATH).setPath("M16,22.375L7.116,28.83l3.396-10.438l-8.883-6.458l10.979,0.002L16.002,1.5l3.391,10.434h10.981l-8.886,6.457l3.396,10.439L16,22.375L16,22.375z").setSize(24).setColor(new dojo.Color([255, 0, 0]));
-      this.editSymbol.setOutline(new SimpleMarkerSymbol().setStyle(SimpleMarkerSymbol.STYLE_PATH).setPath("M16,22.375L7.116,28.83l3.396-10.438l-8.883-6.458l10.979,0.002L16.002,1.5l3.391,10.434h10.981l-8.886,6.457l3.396,10.439L16,22.375L16,22.375zM22.979,26.209l-2.664-8.205l6.979-5.062h-8.627L16,4.729l-2.666,8.206H4.708l6.979,5.07l-2.666,8.203L16,21.146L22.979,26.209L22.979,26.209z").setSize(26).setColor(new dojo.Color([0, 255, 0])));
-
-      this.editSymbolAvailable = new SimpleMarkerSymbol().setStyle(SimpleMarkerSymbol.STYLE_PATH).setPath("M16,22.375L7.116,28.83l3.396-10.438l-8.883-6.458l10.979,0.002L16.002,1.5l3.391,10.434h10.981l-8.886,6.457l3.396,10.439L16,22.375L16,22.375z").setSize(24).setColor(new dojo.Color([0, 255, 0]));
-      this.editSymbolAvailable.setOutline(new SimpleMarkerSymbol().setStyle(SimpleMarkerSymbol.STYLE_PATH).setPath("M16,22.375L7.116,28.83l3.396-10.438l-8.883-6.458l10.979,0.002L16.002,1.5l3.391,10.434h10.981l-8.886,6.457l3.396,10.439L16,22.375L16,22.375zM22.979,26.209l-2.664-8.205l6.979-5.062h-8.627L16,4.729l-2.666,8.206H4.708l6.979,5.07l-2.666,8.203L16,21.146L22.979,26.209L22.979,26.209z").setSize(26).setColor(new dojo.Color([0, 255, 0])));
 
     },
     _drawEnd: function (evt) {
@@ -769,7 +770,8 @@ define([
                 obj[key] = layerName + "_" + oid + "_" + fieldName;
               } else {
                 re = new RegExp("{" + fieldName + "}", "g");
-                obj[key] = obj[key].replace(re, "{" + layerName + "_" + oid + "_" + fieldName + "}").replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, "'");
+                obj[key] = obj[key].replace(re, "{" + layerName + "_" + oid + "_" + fieldName + "}")
+                  .replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, "'");
               }
             }
           }
@@ -805,7 +807,7 @@ define([
         this.defCnt = this.defCnt - 1;
         if (this.defCnt === 0) {
           this._allQueriesComplate();
-          topic.publish("app\toggleIndicator", false);
+          topic.publish("app.toggleIndicator", false);
         }
 
       };
@@ -823,10 +825,10 @@ define([
         var resultFeature = {};
         var valToStore = null;
         var resultSum = {};
-        for (f = 0, fl = this.lookupLayers.length; f < fl; f++) {
+        for (var f = 0, fl = this.lookupLayers.length; f < fl; f++) {
           resultSum[this.lookupLayers[f].name] = 0;
         }
-            
+
         var centr = this._getCenter(this.event);
         if (this.results != null && this.results.length > 0) {
 
@@ -834,12 +836,13 @@ define([
           //mediaArray.length = this.results.length;
           console.log(this.results.length + " layers");
           array.forEach(this.results, function (result) {
-         
+
             mediaArray[result.Layer.layerOrder] = {};
             popUpArray[result.Layer.layerOrder] = {};
             console.log(result.results.length + " features found in " + result.Layer.name);
             array.forEach(result.results, function (feature) {
-              console.log("Feature with OBJECTID: " + feature.attributes.OBJECTID + " in " + result.Layer.name);
+              console.log("Feature with OBJECTID: " + feature.attributes.OBJECTID +
+                " in " + result.Layer.name);
               if (result.Layer.name in resultSum) {
                 resultSum[result.Layer.name] = resultSum[result.Layer.name] + 1;
               }
@@ -847,13 +850,6 @@ define([
                 resultSum[result.Layer.name] = 1;
               }
               if (result.Layer.popupInfo != null) {
-                //var resetFieldNames = result.Layer.popupInfo.fieldInfos;
-                //for (var r = 0, rl = resetFieldNames.length; r < rl; r++) {
-                //  resetFieldNames[r].fieldName = resetFieldNames[r].fieldName.replace(result.Layer.name + "_", "");
-
-                //}
-
-                //result.Layer.popupInfo.fieldInfos;
                 var layerFields = lang.clone(result.Layer.popupInfo.fieldInfos);
 
                 var layerDescription = lang.clone(result.Layer.popupInfo.description);
@@ -865,7 +861,9 @@ define([
                 for (var g = 0, gl = layerFields.length; g < gl; g++) {
                   if (mediaInfos != null) {
                     array.forEach(mediaInfos, function (mediaInfo) {
-                      mediaInfo = this._processObject(mediaInfo, layerFields[g].fieldName, result.Layer.name, false, feature.attributes.OBJECTID);
+                      mediaInfo = this._processObject(mediaInfo,
+                        layerFields[g].fieldName, result.Layer.name,
+                        false, feature.attributes.OBJECTID);
 
                     }, this);
                   }
@@ -873,18 +871,24 @@ define([
                   if (result.Layer.popupInfo.description == null) {
                     re = new RegExp("{" + layerFields[g].fieldName + "}", "g");
 
-                    popupTitle = popupTitle.replace(re, "{" + result.Layer.name + "_" + feature.attributes.OBJECTID + "_" + layerFields[g].fieldName + "}");
+                    popupTitle = popupTitle.replace(re, "{" +
+                      result.Layer.name + "_" + feature.attributes.OBJECTID + "_" +
+                      layerFields[g].fieldName + "}");
 
                     if (layerFields[g].visible === true) {
 
-                      //this.layerDescription = layerFields[g].fieldName + ": " + "{" + result.Layer.name + "_" + layerFields[g].fieldName + "}<br>";
                       layFldTable = layFldTable + "<tr valign='top'>";
                       if (layerFields[g].label != null) {
-                        layFldTable = layFldTable + "<td class='popName'>" + layerFields[g].label + "</td>";
+                        layFldTable = layFldTable + "<td class='popName'>" +
+                          layerFields[g].label + "</td>";
                       } else {
-                        layFldTable = layFldTable + "<td class='popName'>" + layerFields[g].fieldName + "</td>";
+                        layFldTable = layFldTable + "<td class='popName'>" +
+                          layerFields[g].fieldName + "</td>";
                       }
-                      layFldTable = layFldTable + "<td class='popValue'>" + "{" + result.Layer.name + "_" + feature.attributes.OBJECTID + "_" + layerFields[g].fieldName + "}</td>";
+                      layFldTable = layFldTable + "<td class='popValue'>" +
+                        "{" + result.Layer.name + "_" +
+                        feature.attributes.OBJECTID + "_" +
+                        layerFields[g].fieldName + "}</td>";
                       layFldTable = layFldTable + "</tr>";
 
                     }
@@ -892,7 +896,8 @@ define([
                   } else {
                     re = new RegExp("{" + layerFields[g].fieldName + "}", "g");
 
-                    layerDescription = layerDescription.replace(re, "{" + result.Layer.name + "_" + feature.attributes.OBJECTID + "_" + layerFields[g].fieldName + "}");
+                    layerDescription = layerDescription.replace(re, "{" + result.Layer.name + "_" +
+                      feature.attributes.OBJECTID + "_" + layerFields[g].fieldName + "}");
 
                   }
                   var fldVal = feature.attributes[layerFields[g].fieldName];
@@ -900,42 +905,60 @@ define([
 
 
                     fldVal = fldVal.toString();
-                    if (fldVal.indexOf("http://") >= 0 || fldVal.indexOf("https://") >= 0 || fldVal.indexOf("www.") >= 0) {
+                    if (fldVal.indexOf("http://") >= 0 || fldVal.indexOf("https://") >= 0 ||
+                      fldVal.indexOf("www.") >= 0) {
                       if (result.Layer.popupInfo.description === null) {
-                        resultFeature[result.Layer.name + "_" + layerFields[g].fieldName + "_" + "Hyper"] = "<a target='_blank' href='" + fldVal + "'>" + i18n.popup.urlMoreInfo + "</a>"
-                        if (layFldTable.indexOf("{" + result.Layer.name + "_" + feature.attributes.OBJECTID + "_" + layerFields[g].fieldName + "}") >= 0) {
-                          layFldTable = layFldTable.replace("{" + result.Layer.name + "_" + feature.attributes.OBJECTID + "_" + layerFields[g].fieldName + "}", "{" + result.Layer.name + "_" + feature.attributes.OBJECTID + "_" + layerFields[g].fieldName + "_" + "Hyper" + "}");
+                        resultFeature[result.Layer.name + "_" +
+                          layerFields[g].fieldName + "_" + "Hyper"] =
+                          "<a target='_blank' href='" + fldVal + "'>" +
+                          i18n.popup.urlMoreInfo + "</a>";
+                        if (layFldTable.indexOf("{" + result.Layer.name +
+                          "_" + feature.attributes.OBJECTID +
+                          "_" + layerFields[g].fieldName + "}") >= 0) {
+                          layFldTable = layFldTable.replace("{" + result.Layer.name + "_" +
+                            feature.attributes.OBJECTID +
+                            "_" + layerFields[g].fieldName + "}", "{" + result.Layer.name + "_" +
+                            feature.attributes.OBJECTID + "_" + layerFields[g].fieldName + "_" +
+                            "Hyper" + "}");
                         }
-                        resultFeature[result.Layer.name + "_" + feature.attributes.OBJECTID + "_" + layerFields[g].fieldName] = fldVal
+                        resultFeature[result.Layer.name + "_" + feature.attributes.OBJECTID + "_" +
+                          layerFields[g].fieldName] = fldVal;
                       }
                       else {
-                        resultFeature[result.Layer.name + "_" + feature.attributes.OBJECTID + "_" + layerFields[g].fieldName] = fldVal;
+                        resultFeature[result.Layer.name + "_" + feature.attributes.OBJECTID + "_" +
+                          layerFields[g].fieldName] = fldVal;
                       }
                     }
                     else {
-                      resultFeature[result.Layer.name + "_" + feature.attributes.OBJECTID + "_" + layerFields[g].fieldName] = fldVal;
+                      resultFeature[result.Layer.name + "_" + feature.attributes.OBJECTID + "_" +
+                        layerFields[g].fieldName] = fldVal;
                     }
                   }
                   else {
-                    resultFeature[result.Layer.name + "_" + feature.attributes.OBJECTID + "_" + layerFields[g].fieldName] = fldVal;
+                    resultFeature[result.Layer.name + "_" + feature.attributes.OBJECTID + "_" +
+                      layerFields[g].fieldName] = fldVal;
                   }
-                  layerFields[g].fieldName = result.Layer.name + "_" + feature.attributes.OBJECTID + "_" + layerFields[g].fieldName;
+                  layerFields[g].fieldName = result.Layer.name + "_" +
+                    feature.attributes.OBJECTID +
+                    "_" + layerFields[g].fieldName;
 
                 }
                 if (result.Layer.popupInfo.description === null) {
                   var popupTable = "<div>";
-                  popupTable = popupTable + "<table class='popTable' cellpadding='0' cellspacing='0'>";
+                  popupTable = popupTable +
+                    "<table class='popTable' cellpadding='0' cellspacing='0'>";
                   popupTable = popupTable + "<tbody>";
 
                   if (popupTitle !== "") {
 
                     popupTable = popupTable + "<tr valign='top'>";
-                    popupTable = popupTable + "<td colspan='2' class='headerPopUp'>" + popupTitle + "</td>";
+                    popupTable = popupTable + "<td colspan='2' class='headerPopUp'>" +
+                      popupTitle + "</td>";
 
                     popupTable = popupTable + "</tr>";
                     popupTable = popupTable + "<tr>";
-                    //popupTable = popupTable + "<td colspan='2' class='hzLinePopUp' style='border-color: "+ this.config.color.toString() + " !important'></td>";
-                    popupTable = popupTable + "<td colspan='2' class='hzLinePopUp'></td>";
+
+                    popupTable = popupTable + "<td colspan='2' class='hzLinePopUp theme'></td>";
                     popupTable = popupTable + "</tr>";
                   }
 
@@ -955,13 +978,15 @@ define([
           }, this);
 
           var finalMedArr = [];
-          for (var key in popUpArray) {
+          var subkey, key, tmpMsg;
+          for (key in popUpArray) {
             if (key !== null) {
               if (popUpArray[key] != null) {
-                for (var subkey in popUpArray[key]) {
+                for (subkey in popUpArray[key]) {
                   if (subkey !== null) {
                     if (popUpArray[key][subkey] != null) {
-                      allDescriptions = allDescriptions === "" ? popUpArray[key][subkey] : allDescriptions + popUpArray[key][subkey];
+                      allDescriptions = allDescriptions === "" ? popUpArray[key][subkey] :
+                        allDescriptions + popUpArray[key][subkey];
                     }
                   }
                 }
@@ -969,10 +994,10 @@ define([
 
             }
           }
-          for (var key in mediaArray) {
+          for (key in mediaArray) {
             if (key !== null) {
               if (mediaArray[key] != null) {
-                for (var subkey in mediaArray[key]) {
+                for (subkey in mediaArray[key]) {
                   if (subkey !== null) {
                     if (mediaArray[key][subkey] != null) {
                       finalMedArr.push.apply(finalMedArr, mediaArray[key][subkey]);
@@ -984,32 +1009,34 @@ define([
 
             }
           }
-          allDescriptions = "<div>" + allDescriptions + "</div>"
+          allDescriptions = "<div>" + allDescriptions + "</div>";
           var mp = webMercatorUtils.webMercatorToGeographic(centr);
-
+          var find;
+          var regex;
           if (this.config.popPreMessage !== null) {
-            var tmpMsg = this.config.popPreMessage.replace(/{IL_XCOORD}/gi, centr.x).replace(/{IL_YCOORD}/gi, centr.y);
+            tmpMsg = this.config.popPreMessage.replace(/{IL_XCOORD}/gi, centr.x).replace(/{IL_YCOORD}/gi, centr.y);
             tmpMsg = tmpMsg.replace(/{IL_LAT}/gi, mp.y).replace(/{IL_LONG}/gi, mp.x);
-            for (var key in resultSum) {
+            for (key in resultSum) {
               if (key !== null) {
-             
-                var find = "{" + key + "}";
-                var regex = new RegExp(find, "g");
+
+                find = "{" + key + "}";
+                regex = new RegExp(find, "g");
                 tmpMsg = tmpMsg.replace(regex, resultSum[key]);
-                
+
               }
             }
             allDescriptions = "<div>" + tmpMsg + "</div>" + allDescriptions;
           }
           if (this.config.popPostMessage !== null) {
-            var tmpMsg = this.config.popPostMessage.replace(/{IL_XCOORD}/gi, centr.x).replace(/{IL_YCOORD}/gi, centr.y);
+            tmpMsg = this.config.popPostMessage.replace(/{IL_XCOORD}/gi, centr.x)
+              .replace(/{IL_YCOORD}/gi, centr.y);
             tmpMsg = tmpMsg.replace(/{IL_LAT}/gi, mp.y).replace(/{IL_LONG}/gi, mp.x);
 
-            for (var key in resultSum) {
+            for (key in resultSum) {
               if (key !== null) {
 
-                var find = "{" + key + "}";
-                var regex = new RegExp(find, "g");
+                find = "{" + key + "}";
+                regex = new RegExp(find, "g");
                 tmpMsg = tmpMsg.replace(regex, resultSum[key]);
 
               }
@@ -1021,7 +1048,8 @@ define([
           this.popupTemplate = new PopupTemplate({
             title: this.config.popupTitle,
             fieldInfos: allFields,
-            description: allDescriptions.replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, "'"),
+            description: allDescriptions.replace(/&amp;/gi, "&").replace(/&lt;/gi, "<")
+              .replace(/&gt;/gi, ">").replace(/&quot;/gi, "'"),
             mediaInfos: finalMedArr
           });
           valToStore = this.config.serviceRequestLayerAvailibiltyFieldValueAvail;
@@ -1031,7 +1059,8 @@ define([
           this.popupTemplate = new PopupTemplate({
             title: this.config.serviceUnavailableTitle,
             fieldInfos: allFields,
-            description: this.config.serviceUnavailableMessage.replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, "'"),
+            description: this.config.serviceUnavailableMessage.replace(/&amp;/gi, "&")
+              .replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, "'"),
             mediaInfos: mediaArray
           });
           valToStore = this.config.serviceRequestLayerAvailibiltyFieldValueNotAvail;
@@ -1039,11 +1068,8 @@ define([
         }
         var featureArray = [];
         var content;
-        var title;
-
-        var editGraphic = new Graphic(this.event, this._getSymbol(), resultFeature, this.popupTemplate);
-        //this.map.infoWindow.highlight = false;
-        // this.map.infoWindow._highlighted = undefined;
+        var editGraphic = new Graphic(this.event, this._getSymbol(),
+          resultFeature, this.popupTemplate);
 
         if (this.showGraphic === true) {
           this.map.graphics.add(editGraphic);
@@ -1060,11 +1086,11 @@ define([
         }
         if (this.config.storeLocation === true && this.config.editingAllowed) {
           atts[this.config.serviceRequestLayerAvailibiltyField] = valToStore;
-          this._logRequest(cent, atts);
+          this._logRequest(centr, atts);
         }
         content = this.map.infoWindow.getSelectedFeature().getContent();
 
-        
+
         var def = this.map.centerAndZoom(centr, this.config.zoomLevel);
         //
 
@@ -1072,18 +1098,17 @@ define([
 
           if (this.contentWindow) {
             this.contentWindow.set("content", content);
-            djquery(".hzLinePopUp").style("border-color", this.config.color.toString() + " !important");
+            djquery(".hzLinePopUp").style("border-color",
+              this.config.color.toString() + " !important");
 
-            djquery(".esriViewPopup .hzLine").style("border-color", this.config.color.toString() + " !important");
-            topic.publish("app\contentSet", false);
+            djquery(".esriViewPopup .hzLine").style("border-color",
+              this.config.color.toString() + " !important");
+            topic.publish("app.contentSet", false);
           } else {
 
             this.map.infoWindow.show(centr);
           }
-
-
         }));
-
 
       } catch (err) {
         console.log(err);
@@ -1101,10 +1126,12 @@ define([
       }
       var desc;
       if (this.config.noSearchFeatureMessage) {
-       desc = this.config.noSearchFeatureMessage.replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, "'");
+        desc = this.config.noSearchFeatureMessage.replace(/&amp;/gi, "&")
+          .replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, "'");
       }
       else {
-        desc = this.config.serviceUnavailableMessage.replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, "'");
+        desc = this.config.serviceUnavailableMessage.replace(/&amp;/gi, "&")
+          .replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, "'");
       }
 
       this.popupTemplate = new PopupTemplate({
@@ -1120,13 +1147,11 @@ define([
       if (this.showGraphic === true) {
         this.map.graphics.add(editGraphic);
       }
-      featureArray = [];
+      var featureArray = [];
       featureArray.push(editGraphic);
 
       this.map.infoWindow.setFeatures(featureArray);
-     
-    
-
+      var atts;
       //this.map.infoWindow.show(editGraphic.geometry);
       if (this.config.popupWidth != null && this.config.popupHeight != null) {
         this.map.infoWindow.resize(this.config.popupWidth, this.config.popupHeight);
@@ -1137,11 +1162,13 @@ define([
       }
       if (this.config.storeLocation === true && this.config.editingAllowed) {
         if (this.config.serviceRequestLayerAvailibiltyFieldValueNoSearch) {
-          atts[this.config.serviceRequestLayerAvailibiltyField] = this.config.serviceRequestLayerAvailibiltyFieldValueNoSearch;
+          atts[this.config.serviceRequestLayerAvailibiltyField] =
+            this.config.serviceRequestLayerAvailibiltyFieldValueNoSearch;
 
         }
         else {
-          atts[this.config.serviceRequestLayerAvailibiltyField] = this.config.serviceRequestLayerAvailibiltyFieldValueNotAvail;
+          atts[this.config.serviceRequestLayerAvailibiltyField] =
+            this.config.serviceRequestLayerAvailibiltyFieldValueNotAvail;
         }
 
         this._logRequest(centr, atts);
@@ -1149,11 +1176,14 @@ define([
       var def = this.map.centerAndZoom(this.event, this.config.zoomLevel);
       def.addCallback(lang.hitch(this, function () {
         if (this.contentWindow) {
-          this.contentWindow.set("content", this.map.infoWindow.getSelectedFeature().getContent());
-          djquery(".hzLinePopUp").style("border-color", this.config.color.toString() + " !important");
-          djquery(".esriViewPopup .hzLine").style("border-color", this.config.color.toString() + " !important");
+          this.contentWindow.set("content",
+            this.map.infoWindow.getSelectedFeature().getContent());
+          djquery(".hzLinePopUp").style("border-color", this.config.color.toString() +
+            " !important");
+          djquery(".esriViewPopup .hzLine").style("border-color",
+            this.config.color.toString() + " !important");
 
-          topic.publish("app\contentSet", false);
+          topic.publish("app.contentSet", false);
         } else {
           this.map.infoWindow.show(centr);
         }
@@ -1170,11 +1200,9 @@ define([
       if (this.serviceRequestLayerName != null) {
         if (this.serviceRequestLayerName.isEditable() === true) {
           if (this.serviceRequestLayerName.geometryType == "esriGeometryPoint") {
-            //var point = new Geometry.Point(evt.x, evt.y, new esri.SpatialReference({ wkid: 102100}));
-
             var serviceLocation = new Graphic(geom, null, atts);
-
-            var editDeferred = this.serviceRequestLayerName.applyEdits([serviceLocation], null, null);
+            var editDeferred = this.serviceRequestLayerName.applyEdits([serviceLocation],
+              null, null);
 
             editDeferred.addCallback(lang.hitch(this, function (result) {
               console.log(result);
@@ -1188,10 +1216,13 @@ define([
 
     },
     _createSymbols: function () {
-      this.markerSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_SQUARE, 20, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([0, 255, 255]), 2), new Color([0, 0, 0, 0]));
+      this.markerSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_SQUARE, 20,
+        new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([0, 255, 255]), 2),
+        new Color([0, 0, 0, 0]));
 
-      // lineSymbol used for freehand polyline, polyline and line. 
-      this.lineSymbol = new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([0, 255, 255]), 1)
+      // lineSymbol used for freehand polyline, polyline and line.
+      this.lineSymbol = new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+        new Color([0, 255, 255]), 1);
 
       this.fillSymbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_NULL,
           new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,

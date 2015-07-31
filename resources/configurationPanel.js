@@ -33,6 +33,20 @@
           }
         },
         {
+          "type": "string",
+          "fieldName": "popPreMessage",
+          "label": "Text to add to the beginning of the results",
+          "tooltip": "Text to add to the beginning of the results",
+          "stringFieldOption": "richtext"
+        },
+        {
+          "type": "string",
+          "fieldName": "popPostMessage",
+          "label": "Text to add to the end of the results",
+          "tooltip": "Text to add to the end of the results",
+          "stringFieldOption": "richtext"
+        },
+        {
           "label": "Zoom level for location",
           "fieldName": "zoomLevel",
           "type": "number",
@@ -175,20 +189,6 @@
           "label": "Unavailable Popup Message:",
           "tooltip": "Popup message when outside an area",
           "stringFieldOption": "richtext"
-        },
-        {
-          "type": "string",
-          "fieldName": "popPreMessage",
-          "label": "Text to add to the beginning of the results",
-          "tooltip": "Text to add to the beginning of the results",
-          "stringFieldOption": "richtext"
-        },
-        {
-          "type": "string",
-          "fieldName": "popPostMessage",
-          "label": "Text to add to the end of the results",
-          "tooltip": "Text to add to the end of the results",
-          "stringFieldOption": "richtext"
         }
       ]
     },
@@ -206,6 +206,12 @@
           "fieldName": "showUI",
           "label": "Show a title bar",
           "tooltip": "Check on if you want to display the header bar"
+        },
+        {
+          "type": "string",
+          "fieldName": "pageIcon",
+          "label": "Title Bar Icon:",
+          "tooltip": "Url to image to be used in title bar, max size 64x64"
         },
         {
           "type": "boolean",
