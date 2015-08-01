@@ -93,7 +93,6 @@ define([
 
       this._initPopup();
       this._createToolbar();
-      this._initLayerSearch();
       this.map.infoWindow.on("hide", lang.hitch(this, this._infoHide));
       this._initShareLink();
       this.emit("ready", { "Name": "CombinedPopup" });
@@ -133,7 +132,7 @@ define([
         this.searchLayerForPopup(evt);
 
       } else {
-        this.showPopupGeo(evt);
+        this.showPopupGeo(evt, null);
       }
 
     },
@@ -165,7 +164,8 @@ define([
         return null;
       }
     },
-    showPopupGeo: function (evt) {
+    showPopupGeo: function (evt, searchByFeature) {
+      this.searchByFeature = searchByFeature;
 
       if (this.lookupLayers === undefined) {
         return;
@@ -195,23 +195,6 @@ define([
 
       this.defCnt = this.lookupLayers.length;
       var queryDeferred;
-      //var queryType, queryGeo;
-      //queryGeo = evt.geometry;
-      //if (evt.type === "extent") {
-      //  queryGeo = evt.geometry;
-      //}
-      //else if (evt.type === "polygon") {
-      //  queryGeo = evt.geometry;
-      //}
-      //else if (evt.type === "polyline") {
-      //  queryGeo = evt.geometry;
-      //}
-      //else if (evt.type === "point") {
-      //  queryGeo = new Extent({
-      //    "xmin": evt.x, "ymin": evt.y, "xmax": evt.x, "ymax": evt.y,
-      //    "spatialReference": evt.spatialReference
-      //  });
-      //}
 
       for (var f = 0, fl = this.lookupLayers.length; f < fl; f++) {
         if (this.lookupLayers[f].url == null) {
@@ -220,7 +203,10 @@ define([
 
           if (evt.type === "point") {
             query.geometry = new Extent({
-              "xmin": evt.x, "ymin": evt.y, "xmax": evt.x, "ymax": evt.y,
+              "xmin": evt.x,
+              "ymin": evt.y,
+              "xmax": evt.x,
+              "ymax": evt.y,
               "spatialReference": evt.spatialReference
             });
             query.geometryType = "esriGeometryExtent";
@@ -252,7 +238,6 @@ define([
           query.spatialRelationship = Query.SPATIAL_REL_INTERSECTS;
           query.geometry = evt;
           query.outSpatialReference = this.map.spatialReference;
-          //query.geometryType = "esriGeometryPoint";
           query.outFields = ["*"];
           if (this.lookupLayers[f].definitionExpression) {
             query.where = this.lookupLayers[f].definitionExpression;
@@ -286,34 +271,19 @@ define([
         this.map.graphics.clear();
       }
     },
-    _initLayerSearch: function () {
-      this.searchByLayer = null;
-      if (this.config.searchByLayer) {
-        if (this.config.searchByLayer !== null) {
-          if (this.config.searchByLayer !== undefined) {
-            this.searchByLayer = this.map.getLayer(this.config.searchByLayer.id);
-            if (this.searchByLayer === null || this.searchByLayer === undefined) {
-              console.log(this.config.searchByLayer.id + " not found ");
-            }
-            else {
-              console.log(this.searchByLayer.name + " found and set as search layer");
-            }
 
-          }
-        }
-      }
-    },
     searchLayerForPopup: function (geo) {
       var layerQuery = new Query();
       layerQuery.spatialRelationship = Query.SPATIAL_REL_INTERSECTS;
       layerQuery.geometry = geo;
       layerQuery.outSpatialReference = this.map.spatialReference;
       layerQuery.returnGeometry = true;
-      //this.layerQuery.outFields = ["*"];
-      if (this.searchByLayer.definitionExpression) {
-        layerQuery.where = this.searchByLayer.definitionExpression;
+      layerQuery.outFields = ["*"];
+      if (this.searchByLayer.layerDefinition) {
+        if (this.searchByLayer.layerDefinition.definitionExpression) {
+          layerQuery.where = this.searchByLayer.layerDefinition.definitionExpression;
+        }
       }
-
       var layerQueryTask = new QueryTask(this.searchByLayer.url);
       layerQueryTask.on("complete", lang.hitch(this, this._layerSearchComplete));
       layerQueryTask.on("error", lang.hitch(this, function (error) {
@@ -324,6 +294,15 @@ define([
       layerQueryTask.execute(layerQuery);
     },
     _initPopup: function () {
+      this.searchByLayer = null;
+      if (this.config.searchByLayer) {
+        if (this.config.searchByLayer === undefined) {
+          this.config.searchByLayer = null;
+        }
+      } else {
+        this.config.searchByLayer = null;
+      }
+
 
       var serviceAreaLayerNames = [];
       this.popupMedia = [];
@@ -375,8 +354,7 @@ define([
                 if (subLyrs.layerObject != null) {
 
                   if (subLyrs.layerObject.name == serviceAreaLayerNames[f] ||
-                    subLyrs.id == serviceAreaLayerNames[f])
-                  {
+                    subLyrs.id == serviceAreaLayerNames[f]) {
                     serviceAreaLayerNames[f] = subLyrs.layerObject.name;
                     layDetails.name = subLyrs.layerObject.name;
                     layDetails.layerOrder = f;
@@ -463,6 +441,10 @@ define([
               }, this);
 
             } else {
+
+              if (layer.id === this.config.searchByLayer.id) {
+                this.searchByLayer = layer;
+              }
               if (layer.title == serviceAreaLayerNames[f] || layer.id == serviceAreaLayerNames[f]) {
                 serviceAreaLayerNames[f] = layer.title;
                 if (layer.popupInfo == null) {
@@ -545,8 +527,7 @@ define([
       var useLegacyConfig = false;
 
       if (this.lookupLayers.length === 0 &&
-        this.config.serviceAreaLayerName != null)
-      {
+        this.config.serviceAreaLayerName != null) {
         layDetails = {};
 
         array.forEach(this.layers, function (layer) {
@@ -627,8 +608,7 @@ define([
       }
       if (this.serviceRequestLayerName === undefined &&
         this.config.storeLocation === true &&
-        this.config.editingAllowed)
-      {
+        this.config.editingAllowed) {
         if (this.config.serviceRequestLayerName.id !== undefined) {
           alert(i18n.error.layerNotFound + ": " + this.config.serviceRequestLayerName.id);
         } else {
@@ -649,8 +629,7 @@ define([
         this.map.infoWindow === null ||
         this.map.infoWindow === undefined ||
         this.map.infoWindow.features === null ||
-        this.map.infoWindow.features === undefined)
-      {
+        this.map.infoWindow.features === undefined) {
         return;
       }
 
@@ -705,8 +684,7 @@ define([
         this.map.infoWindow === null ||
         this.map.infoWindow === undefined ||
         this.map.infoWindow.features === null ||
-        this.map.infoWindow.features === undefined)
-      {
+        this.map.infoWindow.features === undefined) {
         return;
       }
 
@@ -817,7 +795,7 @@ define([
           if (result.featureSet.features) {
             if (result.featureSet.features.length > 0) {
               this.event = result.featureSet.features[0].geometry;
-              this.showPopupGeo(result.featureSet.features[0].geometry);
+              this.showPopupGeo(result.featureSet.features[0].geometry, result.featureSet.features[0]);
               return;
             }
           }
@@ -843,7 +821,8 @@ define([
 
       };
     },
-    _getPopupForResult: function (feature,layer) {
+    _getPopupForResult: function (feature, layer) {
+      var layerName = layer.name == null ? layer.title : layer.name;
       var resultFeature = {};
       if (layer.popupInfo != null) {
         var layerFields = lang.clone(layer.popupInfo.fieldInfos);
@@ -858,7 +837,7 @@ define([
           if (mediaInfos != null) {
             array.forEach(mediaInfos, function (mediaInfo) {
               mediaInfo = this._processObject(mediaInfo,
-                layerFields[g].fieldName, layer.name,
+                layerFields[g].fieldName, layerName,
                 false, feature.attributes.OBJECTID);
 
             }, this);
@@ -868,7 +847,7 @@ define([
             re = new RegExp("{" + layerFields[g].fieldName + "}", "g");
 
             popupTitle = popupTitle.replace(re, "{" +
-              layer.name + "_" + feature.attributes.OBJECTID + "_" +
+              layerName + "_" + feature.attributes.OBJECTID + "_" +
               layerFields[g].fieldName + "}");
 
             if (layerFields[g].visible === true) {
@@ -882,7 +861,7 @@ define([
                   layerFields[g].fieldName + "</td>";
               }
               layFldTable = layFldTable + "<td class='popValue'>" +
-                "{" + layer.name + "_" +
+                "{" + layerName + "_" +
                 feature.attributes.OBJECTID + "_" +
                 layerFields[g].fieldName + "}</td>";
               layFldTable = layFldTable + "</tr>";
@@ -892,7 +871,7 @@ define([
           } else {
             re = new RegExp("{" + layerFields[g].fieldName + "}", "g");
 
-            layerDescription = layerDescription.replace(re, "{" + layer.name + "_" +
+            layerDescription = layerDescription.replace(re, "{" + layerName + "_" +
               feature.attributes.OBJECTID + "_" + layerFields[g].fieldName + "}");
 
           }
@@ -904,37 +883,37 @@ define([
             if (fldVal.indexOf("http://") >= 0 || fldVal.indexOf("https://") >= 0 ||
               fldVal.indexOf("www.") >= 0) {
               if (layer.popupInfo.description === null) {
-                resultFeature[layer.name + "_" +
+                resultFeature[layerName + "_" +
                   layerFields[g].fieldName + "_" + "Hyper"] =
                   "<a target='_blank' href='" + fldVal + "'>" +
                   i18n.popup.urlMoreInfo + "</a>";
-                if (layFldTable.indexOf("{" + layer.name +
+                if (layFldTable.indexOf("{" + layerName +
                   "_" + feature.attributes.OBJECTID +
                   "_" + layerFields[g].fieldName + "}") >= 0) {
-                  layFldTable = layFldTable.replace("{" + layer.name + "_" +
+                  layFldTable = layFldTable.replace("{" + layerName + "_" +
                     feature.attributes.OBJECTID +
-                    "_" + layerFields[g].fieldName + "}", "{" + layer.name + "_" +
+                    "_" + layerFields[g].fieldName + "}", "{" + layerName + "_" +
                     feature.attributes.OBJECTID + "_" + layerFields[g].fieldName + "_" +
                     "Hyper" + "}");
                 }
-                resultFeature[layer.name + "_" + feature.attributes.OBJECTID + "_" +
+                resultFeature[layerName + "_" + feature.attributes.OBJECTID + "_" +
                   layerFields[g].fieldName] = fldVal;
               }
               else {
-                resultFeature[layer.name + "_" + feature.attributes.OBJECTID + "_" +
+                resultFeature[layerName + "_" + feature.attributes.OBJECTID + "_" +
                   layerFields[g].fieldName] = fldVal;
               }
             }
             else {
-              resultFeature[layer.name + "_" + feature.attributes.OBJECTID + "_" +
+              resultFeature[layerName + "_" + feature.attributes.OBJECTID + "_" +
                 layerFields[g].fieldName] = fldVal;
             }
           }
           else {
-            resultFeature[layer.name + "_" + feature.attributes.OBJECTID + "_" +
+            resultFeature[layerName + "_" + feature.attributes.OBJECTID + "_" +
               layerFields[g].fieldName] = fldVal;
           }
-          layerFields[g].fieldName = layer.name + "_" +
+          layerFields[g].fieldName = layerName + "_" +
             feature.attributes.OBJECTID +
             "_" + layerFields[g].fieldName;
 
@@ -970,7 +949,7 @@ define([
           desc: layerDescription,
           feature: resultFeature
         }
-      
+
       }
     },
     _allQueriesComplate: function () {
@@ -996,24 +975,25 @@ define([
           //popUpArray.length = this.results.length;
           //mediaArray.length = this.results.length;
           console.log(this.results.length + " layers");
-          
+
           array.forEach(this.results, function (result) {
             var layer = result.Layer;
             mediaArray[layer.layerOrder] = {};
             popUpArray[layer.layerOrder] = {};
-            console.log(result.results.length + " features found in " + layer.name);
+            var layerName = layer.name == null ? layer.title : layer.name;
+            console.log(result.results.length + " features found in " + layerName);
             array.forEach(result.results, function (feature) {
               console.log("Feature with OBJECTID: " + feature.attributes.OBJECTID +
-                " in " + layer.name);
-              if (layer.name in resultSum) {
-                resultSum[layer.name] = resultSum[layer.name] + 1;
+                " in " + layerName);
+              if (layerName in resultSum) {
+                resultSum[layerName] = resultSum[layerName] + 1;
               }
               else {
-                resultSum[result.Layer.name] = 1;
+                resultSum[layerName] = 1;
               }
-              var popDet = this._getPopupForResult(feature,layer);
+              var popDet = this._getPopupForResult(feature, layer);
               allFields = allFields.concat(popDet.fields);
-              resultFeature = lang.mixin( resultFeature,popDet.feature);
+              resultFeature = lang.mixin(resultFeature, popDet.feature);
               mediaArray[result.Layer.layerOrder][feature.attributes.OBJECTID] = popDet.media;
               popUpArray[result.Layer.layerOrder][feature.attributes.OBJECTID] = popDet.desc;
             }, this);
@@ -1085,7 +1065,20 @@ define([
             }
             allDescriptions = allDescriptions + "<div>" + tmpMsg + "</div>";
           }
+          if (this.searchByFeature && this.searchByLayer.popupInfo && allDescriptions.indexOf("{IL_SEARCHBY}") >= 0) {
+            var searchByPopup = this._getPopupForResult(this.searchByFeature, this.searchByLayer);
+            allDescriptions = allDescriptions.replace(/{IL_SEARCHBY}/gi, searchByPopup.desc);
+            allFields = allFields.concat(searchByPopup.fields);
+            resultFeature = lang.mixin(resultFeature, searchByPopup.feature);
 
+            for (var g = 0, gl = this.searchByLayer.popupInfo.fieldInfos.length; g < gl; g++) {
+              var fldname = "{" + this.searchByLayer.popupInfo.fieldInfos[g].fieldName + "}";
+              if (allDescriptions.indexOf(fldname) >= 0) {
+                regex = new RegExp(fldname, "g");
+                allDescriptions = allDescriptions.replace(regex, this.searchByFeature.attributes[this.searchByLayer.popupInfo.fieldInfos[g].fieldName]);
+              }
+            }
+          }
           ////Make single Array of fields
           this.popupTemplate = new PopupTemplate({
             title: this.config.popupTitle,
@@ -1140,10 +1133,10 @@ define([
           if (this.map._fixExtent(ext, true).lod.level > this.config.zoomLevel) {
             def = this.map.centerAndZoom(centr, this.config.zoomLevel);
           }
-          else{
+          else {
             def = this.map.setExtent(ext, true);
           }
-         
+
 
         }
         //

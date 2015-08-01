@@ -67,14 +67,35 @@
         },
         {
           "type": "layerAndFieldSelector",
-          "fieldName": "searchByLayer",
-          "label": "Layer to search for features to lookup intersecting layers",
-          "tooltip": "Select the layer whos features will be used to find the lookup features",
+          "fields": [
+            {
+              "supportedTypes": [
+                "esriFieldTypeInteger",
+                "esriFieldTypeSmallInteger",
+                "esriFieldTypeDouble",
+                "esriFieldTypeSingle",
+                "esriFieldTypeString",
+                "esriFieldTypeDate",
+                "esriFieldTypeGeometry",
+                "esriFieldTypeOID",
+                "esriFieldTypeGlobalID",
+                "esriFieldTypeGUID"
+              
+              ],
+              "multipleSelection": true,
+              "fieldName": "searchByLayerField",
+              "label": "Field list to be used in pre or post pop up message",
+              "tooltip": "Field list to be used in pre or post pop up message"
+            }
+          ],
           "layerOptions": {
             "supportedTypes": [
               "FeatureLayer"
             ]
-          }
+          },
+          "fieldName": "searchByLayer",
+          "label": "Search by layer",
+          "tooltip": "Layer to search for features to lookup intersecting layers"
         },
         {
           "type": "string",
@@ -329,6 +350,7 @@
     "storeLocation": false,
     "serviceRequestLayerAvailibiltyFieldValueAvail": "Intersected",
     "serviceRequestLayerAvailibiltyFieldValueNotAvail": "Not Intersected",
+    "serviceRequestLayerAvailibiltyFieldValueNoSearch": "No Search Layer",
     "showSplash": false,
     "splashText": "<center>Information Lookup is a configurable web application template that can be used to provide the general public, internal staff and other interested parties the with information about a location. If no features are found at that location, a general message is displayed. Optionally, the location entered can be stored in a point layer. The template can be configured using the ArcGIS Online Configuration dialog.</center>",
     "theme": "black",
