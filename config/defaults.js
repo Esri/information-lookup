@@ -1,10 +1,10 @@
-  /*global define,location */
+/*global define,location */
 define([], function () {
   //Default configuration settings for the application. This is where you'll define things like a bing maps key, 
   //default web map, default app color theme and more. These values can be overwritten by template configuration settings
   //and url parameters.
   var defaults = {
-    "appid": "d8a2b31abf3740c38058e8cf76f1735e",
+    "appid": "",
     "webmap": "25660c0facdb419191c8b2dec5da74d7",
     "oauthappid": null, //"AFTKRmv16wj14N3z",
     //Group templates must support a group url parameter. This will contain the id of the group.
