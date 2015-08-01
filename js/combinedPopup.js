@@ -1065,20 +1065,34 @@ define([
             }
             allDescriptions = allDescriptions + "<div>" + tmpMsg + "</div>";
           }
-          if (this.searchByFeature && this.searchByLayer.popupInfo && allDescriptions.indexOf("{IL_SEARCHBY}") >= 0) {
-            var searchByPopup = this._getPopupForResult(this.searchByFeature, this.searchByLayer);
-            allDescriptions = allDescriptions.replace(/{IL_SEARCHBY}/gi, searchByPopup.desc);
-            allFields = allFields.concat(searchByPopup.fields);
-            resultFeature = lang.mixin(resultFeature, searchByPopup.feature);
-
-            for (var g = 0, gl = this.searchByLayer.popupInfo.fieldInfos.length; g < gl; g++) {
-              var fldname = "{" + this.searchByLayer.popupInfo.fieldInfos[g].fieldName + "}";
-              if (allDescriptions.indexOf(fldname) >= 0) {
-                regex = new RegExp(fldname, "g");
-                allDescriptions = allDescriptions.replace(regex, this.searchByFeature.attributes[this.searchByLayer.popupInfo.fieldInfos[g].fieldName]);
+          if (this.searchByFeature && this.searchByLayer.popupInfo) {
+            if (allDescriptions.indexOf("{IL_SEARCHBY}") >= 0) {
+              var searchByPopup = this._getPopupForResult(this.searchByFeature, this.searchByLayer);
+              allDescriptions = allDescriptions.replace(/{IL_SEARCHBY}/gi, searchByPopup.desc);
+              allFields = allFields.concat(searchByPopup.fields);
+              resultFeature = lang.mixin(resultFeature, searchByPopup.feature);
+            }
+          }
+          if (this.searchByFeature && this.searchByFeature.attributes)
+          {
+            for (key in this.searchByFeature.attributes) {
+              if (key !== null) {
+                var fldname = "{" + key + "}";
+                if (allDescriptions.indexOf(fldname) >= 0) {
+                  regex = new RegExp(fldname, "g");
+                  allDescriptions = allDescriptions.replace(regex, this.searchByFeature.attributes[key]);
+                }
               }
             }
           }
+          for (var g = 0, gl = this.searchByLayer.popupInfo.fieldInfos.length; g < gl; g++) {
+            var fldname = "{" + this.searchByLayer.popupInfo.fieldInfos[g].fieldName + "}";
+            if (allDescriptions.indexOf(fldname) >= 0) {
+              regex = new RegExp(fldname, "g");
+              allDescriptions = allDescriptions.replace(regex, this.searchByFeature.attributes[this.searchByLayer.popupInfo.fieldInfos[g].fieldName]);
+            }
+          }
+
           ////Make single Array of fields
           this.popupTemplate = new PopupTemplate({
             title: this.config.popupTitle,
