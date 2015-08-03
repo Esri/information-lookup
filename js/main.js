@@ -116,7 +116,11 @@ function (
               }
               else if (this.config.theme === "blue") {
                 query(".splashTextContainer").style("backgroundColor", "#82b0f1");
-                query(".splashTextContent").style("color", "#000000");
+                query(".splashTextContent").style("color", "#ffffff");
+              }
+              else {
+                query(".splashTextContainer").style("backgroundColor", "#000000");
+                query(".splashTextContent").style("color", "#ffffff");
               }
             }
           }

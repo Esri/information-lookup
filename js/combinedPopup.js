@@ -127,7 +127,7 @@ define([
         this.map.graphics.clear();
       }
 
-      if (this.searchByLayer && info !== this.searchByLayer.id) {
+      if (this.searchByLayer !== null && this.searchByLayer !== undefined && info !== this.searchByLayer.id) {
 
         this.searchLayerForPopup(evt);
 
@@ -769,9 +769,9 @@ define([
           if (obj[key] != null) {
             if (obj[key] instanceof Object) {
               if (key == "fields") {
-                obj[key] = this._processObject(obj[key], fieldName, layerName, true);
+                obj[key] = this._processObject(obj[key], fieldName, layerName, true, oid);
               } else {
-                obj[key] = this._processObject(obj[key], fieldName, layerName, matchName);
+                obj[key] = this._processObject(obj[key], fieldName, layerName, matchName, oid);
               }
 
             } else {
@@ -1032,6 +1032,7 @@ define([
             }
           }
           allDescriptions = "<div>" + allDescriptions + "</div>";
+          //allDescriptions = "" + allDescriptions + "";
           var mp = webMercatorUtils.webMercatorToGeographic(centr);
           var find;
           var regex;
@@ -1065,31 +1066,26 @@ define([
             }
             allDescriptions = allDescriptions + "<div>" + tmpMsg + "</div>";
           }
-          if (this.searchByFeature && this.searchByLayer.popupInfo) {
-            if (allDescriptions.indexOf("{IL_SEARCHBY}") >= 0) {
-              var searchByPopup = this._getPopupForResult(this.searchByFeature, this.searchByLayer);
-              allDescriptions = allDescriptions.replace(/{IL_SEARCHBY}/gi, searchByPopup.desc);
-              allFields = allFields.concat(searchByPopup.fields);
-              resultFeature = lang.mixin(resultFeature, searchByPopup.feature);
-            }
-          }
-          if (this.searchByFeature && this.searchByFeature.attributes)
-          {
-            for (key in this.searchByFeature.attributes) {
-              if (key !== null) {
-                var fldname = "{" + key + "}";
-                if (allDescriptions.indexOf(fldname) >= 0) {
-                  regex = new RegExp(fldname, "g");
-                  allDescriptions = allDescriptions.replace(regex, this.searchByFeature.attributes[key]);
-                }
+          if (this.searchByFeature !== null && this.searchByFeature !== undefined) {
+            if (this.searchByLayer.popupInfo !== null && this.searchByFeature.popupInfo !== undefined) {
+
+              if (allDescriptions.indexOf("{IL_SEARCHBY}") >= 0) {
+                var searchByPopup = this._getPopupForResult(this.searchByFeature, this.searchByLayer);
+                allDescriptions = allDescriptions.replace(/{IL_SEARCHBY}/gi, searchByPopup.desc);
+                allFields = allFields.concat(searchByPopup.fields);
+                resultFeature = lang.mixin(resultFeature, searchByPopup.feature);
               }
             }
-          }
-          for (var g = 0, gl = this.searchByLayer.popupInfo.fieldInfos.length; g < gl; g++) {
-            var fldname = "{" + this.searchByLayer.popupInfo.fieldInfos[g].fieldName + "}";
-            if (allDescriptions.indexOf(fldname) >= 0) {
-              regex = new RegExp(fldname, "g");
-              allDescriptions = allDescriptions.replace(regex, this.searchByFeature.attributes[this.searchByLayer.popupInfo.fieldInfos[g].fieldName]);
+            if (this.searchByLayer.attributes !== null && this.searchByFeature.attributes !== undefined) {
+              for (key in this.searchByFeature.attributes) {
+                if (key !== null) {
+                  var fldname = "{" + key + "}";
+                  if (allDescriptions.indexOf(fldname) >= 0) {
+                    regex = new RegExp(fldname, "g");
+                    allDescriptions = allDescriptions.replace(regex, this.searchByFeature.attributes[key]);
+                  }
+                }
+              }
             }
           }
 
@@ -1137,11 +1133,10 @@ define([
           atts[this.config.serviceRequestLayerAvailibiltyField] = valToStore;
           this._logRequest(centr, atts);
         }
-        content = this.map.infoWindow.getSelectedFeature().getContent();
-        var def;
+         var def;
         var ext = this._getExtent(this.event);
         if (ext === null) {
-          def = this.map.centerAndZoom(centr, this.config.zoomLevel);
+           def = this.map.centerAndZoom(centr, this.config.zoomLevel);
 
         } else {
           if (this.map._fixExtent(ext, true).lod.level > this.config.zoomLevel) {
@@ -1158,6 +1153,8 @@ define([
         def.addCallback(lang.hitch(this, function (results) {
 
           if (this.contentWindow) {
+            content = this.map.infoWindow.getSelectedFeature().getContent();
+
             this.contentWindow.set("content", content);
             djquery(".hzLinePopUp").style("border-color",
               this.config.color.toString() + " !important");
