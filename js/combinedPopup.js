@@ -167,6 +167,7 @@ define([
       }
     },
     showPopupGeo: function (evt, searchByFeature) {
+      this.resultCount = 0;
       this.searchByFeature = searchByFeature;
 
       if (this.lookupLayers === undefined) {
@@ -863,7 +864,8 @@ define([
             return geometryEngine.intersect(this.event,feature.geometry );
           }));
 
-          
+          this.resultCount = this.resultCount + result.features.length;
+
           this.results.push({ "results": result.features, "Layer": lookupLayer });
         }
 
@@ -1008,7 +1010,11 @@ define([
     },
     _allQueriesComplate: function () {
       try {
-
+        if (this.resultCount == 0)
+        {
+          this._showNoSearchFeatureFound();
+          return;
+        }
         var atts = {};
         var re = null;
         var allFields = [];
