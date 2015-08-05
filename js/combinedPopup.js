@@ -57,7 +57,7 @@ define([
   PopupTemplate,
   webMercatorUtils,
   geometryEngine,
-  String,
+  djString,
   i18n
 ) {
   return declare([Evented], {
@@ -350,8 +350,8 @@ define([
         this.config.serviceAreaLayerNamesSelector = "";
       }
 
-      if (String.trim(this.config.serviceAreaLayerNamesSelector) === "") {
-        if (String.trim(this.config.serviceAreaLayerNames) === "") {
+      if (djString.trim(this.config.serviceAreaLayerNamesSelector) === "") {
+        if (djString.trim(this.config.serviceAreaLayerNames) === "") {
           if (i18n) {
             if (i18n.error) {
               if (i18n.error.noLayersSet) {
@@ -381,7 +381,7 @@ define([
 
       for (f = 0, fl = serviceAreaLayerNames.length; f < fl; f++) {
         layDetails = {};
-        serviceAreaLayerNames[f] = String.trim(serviceAreaLayerNames[f]);
+        serviceAreaLayerNames[f] = djString.trim(serviceAreaLayerNames[f]);
 
         array.forEach(this.layers, function (layer) {
 
@@ -517,7 +517,7 @@ define([
 
             if (this.config.serviceRequestLayerName.id !== undefined) {
 
-              if (layer.id == String.trim(this.config.serviceRequestLayerName.id)) {
+              if (layer.id == djString.trim(this.config.serviceRequestLayerName.id)) {
 
                 this.serviceRequestLayerName = layer.layerObject;
                 console.log("Service Request Layer set");
@@ -540,7 +540,7 @@ define([
                 }
               }
             } else {
-              if (layer.title == String.trim(this.config.serviceRequestLayerName)) {
+              if (layer.title == djString.trim(this.config.serviceRequestLayerName)) {
 
                 this.serviceRequestLayerName = layer.layerObject;
                 console.log("Service Request Layer set");
@@ -572,7 +572,7 @@ define([
 
         array.forEach(this.layers, function (layer) {
 
-          this.config.serviceAreaLayerName = String.trim(this.config.serviceAreaLayerName);
+          this.config.serviceAreaLayerName = djString.trim(this.config.serviceAreaLayerName);
           if (layer.layerObject.layerInfos != null) {
             array.forEach(layer.layerObject.layerInfos, function (subLyrs) {
               if (subLyrs.name == this.config.serviceAreaLayerName) {
@@ -796,38 +796,44 @@ define([
       this.showPopup(evt.geometry, "MapClick");
     },
     _processObject: function (obj, fieldName, layerName, matchName, oid) {
-      var matchForRec = matchName;
-      var re = null;
-      for (var key in obj) {
-        if (key !== null) {
-          if (key == "type") {
-            if (obj[key].indexOf("chart") > -1) {
-              matchForRec = true;
-            }
-          }
-
-          if (obj[key] != null) {
-            if (obj[key] instanceof Object) {
-              if (key == "fields") {
-                obj[key] = this._processObject(obj[key], fieldName, layerName, true, oid);
-              } else {
-                obj[key] = this._processObject(obj[key], fieldName, layerName, matchName, oid);
+      try {
+        var matchForRec = matchName;
+        var re = null;
+        for (var key in obj) {
+          if (key !== null) {
+            if (key == "type") {
+              if (obj[key].indexOf("chart") > -1) {
+                matchForRec = true;
               }
+            }
 
-            } else {
-              if (obj[key] == fieldName && (matchName || key == "normalizeField")) {
-                obj[key] = layerName + "_" + oid + "_" + fieldName;
+            if (obj[key] != null) {
+              if (obj[key] instanceof Object) {
+                if (key == "fields") {
+                  obj[key] = this._processObject(obj[key], fieldName, layerName, true, oid);
+                } else {
+                  obj[key] = this._processObject(obj[key], fieldName, layerName, matchName, oid);
+                }
+
               } else {
-                re = new RegExp("{" + fieldName + "}", "g");
-                obj[key] = obj[key].replace(re, "{" + layerName + "_" + oid + "_" + fieldName + "}")
-                  .replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, "'");
+                if (obj[key] == fieldName && (matchName || key == "normalizeField")) {
+                  obj[key] = layerName + "_" + oid + "_" + fieldName;
+                } else {
+                  re = new RegExp("{" + fieldName + "}", "g");
+                  if (typeof obj[key] === 'string') {
+                    obj[key] = obj[key].replace(re, "{" + layerName + "_" + oid + "_" + fieldName + "}")
+                      .replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, "'");
+                  }
+                }
               }
             }
           }
         }
+        return obj;
+      } catch (err) {
+        console.log("_processObject error:" + err);
+        return null;
       }
-      return obj;
-
     },
     _layerSearchComplete: function (result) {
       if (result) {
@@ -860,8 +866,8 @@ define([
       return function (result) {
 
         if (result.features.length > 0) {
-          result.features = array.filter(result.features, lang.hitch(this,function (feature) {
-            return geometryEngine.intersect(this.event,feature.geometry );
+          result.features = array.filter(result.features, lang.hitch(this, function (feature) {
+            return geometryEngine.intersect(this.event, feature.geometry);
           }));
 
           this.resultCount = this.resultCount + result.features.length;
@@ -877,144 +883,163 @@ define([
 
       };
     },
+    _randomstring: function (L) {
+      var s = '';
+      var randomchar = function () {
+        var n = Math.floor(Math.random() * 62);
+        if (n < 10) return n; //1-10
+        if (n < 36) return String.fromCharCode(n + 55); //A-Z
+        return String.fromCharCode(n + 61); //a-z
+      }
+      while (s.length < L) s += randomchar();
+      return s;
+    },
     _getPopupForResult: function (feature, layer) {
-      var layerName = layer.name == null ? layer.title : layer.name;
-      var resultFeature = {};
-      if (layer.popupInfo != null) {
-        var layerFields = lang.clone(layer.popupInfo.fieldInfos);
+      try {
 
-        var layerDescription = lang.clone(layer.popupInfo.description);
-        var popupTitle = lang.clone(layer.popupInfo.title);
-        var mediaInfos = lang.clone(layer.popupInfo.mediaInfos);
+        var layerName = layer.name == null ? layer.title : layer.name;
+        var replaceVal = Math.random().toString(36).substr(2, 5);
 
-        var layFldTable = "";
+        var resultFeature = {};
+        if (layer.popupInfo != null) {
+          var layerFields = lang.clone(layer.popupInfo.fieldInfos);
 
-        for (var g = 0, gl = layerFields.length; g < gl; g++) {
-          if (mediaInfos != null) {
-            array.forEach(mediaInfos, function (mediaInfo) {
-              mediaInfo = this._processObject(mediaInfo,
-                layerFields[g].fieldName, layerName,
-                false, feature.attributes.OBJECTID);
+          var layerDescription = lang.clone(layer.popupInfo.description);
+          var popupTitle = lang.clone(layer.popupInfo.title);
+          var mediaInfos = lang.clone(layer.popupInfo.mediaInfos);
 
-            }, this);
-          }
+          var layFldTable = "";
 
-          if (layer.popupInfo.description == null) {
-            re = new RegExp("{" + layerFields[g].fieldName + "}", "g");
+          for (var g = 0, gl = layerFields.length; g < gl; g++) {
+            if (mediaInfos != null) {
+              array.forEach(mediaInfos, function (mediaInfo) {
+                mediaInfo = this._processObject(mediaInfo,
+                  layerFields[g].fieldName, replaceVal,
+                  false, feature.attributes.OBJECTID);
 
-            popupTitle = popupTitle.replace(re, "{" +
-              layerName + "_" + feature.attributes.OBJECTID + "_" +
-              layerFields[g].fieldName + "}");
-
-            if (layerFields[g].visible === true) {
-
-              layFldTable = layFldTable + "<tr valign='top'>";
-              if (layerFields[g].label != null) {
-                layFldTable = layFldTable + "<td class='popName'>" +
-                  layerFields[g].label + "</td>";
-              } else {
-                layFldTable = layFldTable + "<td class='popName'>" +
-                  layerFields[g].fieldName + "</td>";
-              }
-              layFldTable = layFldTable + "<td class='popValue'>" +
-                "{" + layerName + "_" +
-                feature.attributes.OBJECTID + "_" +
-                layerFields[g].fieldName + "}</td>";
-              layFldTable = layFldTable + "</tr>";
-
+              }, this);
             }
 
-          } else {
-            re = new RegExp("{" + layerFields[g].fieldName + "}", "g");
+            if (layer.popupInfo.description == null) {
+              re = new RegExp("{" + layerFields[g].fieldName + "}", "g");
 
-            layerDescription = layerDescription.replace(re, "{" + layerName + "_" +
-              feature.attributes.OBJECTID + "_" + layerFields[g].fieldName + "}");
+              popupTitle = popupTitle.replace(re, "{" +
+                replaceVal + "_" + feature.attributes.OBJECTID + "_" +
+                layerFields[g].fieldName + "}");
 
-          }
-          var fldVal = feature.attributes[layerFields[g].fieldName];
-          if (fldVal != null) {
+              if (layerFields[g].visible === true) {
 
-
-            fldVal = fldVal.toString();
-            if (fldVal.indexOf("http://") >= 0 || fldVal.indexOf("https://") >= 0 ||
-              fldVal.indexOf("www.") >= 0) {
-              if (layer.popupInfo.description === null) {
-                resultFeature[layerName + "_" +
-                  layerFields[g].fieldName + "_" + "Hyper"] =
-                  "<a target='_blank' href='" + fldVal + "'>" +
-                  i18n.popup.urlMoreInfo + "</a>";
-                if (layFldTable.indexOf("{" + layerName +
-                  "_" + feature.attributes.OBJECTID +
-                  "_" + layerFields[g].fieldName + "}") >= 0) {
-                  layFldTable = layFldTable.replace("{" + layerName + "_" +
-                    feature.attributes.OBJECTID +
-                    "_" + layerFields[g].fieldName + "}", "{" + layerName + "_" +
-                    feature.attributes.OBJECTID + "_" + layerFields[g].fieldName + "_" +
-                    "Hyper" + "}");
+                layFldTable = layFldTable + "<tr valign='top'>";
+                if (layerFields[g].label != null) {
+                  layFldTable = layFldTable + "<td class='popName'>" +
+                    layerFields[g].label + "</td>";
+                } else {
+                  layFldTable = layFldTable + "<td class='popName'>" +
+                    layerFields[g].fieldName + "</td>";
                 }
-                resultFeature[layerName + "_" + feature.attributes.OBJECTID + "_" +
-                  layerFields[g].fieldName] = fldVal;
+                layFldTable = layFldTable + "<td class='popValue'>" +
+                  "{" + replaceVal + "_" +
+                  feature.attributes.OBJECTID + "_" +
+                  layerFields[g].fieldName + "}</td>";
+                layFldTable = layFldTable + "</tr>";
+
+              }
+
+            } else {
+              re = new RegExp("{" + layerFields[g].fieldName + "}", "g");
+
+              layerDescription = layerDescription.replace(re, "{" + replaceVal + "_" +
+                feature.attributes.OBJECTID + "_" + layerFields[g].fieldName + "}");
+
+            }
+            var fldVal = feature.attributes[layerFields[g].fieldName];
+            if (fldVal != null) {
+
+
+              fldVal = fldVal.toString();
+              if (fldVal.indexOf("http://") >= 0 || fldVal.indexOf("https://") >= 0 ||
+                fldVal.indexOf("www.") >= 0) {
+                if (layer.popupInfo.description === null) {
+                  resultFeature[replaceVal + "_" +
+                    layerFields[g].fieldName + "_" + "Hyper"] =
+                    "<a target='_blank' href='" + fldVal + "'>" +
+                    i18n.popup.urlMoreInfo + "</a>";
+                  if (layFldTable.indexOf("{" + replaceVal +
+                    "_" + feature.attributes.OBJECTID +
+                    "_" + layerFields[g].fieldName + "}") >= 0) {
+                    layFldTable = layFldTable.replace("{" + replaceVal + "_" +
+                      feature.attributes.OBJECTID +
+                      "_" + layerFields[g].fieldName + "}", "{" + replaceVal + "_" +
+                      feature.attributes.OBJECTID + "_" + layerFields[g].fieldName + "_" +
+                      "Hyper" + "}");
+                  }
+                  resultFeature[replaceVal + "_" + feature.attributes.OBJECTID + "_" +
+                    layerFields[g].fieldName] = fldVal;
+                }
+                else {
+                  resultFeature[replaceVal + "_" + feature.attributes.OBJECTID + "_" +
+                    layerFields[g].fieldName] = fldVal;
+                }
               }
               else {
-                resultFeature[layerName + "_" + feature.attributes.OBJECTID + "_" +
+                resultFeature[replaceVal + "_" + feature.attributes.OBJECTID + "_" +
                   layerFields[g].fieldName] = fldVal;
               }
             }
             else {
-              resultFeature[layerName + "_" + feature.attributes.OBJECTID + "_" +
+              resultFeature[replaceVal + "_" + feature.attributes.OBJECTID + "_" +
                 layerFields[g].fieldName] = fldVal;
             }
+            layerFields[g].fieldName = replaceVal + "_" +
+              feature.attributes.OBJECTID +
+              "_" + layerFields[g].fieldName;
+
           }
-          else {
-            resultFeature[layerName + "_" + feature.attributes.OBJECTID + "_" +
-              layerFields[g].fieldName] = fldVal;
+          if (layer.popupInfo.description === null) {
+            var popupTable = "<div>";
+            popupTable = popupTable +
+              "<table class='popTable' cellpadding='0' cellspacing='0'>";
+            popupTable = popupTable + "<tbody>";
+
+            if (popupTitle !== "") {
+
+              popupTable = popupTable + "<tr valign='top'>";
+              popupTable = popupTable + "<td colspan='2' class='headerPopUp'>" +
+                popupTitle + "</td>";
+
+              popupTable = popupTable + "</tr>";
+              popupTable = popupTable + "<tr>";
+
+              popupTable = popupTable + "<td colspan='2' class='hzLinePopUp theme'></td>";
+              popupTable = popupTable + "</tr>";
+            }
+
+            popupTable = popupTable + layFldTable;
+            popupTable = popupTable + "</tbody></table>";
+
+            popupTable = popupTable + "</div>";
+            layerDescription = popupTable;
           }
-          layerFields[g].fieldName = layerName + "_" +
-            feature.attributes.OBJECTID +
-            "_" + layerFields[g].fieldName;
+          return {
+            fields: layerFields,
+            media: mediaInfos,
+            desc: layerDescription,
+            feature: resultFeature
+          }
 
         }
-        if (layer.popupInfo.description === null) {
-          var popupTable = "<div>";
-          popupTable = popupTable +
-            "<table class='popTable' cellpadding='0' cellspacing='0'>";
-          popupTable = popupTable + "<tbody>";
 
-          if (popupTitle !== "") {
-
-            popupTable = popupTable + "<tr valign='top'>";
-            popupTable = popupTable + "<td colspan='2' class='headerPopUp'>" +
-              popupTitle + "</td>";
-
-            popupTable = popupTable + "</tr>";
-            popupTable = popupTable + "<tr>";
-
-            popupTable = popupTable + "<td colspan='2' class='hzLinePopUp theme'></td>";
-            popupTable = popupTable + "</tr>";
-          }
-
-          popupTable = popupTable + layFldTable;
-          popupTable = popupTable + "</tbody></table>";
-
-          popupTable = popupTable + "</div>";
-          layerDescription = popupTable;
-        }
-        return {
-          fields: layerFields,
-          media: mediaInfos,
-          desc: layerDescription,
-          feature: resultFeature
-        }
-
+      } catch (err) {
+        console.log("_getPopupForResult error:" + err);
       }
     },
     _allQueriesComplate: function () {
       try {
-        if (this.resultCount == 0)
-        {
-          this._showNoSearchFeatureFound();
-          return;
-        }
+        //if (this.resultCount == 0 && this.searchByFeature !== null)
+        //{
+        //  this._showNoSearchFeatureFound();
+        //  return;
+        //}
         var atts = {};
         var re = null;
         var allFields = [];
@@ -1030,7 +1055,7 @@ define([
         }
 
         var centr = this._getCenter(this.event);
-        if (this.results != null && this.results.length > 0) {
+        if (this.resultCount > 0) {
 
           //popUpArray.length = this.results.length;
           //mediaArray.length = this.results.length;
@@ -1097,6 +1122,11 @@ define([
           var find;
           var regex;
           if (this.config.popPreMessage !== null) {
+            if (this.config.popPreMessage.indexOf('{<') > 0) {
+              regex = new RegExp('{<', "g");
+              console.warn("Invalid text in the beginning pop up description.  Removing bad value.  This might be caused by string formatting between {}.  Character " + this.config.popPreMessage.indexOf('{<').toString());
+              this.config.popPreMessage = this.config.popPreMessage.replace(regex, "<");
+            }
             tmpMsg = this.config.popPreMessage.replace(/{IL_XCOORD}/gi, centr.x).replace(/{IL_YCOORD}/gi, centr.y);
             tmpMsg = tmpMsg.replace(/{IL_LAT}/gi, mp.y).replace(/{IL_LONG}/gi, mp.x);
             for (key in resultSum) {
@@ -1111,6 +1141,11 @@ define([
             allDescriptions = "<div>" + tmpMsg + "</div>" + allDescriptions;
           }
           if (this.config.popPostMessage !== null) {
+            if (this.config.popPostMessage.indexOf('{<') > 0) {
+              regex = new RegExp('{<', "g");
+              console.warn("Invalid text in the beginning pop up description.  Removing bad value. This might be caused by string formatting between {}.  Character " + this.config.popPostMessage.indexOf('{<').toString());
+              this.config.popPostMessage = this.config.popPostMessage.replace(regex, "<");
+            }
             tmpMsg = this.config.popPostMessage.replace(/{IL_XCOORD}/gi, centr.x)
               .replace(/{IL_YCOORD}/gi, centr.y);
             tmpMsg = tmpMsg.replace(/{IL_LAT}/gi, mp.y).replace(/{IL_LONG}/gi, mp.x);
@@ -1149,12 +1184,13 @@ define([
             }
           }
 
+          var finalDes = allDescriptions.replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, "'");
+
           ////Make single Array of fields
           this.popupTemplate = new PopupTemplate({
             title: this.config.popupTitle,
             fieldInfos: allFields,
-            description: allDescriptions.replace(/&amp;/gi, "&").replace(/&lt;/gi, "<")
-              .replace(/&gt;/gi, ">").replace(/&quot;/gi, "'"),
+            description: finalDes,
             mediaInfos: finalMedArr
           });
           valToStore = this.config.serviceRequestLayerAvailibiltyFieldValueAvail;

@@ -32,17 +32,21 @@
             ]
           }
         },
+         {
+           "type": "paragraph",
+           "value": "The following two option allow you to add text to the beginning and end of the pop up when results are found.  The following parameters are supported:<br />&nbsp; - {IL_SEARCHBY} pop up from the search by layer.<br />&nbsp; - {&lt;FieldName&gt;} for a field from the search by layer<br />&nbsp; - {&lt;LayerName&gt;} for a count of the features from each look up layer.<br />&nbsp; - {IL_LAT},{IL_LONG} ,{IL_XCOORD} ,{IL_YCOORD} for coordinates from the lookup location, centroid it used a line or polygon"
+         },
         {
           "type": "string",
           "fieldName": "popPreMessage",
-          "label": "Text to add to the beginning of the results",
+          "label": "Beginning Text",
           "tooltip": "Text to add to the beginning of the results",
           "stringFieldOption": "richtext"
         },
         {
           "type": "string",
           "fieldName": "popPostMessage",
-          "label": "Text to add to the end of the results",
+          "label": "Ending Text",
           "tooltip": "Text to add to the end of the results",
           "stringFieldOption": "richtext"
         },
@@ -63,7 +67,7 @@
       "fields": [
         {
           "type": "paragraph",
-          "value": "By Default, when the mouse click location is used to lookup information at that location.  If you would like to use a feature from a layer at that location, set up the following parameters."
+          "value": "By Default, when the mouse click or search location is used to lookup information at that location.  If you would like to use a feature from a layer at that location, set up the following parameters."
         },
         {
           "type": "layerAndFieldSelector",
