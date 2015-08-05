@@ -90,7 +90,8 @@
           ],
           "layerOptions": {
             "supportedTypes": [
-              "FeatureLayer"
+              "FeatureLayer",
+              "FeatureCollection"
             ]
           },
           "fieldName": "searchByLayer",
@@ -331,7 +332,8 @@
           ],
           "layerOptions": {
             "supportedTypes": [
-              "FeatureLayer"
+              "FeatureLayer",
+              "FeatureCollection"
             ]
           }
         }

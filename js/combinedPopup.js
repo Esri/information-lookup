@@ -26,6 +26,7 @@ define([
   "esri/tasks/query",
   "esri/dijit/PopupTemplate",
   "esri/geometry/webMercatorUtils",
+  "esri/geometry/geometryEngine",
   "dojo/string",
   "dojo/i18n!application/nls/resources"
 ], function (
@@ -55,6 +56,7 @@ define([
   Query,
   PopupTemplate,
   webMercatorUtils,
+  geometryEngine,
   String,
   i18n
 ) {
@@ -212,7 +214,7 @@ define([
             query.geometryType = "esriGeometryExtent";
           }
           else {
-            query.geometry = evt;
+            query.geometry = this._getExtent(evt);
             query.geometryType = "esriGeometryExtent";
           }
 
@@ -220,6 +222,7 @@ define([
           if (this.lookupLayers[f].definitionExpression) {
             query.where = this.lookupLayers[f].definitionExpression;
           }
+
           queryDeferred = this.lookupLayers[f].layer.layerObject.queryFeatures(query);
           queryDeferred.addCallback(lang.hitch(this, this._queryComplete(this.lookupLayers[f])));
 
@@ -273,25 +276,58 @@ define([
     },
 
     searchLayerForPopup: function (geo) {
-      var layerQuery = new Query();
-      layerQuery.spatialRelationship = Query.SPATIAL_REL_INTERSECTS;
-      layerQuery.geometry = geo;
-      layerQuery.outSpatialReference = this.map.spatialReference;
-      layerQuery.returnGeometry = true;
-      layerQuery.outFields = ["*"];
-      if (this.searchByLayer.layerDefinition) {
-        if (this.searchByLayer.layerDefinition.definitionExpression) {
-          layerQuery.where = this.searchByLayer.layerDefinition.definitionExpression;
+      var query = new Query();
+      if (this.searchByLayer.url == null) {
+        if (geo.type === "point") {
+          query.geometry = new Extent({
+            "xmin": geo.x,
+            "ymin": geo.y,
+            "xmax": geo.x,
+            "ymax": geo.y,
+            "spatialReference": geo.spatialReference
+          });
+          query.geometryType = "esriGeometryExtent";
         }
+        else {
+          query.geometry = geo;
+          //query.geometryType = "esriGeometryExtent";
+        }
+
+        query.outFields = ["*"];
+
+        if (this.searchByLayer.layerDefinition) {
+          if (this.searchByLayer.layerDefinition.definitionExpression) {
+            query.where = this.searchByLayer.layerDefinition.definitionExpression;
+          }
+        }
+        queryDeferred = this.searchByLayer.layerObject.queryFeatures(query);
+        queryDeferred.addCallback(lang.hitch(this, this._layerSearchComplete));
+
+        queryDeferred.addErrback(lang.hitch(this, function (error) {
+          console.log(error);
+        }));
       }
-      var layerQueryTask = new QueryTask(this.searchByLayer.url);
-      layerQueryTask.on("complete", lang.hitch(this, this._layerSearchComplete));
-      layerQueryTask.on("error", lang.hitch(this, function (error) {
-        console.log(error);
+      else {
 
-      }));
+        query.spatialRelationship = Query.SPATIAL_REL_INTERSECTS;
+        query.geometry = geo;
+        query.outSpatialReference = this.map.spatialReference;
+        query.returnGeometry = true;
+        query.outFields = ["*"];
+        if (this.searchByLayer.layerDefinition) {
+          if (this.searchByLayer.layerDefinition.definitionExpression) {
+            query.where = this.searchByLayer.layerDefinition.definitionExpression;
+          }
+        }
+        var layerQueryTask = new QueryTask(this.searchByLayer.url);
+        layerQueryTask.on("complete", lang.hitch(this, this._layerSearchComplete));
+        layerQueryTask.on("error", lang.hitch(this, function (error) {
+          console.log(error);
 
-      layerQueryTask.execute(layerQuery);
+        }));
+
+        layerQueryTask.execute(query);
+      }
     },
     _initPopup: function () {
       this.searchByLayer = null;
@@ -352,7 +388,9 @@ define([
             if (layer.featureCollection.layers != null) {
               array.forEach(layer.featureCollection.layers, function (subLyrs) {
                 if (subLyrs.layerObject != null) {
-
+                  if (subLyrs.layerObject.id === this.config.searchByLayer.id) {
+                    this.searchByLayer = subLyrs;
+                  }
                   if (subLyrs.layerObject.name == serviceAreaLayerNames[f] ||
                     subLyrs.id == serviceAreaLayerNames[f]) {
                     serviceAreaLayerNames[f] = subLyrs.layerObject.name;
@@ -390,6 +428,7 @@ define([
               array.forEach(layer.layerObject.layerInfos, function (subLyrs) {
                 var matches = false;
                 var serName;
+                //Add code for SearchBy Layer one layer selector supports map service layers
                 if (subLyrs.name == serviceAreaLayerNames[f]) {
                   matches = true;
                 }
@@ -800,6 +839,16 @@ define([
             }
           }
         }
+        else if (result.features) {
+
+          if (result.features.length > 0) {
+            this.event = result.features[0].geometry;
+            this.showPopupGeo(result.features[0].geometry, result.features[0]);
+            return;
+          }
+
+
+        }
       }
       this._showNoSearchFeatureFound();
 
@@ -810,6 +859,11 @@ define([
       return function (result) {
 
         if (result.features.length > 0) {
+          result.features = array.filter(result.features, lang.hitch(this,function (feature) {
+            return geometryEngine.intersect(this.event,feature.geometry );
+          }));
+
+          
           this.results.push({ "results": result.features, "Layer": lookupLayer });
         }
 
@@ -1067,7 +1121,7 @@ define([
             allDescriptions = allDescriptions + "<div>" + tmpMsg + "</div>";
           }
           if (this.searchByFeature !== null && this.searchByFeature !== undefined) {
-            if (this.searchByLayer.popupInfo !== null && this.searchByFeature.popupInfo !== undefined) {
+            if (this.searchByLayer.popupInfo !== null && this.searchByLayer.popupInfo !== undefined) {
 
               if (allDescriptions.indexOf("{IL_SEARCHBY}") >= 0) {
                 var searchByPopup = this._getPopupForResult(this.searchByFeature, this.searchByLayer);
@@ -1076,7 +1130,7 @@ define([
                 resultFeature = lang.mixin(resultFeature, searchByPopup.feature);
               }
             }
-            if (this.searchByLayer.attributes !== null && this.searchByFeature.attributes !== undefined) {
+            if (this.searchByFeature.attributes !== null && this.searchByFeature.attributes !== undefined) {
               for (key in this.searchByFeature.attributes) {
                 if (key !== null) {
                   var fldname = "{" + key + "}";
@@ -1133,10 +1187,10 @@ define([
           atts[this.config.serviceRequestLayerAvailibiltyField] = valToStore;
           this._logRequest(centr, atts);
         }
-         var def;
+        var def;
         var ext = this._getExtent(this.event);
         if (ext === null) {
-           def = this.map.centerAndZoom(centr, this.config.zoomLevel);
+          def = this.map.centerAndZoom(centr, this.config.zoomLevel);
 
         } else {
           if (this.map._fixExtent(ext, true).lod.level > this.config.zoomLevel) {
@@ -1209,7 +1263,7 @@ define([
       featureArray.push(editGraphic);
 
       this.map.infoWindow.setFeatures(featureArray);
-      var atts;
+      var atts = {};
       //this.map.infoWindow.show(editGraphic.geometry);
       if (this.config.popupWidth != null && this.config.popupHeight != null) {
         this.map.infoWindow.resize(this.config.popupWidth, this.config.popupHeight);
