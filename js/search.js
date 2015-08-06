@@ -114,7 +114,7 @@ function (
       }
 
       //Feature Search
-      if (this.config.customUrlLayer.id !== null && this.config.customUrlLayer.fields.length > 0 &&
+      if (this.config.searchByLayer.id !== null && this.config.searchByLayer.fields.length > 0 &&
         this.config.customUrlParam !== null) {
         require(["esri/dijit/Search"], lang.hitch(this, function (Search) {
           var source = null,
@@ -128,10 +128,10 @@ function (
           if (urlObject.query[this.config.customUrlParam.toLowerCase()]) {
             value = urlObject.query[this.config.customUrlParam.toLowerCase()];
 
-            searchLayer = this.map.getLayer(this.config.customUrlLayer.id);
+            searchLayer = this.map.getLayer(this.config.searchByLayer.id);
             if (searchLayer) {
 
-              var searchFields = this.config.customUrlLayer.fields[0].fields;
+              var searchFields = this.config.searchByLayer.fields[0].fields;
               source = {
                 exactMatch : true,
                 outFields : ["*"],
@@ -156,7 +156,7 @@ function (
                       if (response[0][0].feature.hasOwnProperty("geometry")) {
                         topic.publish("app.mapLocate", {
                           "geometry" : response[0][0].feature.geometry,
-                          "geometryInfo" : this.config.customUrlLayer.id
+                          "geometryInfo" : this.config.searchByLayer.id
                         });
                       }
                     }

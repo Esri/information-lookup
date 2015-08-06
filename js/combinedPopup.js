@@ -122,7 +122,7 @@ define([
     },
     showPopup: function (evt, info) {
       this.event = evt;//this._getCenter(evt);
-
+      this.searchLoc = evt;
       this.map.infoWindow.hide();
       //this.map.infoWindow.highlight = false;
       if (this.showGraphic === true) {
@@ -146,7 +146,9 @@ define([
         return geo.getCentroid();
       }
       else if (geo.type === "polyline") {
-        return geo.getExtent().getCenter();
+        return geometryEngine.nearestCoordinate(geo, geo.getExtent().getCenter()).coordinate;
+        //return new Point(coord.x, coord.y, this.map.spatialReference);
+
       }
       else {
         return geo;
@@ -241,6 +243,7 @@ define([
 
           query.spatialRelationship = Query.SPATIAL_REL_INTERSECTS;
           query.geometry = evt;
+          query.returnGeometry = true;
           query.outSpatialReference = this.map.spatialReference;
           query.outFields = ["*"];
           if (this.lookupLayers[f].definitionExpression) {
@@ -275,25 +278,30 @@ define([
         this.map.graphics.clear();
       }
     },
-
+    pointToExtent: function (point, toleranceInPixel) {
+      //calculate map coords represented per pixel
+      var pixelWidth = this.map.extent.getWidth() / this.map.width;
+      //calculate map coords for tolerance in pixel
+      var toleraceInMapCoords = toleranceInPixel * pixelWidth;
+      //calculate & return computed extent
+      return new Extent(point.x - toleraceInMapCoords,
+                   point.y - toleraceInMapCoords,
+                   point.x + toleraceInMapCoords,
+                   point.y + toleraceInMapCoords,
+                   this.map.spatialReference);
+    },
     searchLayerForPopup: function (geo) {
       var query = new Query();
       if (this.searchByLayer.url == null) {
         if (geo.type === "point") {
-          query.geometry = new Extent({
-            "xmin": geo.x,
-            "ymin": geo.y,
-            "xmax": geo.x,
-            "ymax": geo.y,
-            "spatialReference": geo.spatialReference
-          });
+          query.geometry = this.pointToExtent(geo, 2);
           query.geometryType = "esriGeometryExtent";
         }
         else {
-          query.geometry = geo;
-          //query.geometryType = "esriGeometryExtent";
+          query.geometry = geo.getExtent();
+          query.geometryType = "esriGeometryExtent";
         }
-
+        this.searchLoc = query.geometry;
         query.outFields = ["*"];
 
         if (this.searchByLayer.layerDefinition) {
@@ -309,9 +317,16 @@ define([
         }));
       }
       else {
-
+        if (geo.type === "point") {
+          query.geometry = this.pointToExtent(geo, 10);
+          query.geometryType = "esriGeometryExtent";
+        }
+        else {
+          query.geometry = geo;
+        }
+        this.searchLoc = query.geometry;
         query.spatialRelationship = Query.SPATIAL_REL_INTERSECTS;
-        query.geometry = geo;
+        
         query.outSpatialReference = this.map.spatialReference;
         query.returnGeometry = true;
         query.outFields = ["*"];
@@ -678,7 +693,7 @@ define([
       }
       var uri = window.location.href;
       var params = {};
-      var geo = this._getCenter(this.map.infoWindow.features[0].geometry);
+      var geo = this._getCenter(this.searchLoc);
 
       var geostring = geo.x + "," + geo.y;
 
@@ -733,7 +748,7 @@ define([
       }
       var uri = window.location.href;
       var params = {};
-      var geo = this._getCenter(this.map.infoWindow.features[0].geometry);
+      var geo = this._getCenter(this.searchLoc);
 
       var geostring = geo.x + "," + geo.y;
 
@@ -1054,7 +1069,7 @@ define([
           resultSum[this.lookupLayers[f].name] = 0;
         }
 
-        var centr = this._getCenter(this.event);
+        var centr = this._getCenter(this.searchLoc);
         if (this.resultCount > 0) {
 
           //popUpArray.length = this.results.length;
@@ -1269,7 +1284,7 @@ define([
       }
     },
     _showNoSearchFeatureFound: function () {
-      var centr = this._getCenter(this.event);
+      var centr = this._getCenter(this.searchLoc);
 
       var title;
       if (this.config.noSearchFeatureTitle) {

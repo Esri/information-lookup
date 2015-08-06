@@ -28,14 +28,16 @@
               "MapServiceLayer"
             ],
             "geometryTypes": [
-              "esriGeometryPolygon"
+              "esriGeometryPolygon",
+              "esriGeometryPolyline",
+              "esriGeometryPoint"
             ]
           }
         },
-         {
-           "type": "paragraph",
-           "value": "The following two option allow you to add text to the beginning and end of the pop up when results are found.  The following parameters are supported:<br />&nbsp; - {IL_SEARCHBY} pop up from the search by layer.<br />&nbsp; - {&lt;FieldName&gt;} for a field from the search by layer<br />&nbsp; - {&lt;LayerName&gt;} for a count of the features from each look up layer.<br />&nbsp; - {IL_LAT},{IL_LONG} ,{IL_XCOORD} ,{IL_YCOORD} for coordinates from the lookup location, centroid it used a line or polygon"
-         },
+        {
+          "type": "paragraph",
+          "value": "The following two option allow you to add text to the beginning and end of the pop up when results are found.  The following parameters are supported:<br />&nbsp; - {IL_SEARCHBY} pop up from the search by layer.<br />&nbsp; - {&lt;FieldName&gt;} for a field from the search by layer<br />&nbsp; - {&lt;LayerName&gt;} for a count of the features from each look up layer.<br />&nbsp; - {IL_LAT},{IL_LONG} ,{IL_XCOORD} ,{IL_YCOORD} for coordinates from the lookup location, centroid it used a line or polygon"
+        },
         {
           "type": "string",
           "fieldName": "popPreMessage",
@@ -67,7 +69,14 @@
       "fields": [
         {
           "type": "paragraph",
-          "value": "By Default, when the mouse click or search location is used to lookup information at that location.  If you would like to use a feature from a layer at that location, set up the following parameters."
+          "value": "By Default, when the mouse click or search location is used to lookup information at that location.  If you would like to use a feature from a layer to look up features, fill out the following parameters.  You can also specify a url parameter to provide a url to a specific feature.  If you would like to search for a feature using the search dialog, configure it in the search settings at the bottom."
+        },
+        {
+          "placeHolder": "i.e. parcels",
+          "label": "URL param name:",
+          "fieldName": "customUrlParam",
+          "type": "string",
+          "tooltip": "Custom URL param name"
         },
         {
           "type": "layerAndFieldSelector",
@@ -84,12 +93,16 @@
                 "esriFieldTypeOID",
                 "esriFieldTypeGlobalID",
                 "esriFieldTypeGUID"
-              
               ],
-              "multipleSelection": true,
-              "fieldName": "searchByLayerField",
-              "label": "Field list to be used in pre or post pop up message",
-              "tooltip": "Field list to be used in pre or post pop up message"
+              "geometryTypes": [
+                "esriGeometryPolygon",
+                "esriGeometryPolyline",
+                "esriGeometryPoint"
+              ],
+              "multipleSelection": false,
+              "fieldName": "urlField",
+              "label": "URL param search field",
+              "tooltip": "URL param search field"
             }
           ],
           "layerOptions": {
@@ -306,42 +319,6 @@
           "label": "Configure search tool"
         }
       ]
-    },
-    {
-      "category": "Custom URL Parameter",
-      "fields": [
-        {
-          "type": "paragraph",
-          "value": "Setup the app to support a custom url parameter.  For example if your map contains a feature layer with parcel information and you'd like to be able to find parcels using a url parameter you can use this section to do so. Select a layer and search field then define the name of a custom param. Once you've defined these values you can append the custom search to your application url using the custom parameter name you define. For example, if I set the custom param value to parcels a custom url would look like this index.html?parcel=3045"
-        },
-        {
-          "placeHolder": "i.e. parcels",
-          "label": "URL param name:",
-          "fieldName": "customUrlParam",
-          "type": "string",
-          "tooltip": "Custom URL param name"
-        },
-        {
-          "type": "layerAndFieldSelector",
-          "fieldName": "customUrlLayer",
-          "label": "Layer to search for custom url param value",
-          "tooltip": "Url param search layer",
-          "fields": [
-            {
-              "multipleSelection": false,
-              "fieldName": "urlField",
-              "label": "URL param search field",
-              "tooltip": "URL param search field"
-            }
-          ],
-          "layerOptions": {
-            "supportedTypes": [
-              "FeatureLayer",
-              "FeatureCollection"
-            ]
-          }
-        }
-      ]
     }
   ],
   "values": {
@@ -356,7 +333,7 @@
     "storeLocation": false,
     "serviceRequestLayerAvailibiltyFieldValueAvail": "Intersected",
     "serviceRequestLayerAvailibiltyFieldValueNotAvail": "Not Intersected",
-    "serviceRequestLayerAvailibiltyFieldValueNoSearch": "No Search Layer",
+    "serviceRequestLayerAvailibiltyFieldValueNoSearch": "No Search Feature",
     "showSplash": false,
     "splashText": "<center>Information Lookup is a configurable web application template that can be used to provide the general public, internal staff and other interested parties the with information about a location. If no features are found at that location, a general message is displayed. Optionally, the location entered can be stored in a point layer. The template can be configured using the ArcGIS Online Configuration dialog.</center>",
     "basemapWidgetVisible": true,
