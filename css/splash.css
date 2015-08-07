@@ -43,9 +43,11 @@
 .splashTextContent {
     
     overflow: hidden;
-    width: 100%;
-    height: 100%;
-    
+    padding-top:10px;
+ padding-left:10px;
+  padding-right:10px;
+ width: 330px;
+    height: 280px;
     font-size:larger;
    
 }

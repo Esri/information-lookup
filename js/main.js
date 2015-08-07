@@ -110,7 +110,7 @@ function (
               }
               if (this.config.color !== null &&
                 this.config.color !== undefined) {
-                
+
                 query(".splashTextContent").style({
                   "color": this.config.color.toString()
                 });
@@ -122,19 +122,51 @@ function (
                   "box-shadow": "0 0 20px" + this.config.color.toString()
                 });
               }
+              else {
+                query(".splashTextContainer").style({
+                  "backgroundColor": "#ffffff",
+                  "-webkit-box-shadow": "0 0 20px" + "#ffffff",
+                  "-moz-box-shadow": "0 0 20px" + "#ffffff",
+                  "-o-box-shadow": "0 0 20px" + "#ffffff",
+                  "box-shadow": "0 0 20px" + "#ffffff"
+                });
+              }
             }
             else {
               if (this.config.theme === "black") {
-                query(".splashTextContainer").style("backgroundColor", "#000000");
+                query(".splashTextContent").style("backgroundColor", "#000000");
                 query(".splashTextContent").style("color", "#ffffff");
+                query(".splashTextContainer").style({
+                  "backgroundColor": "#ffffff",
+                  "-webkit-box-shadow": "0 0 20px" + "#ffffff",
+                  "-moz-box-shadow": "0 0 20px" + "#ffffff",
+                  "-o-box-shadow": "0 0 20px" + "#ffffff",
+                  "box-shadow": "0 0 20px" + "#ffffff"
+                });
               }
               else if (this.config.theme === "blue") {
-                query(".splashTextContainer").style("backgroundColor", "#82b0f1");
                 query(".splashTextContent").style("color", "#ffffff");
+                query(".splashTextContent").style("backgroundColor", "#82b0f1");
+
+                query(".splashTextContent").style("color", "#ffffff");
+                query(".splashTextContainer").style({
+                  "backgroundColor": "#ffffff",
+                  "-webkit-box-shadow": "0 0 20px" + "#ffffff",
+                  "-moz-box-shadow": "0 0 20px" + "#ffffff",
+                  "-o-box-shadow": "0 0 20px" + "#ffffff",
+                  "box-shadow": "0 0 20px" + "#ffffff"
+                });
               }
               else {
-                query(".splashTextContainer").style("backgroundColor", "#000000");
+                query(".splashTextContent").style("backgroundColor", "#000000");
                 query(".splashTextContent").style("color", "#ffffff");
+                query(".splashTextContainer").style({
+                  "backgroundColor": "#ffffff",
+                  "-webkit-box-shadow": "0 0 20px" + "#ffffff",
+                  "-moz-box-shadow": "0 0 20px" + "#ffffff",
+                  "-o-box-shadow": "0 0 20px" + "#ffffff",
+                  "box-shadow": "0 0 20px" + "#ffffff"
+                });
               }
             }
           }
