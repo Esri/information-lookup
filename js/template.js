@@ -25,15 +25,11 @@ define([
   "dojo/_base/declare",
   "dojo/_base/kernel",
   "dojo/_base/lang",
-
   "dojo/Evented",
   "dojo/Deferred",
   "dojo/string",
-
   "dojo/dom-class",
-
   "dojo/promise/all",
-
   "esri/config",
   "esri/IdentityManager",
   "esri/lang",
@@ -140,7 +136,7 @@ define([
             // group information
             groupInfo: this.queryGroupInfo(),
             // group items
-            groupItems: this.queryGroupItems(),
+            groupItems: this.queryGroupItems()
           }).then(lang.hitch(this, function () {
             // mixin all new settings from item, group info and group items.
             this._mixinAll();
@@ -422,7 +418,7 @@ define([
             deferred.resolve(cfg);
           }));
         }
-          // no webmap is set and we have organization's info
+        // no webmap is set and we have organization's info
         else if (!this.config.webmap && this.config.orgInfo) {
           var defaultWebmap = {
             "item": {
@@ -441,7 +437,7 @@ define([
           this.itemConfig = cfg;
           deferred.resolve(cfg);
         }
-          // use webmap from id
+        // use webmap from id
         else {
           arcgisUtils.getItem(this.config.webmap).then(lang.hitch(this, function (itemInfo) {
             // Set the itemInfo config option. This can be used when calling createMap instead of the webmap id
@@ -532,8 +528,7 @@ define([
             (response.user && !response.user.region && response.region === "US") ||
             (response.user && !response.user.region && !response.region) ||
             (!response.user && response.ipCntryCode === "US") ||
-            (!response.user && !response.ipCntryCode && kernel.locale === "en-us"))
-          {
+            (!response.user && !response.ipCntryCode && kernel.locale === "en-us")) {
             // use feet/miles only for the US and if nothing is set for a user
             cfg.units = "english";
           }

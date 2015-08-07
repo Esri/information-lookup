@@ -1,38 +1,28 @@
 ﻿define([
   "dojo/Evented",
   "dojo",
-  "dojo/ready",
   "dojo/_base/declare",
   "dojo/_base/lang",
-  "dojo/_base/array",
-  "dojo/on",
   "dojo/Deferred",
   "dojo/request/xhr",
   "dijit/layout/ContentPane",
   "dijit/TitlePane",
-  "esri",
   "esri/dijit/BasemapGallery",
   "esri/dijit/Basemap",
-  "dojo/dom",
   "dojo/topic",
   "dojo/i18n!application/nls/resources"
 ],
 function (
   Evented,
   dojo,
-  ready,
   declare,
   lang,
-  array,
-  on,
   Deferred,
   xhr,
   ContentPane,
   TitlePane,
-  esri,
   BasemapGallery,
   Basemap,
-  dom,
   topic,
   i18n
     ) {
@@ -115,7 +105,7 @@ function (
             xhr(this.config.proxyurl + "?" + webmapThumbnailUrl).then(function () {
               thumbnailUrl = webmapThumbnailUrl;
               testForWebmapThumbnail.resolve();
-            }, function (err) {
+            }, function () {
               testForWebmapThumbnail.resolve();
             });
           } else if (this.config.itemInfo.item.thumbnail) {
@@ -126,7 +116,7 @@ function (
             xhr(webmapThumbnailUrl).then(function () {
               thumbnailUrl = webmapThumbnailUrl;
               testForWebmapThumbnail.resolve();
-            }, function (err) {
+            }, function () {
               thumbnailUrl = webmapThumbnailUrl;
               testForWebmapThumbnail.resolve();
             });
@@ -162,7 +152,7 @@ function (
         }));
 
       }
-    },
+    }
 
   });
 });

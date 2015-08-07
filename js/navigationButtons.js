@@ -1,15 +1,11 @@
 ﻿define([
   "dojo/Evented",
   "dojo",
-  "dojo/ready",
   "dojo/_base/declare",
   "dojo/_base/lang",
-  "dojo/_base/array",
   "dojo/on",
-  "esri",
   "esri/dijit/HomeButton",
   "esri/dijit/LocateButton",
-  "dojo/dom",
   "dojo/dom-construct",
   "dojo/topic",
   "esri/geometry",
@@ -18,15 +14,11 @@
 function (
   Evented,
   dojo,
-  ready,
   declare,
   lang,
-  array,
   on,
-  esri,
   HomeButton,
   LocateButton,
-  dom,
   domConstruct,
   topic,
   Geometry,
@@ -117,7 +109,7 @@ function (
     _locate: function (location) {
       this._LocateButtonLight.clear();
 
-      if (location.error != null) {
+      if (location.error !== null && location.error !== undefined) {
         alert(location.error);
 
       } else {
@@ -130,7 +122,7 @@ function (
         });
 
         this.map.centerAndZoom(point, this.zoomScale);
-        var msg = { "geometry": point, "geometryInfo": "GPS" };
+        var msg = { "geometry": point, "layerId": "GPS" };
 
         topic.publish("app.mapLocate", msg);
 

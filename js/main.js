@@ -17,7 +17,6 @@
  */
 define([
   "dojo",
-  "dojo/ready",
   "dojo/_base/declare",
   "dojo/_base/lang",
   "dojo/Deferred",
@@ -38,7 +37,6 @@ define([
 ],
 function (
     dojo,
-    ready,
     declare,
     lang,
     Deferred,
@@ -57,8 +55,8 @@ function (
     Drawer
 ) {
   return declare(null, {
-    config : {},
-    startup : function (config) {
+    config: {},
+    startup: function (config) {
       var promise;
       // config will contain application and user defined info for the template such as i18n strings, the web map id
       // and application id
@@ -72,14 +70,14 @@ function (
         var itemInfo = this.config.itemInfo || this.config.webmap;
 
         this._drawer = new Drawer({
-          showDrawerSize : 850, // Pixel size when the drawer is automatically opened
-          borderContainer : "border_container", // border container node id
-          contentPaneCenter : "cp_center", // center content pane node id
-          contentPaneSide : "cp_left", // side content pane id
-          toggleButton : "toggle_button", // button node to toggle drawer id
-          topBar : "top_bar",// top bar id
-          direction : this.config.uidirection, // left or right
-          title : this.config.title
+          showDrawerSize: 850, // Pixel size when the drawer is automatically opened
+          borderContainer: "border_container", // border container node id
+          contentPaneCenter: "cp_center", // center content pane node id
+          contentPaneSide: "cp_left", // side content pane id
+          toggleButton: "toggle_button", // button node to toggle drawer id
+          topBar: "top_bar",// top bar id
+          direction: this.config.uidirection, // left or right
+          title: this.config.title
         });
         on(this._drawer, "load", lang.hitch(this, this._initDrawer));
 
@@ -96,18 +94,34 @@ function (
             document.title = this.config.i18n.page.title;
 
           }
-          
           if (this.config.showSplash) {
             this.splash = new SplashScreen(
               {
-                domNode : "splash",
-                config : this.config
+                domNode: "splash",
+                config: this.config
               });
             this.splash.startup();
-            if (this.config.backcolor && this.config.color) {
-              query(".splashTextContainer").style("backgroundColor",
-                this.config.backcolor.toString());
-              query(".splashTextContent").style("color", this.config.color.toString());
+            if (this.config.backcolor || this.config.color) {
+              if (this.config.backcolor !== null &&
+                this.config.backcolor !== undefined) {
+                query(".splashTextContent").style({
+                  "backgroundColor": this.config.backcolor.toString()}
+                );
+              }
+              if (this.config.color !== null &&
+                this.config.color !== undefined) {
+                
+                query(".splashTextContent").style({
+                  "color": this.config.color.toString()
+                });
+                query(".splashTextContainer").style({
+                  "backgroundColor": this.config.color.toString(),
+                  "-webkit-box-shadow": "0 0 20px" + this.config.color.toString(),
+                  "-moz-box-shadow": "0 0 20px" + this.config.color.toString(),
+                  "-o-box-shadow": "0 0 20px" + this.config.color.toString(),
+                  "box-shadow": "0 0 20px" + this.config.color.toString()
+                });
+              }
             }
             else {
               if (this.config.theme === "black") {
@@ -132,7 +146,8 @@ function (
         if (this.config.basemapWidgetVisible === undefined) {
           this.config.basemapWidgetVisible = true;
         }
-        if (this.config.basemapWidgetVisible === null) {
+        if (this.config.basemapWidgetVisible === null ||
+          this.config.basemapWidgetVisible === undefined) {
           this.config.basemapWidgetVisible = true;
         }
         if (this.config.basemapWidgetVisible === true) {
@@ -146,22 +161,22 @@ function (
           }
           this.basemapButton = new BasemapButton(
               {
-                basemapGalleryGroupQuery : basemapGalleryGroupQuery,
-                domNode : "basemapDiv",
-                config : this.config
+                basemapGalleryGroupQuery: basemapGalleryGroupQuery,
+                domNode: "basemapDiv",
+                config: this.config
               });
           this.basemapButton.startup();
         }
         var zoomScale = 16;
-        if (this.config != null) {
-          if (this.config.zoomLevel != null) {
+        if (this.config !== null && this.config !== undefined) {
+          if (this.config.zoomLevel !== null && this.config.zoomLevel !== undefined) {
 
             zoomScale = this.config.zoomLevel;
           }
         }
         this.navigationButtons = new NavigationButtons({
-          zoomScale : zoomScale,
-          domNode : "mapButtons"
+          zoomScale: zoomScale,
+          domNode: "mapButtons"
 
         });
         this.navigationButtons.startup();
@@ -176,7 +191,7 @@ function (
       }
       return promise;
     },
-    testImage : function (url) {
+    testImage: function (url) {
       var img = new Image();
       var myNode = query("#page_icon")[0];
       img.onload = lang.hitch(this, function () {
@@ -187,15 +202,15 @@ function (
       img.onerror = function () {
         domStyle.set(myNode,
         {
-          "visibility" : "hidden",
-          "display" : "none"
+          "visibility": "hidden",
+          "display": "none"
         });
       };
 
       img.src = url; // fires off loading of image
     },
 
-    _initDrawer : function () {
+    _initDrawer: function () {
       if (this.config.showUI !== undefined && this.config.showUI === false) {
         this._drawer.hideBar();
         this._drawer.hideSide();
@@ -209,8 +224,8 @@ function (
       else {
         domStyle.set(myNode,
           {
-            "visibility" : "hidden",
-            "display" : "none"
+            "visibility": "hidden",
+            "display": "none"
           });
       }
       if (this.config.showUI && this.config.showUI === true) {
@@ -224,7 +239,7 @@ function (
 
     },
 
-    reportError : function (error) {
+    reportError: function (error) {
       // remove loading class from body
       domClass.remove(document.body, "app-loading");
       domClass.add(document.body, "app-error");
@@ -243,7 +258,7 @@ function (
       }
       return error;
     },
-    _resizeMap : function () {
+    _resizeMap: function () {
       var w = window.innerWidth;
       var h = window.innerHeight;
       dojo.byId("mapDiv").style.width = w;
@@ -255,7 +270,7 @@ function (
 
     },
 
-    _mapLoaded : function () {
+    _mapLoaded: function () {
       // Map is ready
       try {
         console.log("map loaded");
@@ -269,16 +284,16 @@ function (
         }
         this.search = new Search(
             {
-              config : this.config,
-              domNode : "searchDiv",
-              map : this.map,
-              href : document.location.href
+              config: this.config,
+              domNode: "searchDiv",
+              map: this.map,
+              href: document.location.href
             });
         this.search.startup();
 
         this.popup = new CombinedPopup(this.map, this.config,
           {
-            contentID : contentID
+            contentID: contentID
           });
 
         this.popup.startup();
@@ -288,32 +303,35 @@ function (
 
         topic.publish("app.mapLoaded", this.map);
         this._drawer.toggle();
-        domClass.add(document.body, this.config.theme);
-
-        if (this.config.backcolor && this.config.color) {
-          var themeElements = query(".theme");
+        //domClass.add(document.body, this.config.theme);
+        var themeElements = query(".theme");
+        if (this.config.backcolor) {
           themeElements.style("backgroundColor", this.config.backcolor.toString());
+          //query(".esriPopup .titlePane").style("backgroundColor", this.config.backcolor.toString());
+          //query(".esriPopup .pointer").style("backgroundColor", this.config.backcolor.toString());
+
+        }
+        if (this.config.color) {
           themeElements.style("border-color", this.config.color.toString());
           themeElements.style("color", this.config.color.toString());
-          //query(".esriPopup .pointer").style("backgroundColor", this.config.backcolor.toString());
-          query(".esriPopup .titlePane").style("backgroundColor", this.config.backcolor.toString());
-          query(".esriPopup .titlePane").style("color", this.config.color.toString());
-          query(".esriPopup .titleButton").style("color", this.config.color.toString());
+          //query(".esriPopup .titlePane").style("color", this.config.color.toString());
+          //query(".esriPopup .titleButton").style("color", this.config.color.toString());
+          //query(".esriPopup .titleButton").style("color", this.config.color.toString());
         }
       }
       catch (e) {
         this.reportError(e);
       }
     },
-    _mapLocate : function () {
+    _mapLocate: function () {
 
       //this.map.centerAt(arguments[0]);
 
     },
-    _controlLoaded : function (evt) {
+    _controlLoaded: function (evt) {
       console.log(evt.Name + " created");
     },
-    _toggleIndicator : function (events) {
+    _toggleIndicator: function (events) {
       if (events) {
         domClass.add(document.body, "app-loading");
       } else {
@@ -321,20 +339,22 @@ function (
       }
     },
 
-    _checkEditing : function () {
-      if (this.config.editingAllowed == null) {
+    _checkEditing: function () {
+      if (this.config.editingAllowed === null ||
+        this.config.editingAllowed === undefined) {
         this.config.editingAllowed = false;
 
-        if (this.config == null) {
+        if (this.config === null || this.config === undefined) {
           this.config.editingAllowed = true;
 
         }
-        if (this.config.userPrivileges == null) {
+        if (this.config.userPrivileges === null ||
+          this.config.userPrivileges === undefined) {
           this.config.editingAllowed = true;
 
         } else {
           for (var key in this.config.userPrivileges) {
-            if (this.config.userPrivileges[key] == "features:user:edit") {
+            if (this.config.userPrivileges[key] === "features:user:edit") {
               this.config.editingAllowed = true;
               return this.config.editingAllowed;
 
@@ -349,7 +369,7 @@ function (
 
 
     // create a map based on the input web map id
-    _createWebMap : function (itemInfo) {
+    _createWebMap: function (itemInfo) {
       // set extent from config/url
       itemInfo = this._setExtent(itemInfo);
       // Optionally define additional map config here for example you can
@@ -361,11 +381,11 @@ function (
       mapOptions = this._setCenter(mapOptions);
       // create webmap from item
       return arcgisUtils.createMap(itemInfo, "mapDiv", {
-        mapOptions : mapOptions,
-        usePopupManager : true,
-        layerMixins : this.config.layerMixins || [],
-        editable : this.config.editable,
-        bingMapsKey : this.config.bingKey
+        mapOptions: mapOptions,
+        usePopupManager: true,
+        layerMixins: this.config.layerMixins || [],
+        editable: this.config.editable,
+        bingMapsKey: this.config.bingKey
       }).then(lang.hitch(this, function (response) {
         // Once the map is created we get access to the response which provides important info
         // such as the map, operational layers, popup info and more. This object will also contain
@@ -394,7 +414,7 @@ function (
       }), this.reportError);
     },
 
-    _setLevel : function (options) {
+    _setLevel: function (options) {
       var level = this.config.level;
       //specify center and zoom if provided as url params
       if (level) {
@@ -403,7 +423,7 @@ function (
       return options;
     },
 
-    _setCenter : function (options) {
+    _setCenter: function (options) {
       var center = this.config.center;
       if (center) {
         var points = center.split(",");
@@ -414,7 +434,7 @@ function (
       return options;
     },
 
-    _setExtent : function (info) {
+    _setExtent: function (info) {
       var e = this.config.extent;
       //If a custom extent is set as a url parameter handle that before creating the map
       if (e) {

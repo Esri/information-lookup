@@ -69,14 +69,14 @@
       "fields": [
         {
           "type": "paragraph",
-          "value": "By Default, when the mouse click or search location is used to lookup information at that location.  If you would like to use a feature from a layer to look up features, fill out the following parameters.  You can also specify a url parameter to provide a url to a specific feature.  If you would like to search for a feature using the search dialog, configure it in the search settings at the bottom."
+          "value": "By Default, when the mouse click or search location is used to lookup information at that location.  If you would like to use a feature from a layer to look up features, fill out the following parameters.  You can also specify a url parameter to provide a url to a specific feature, note: this only supports feature layers.  If you would like to search for a feature using the search dialog, configure it in the search settings at the bottom."
         },
         {
           "placeHolder": "i.e. parcels",
           "label": "URL param name:",
-          "fieldName": "customUrlParam",
+          "fieldName": "searchByLayerUrlParam",
           "type": "string",
-          "tooltip": "Custom URL param name"
+          "tooltip": "Custom URL param name for Search By Layer"
         },
         {
           "type": "layerAndFieldSelector",
@@ -161,7 +161,7 @@
             ]
           },
           "fieldName": "serviceRequestLayerName",
-          "label": "Storage Layer Name",
+          "label": "Storage Layer Name (Editable Feature Layer Only)",
           "tooltip": "Point layer used for to store request locations"
         },
         {
@@ -319,6 +319,41 @@
           "label": "Configure search tool"
         }
       ]
+    },
+    {
+      "category": "Custom URL Parameter",
+      "fields": [
+        {
+          "type": "paragraph",
+          "value": "Setup the app to support a custom url parameter.  For example if your map contains a feature layer with parcel information and you'd like to be able to find parcels using a url parameter you can use this section to do so. Select a layer and search field then define the name of a custom param. Once you've defined these values you can append the custom search to your application url using the custom parameter name you define. For example, if I set the custom param value to parcels a custom url would look like this index.html?parcel=3045"
+        },
+        {
+          "placeHolder": "i.e. parcels",
+          "label": "URL param name:",
+          "fieldName": "customUrlParam",
+          "type": "string",
+          "tooltip": "Custom URL param name"
+        },
+        {
+          "type": "layerAndFieldSelector",
+          "fieldName": "customUrlLayer",
+          "label": "Layer to search for custom url param value",
+          "tooltip": "Url param search layer",
+          "fields": [
+            {
+              "multipleSelection": false,
+              "fieldName": "urlField",
+              "label": "URL param search field",
+              "tooltip": "URL param search field"
+            }
+          ],
+          "layerOptions": {
+            "supportedTypes": [
+              "FeatureLayer"
+            ]
+          }
+        }
+      ]
     }
   ],
   "values": {
@@ -329,7 +364,7 @@
     "popupHeight": null,
     "serviceUnavailableTitle": "Outside Service Area",
     "serviceUnavailableMessage": "No information available at the selected location",
-    "zoomLevel": 16,
+    "zoomLevel": 18,
     "storeLocation": false,
     "serviceRequestLayerAvailibiltyFieldValueAvail": "Intersected",
     "serviceRequestLayerAvailibiltyFieldValueNotAvail": "Not Intersected",

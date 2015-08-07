@@ -48,7 +48,7 @@ define([], function () {
     "noSearchFeatureMessage": "A search feature to use to lookup information was not found, please select a new location.",
     "popupWidth": null,
     "popupHeight": null,
-    "zoomLevel": 16,
+    "zoomLevel": 18,
     "storeLocation": false,
     "serviceRequestLayerName": "Request Tracking",
     "serviceRequestLayerAvailibiltyField": "REQSTATUS",
@@ -73,7 +73,6 @@ define([], function () {
     //the current map extent
     //"searchExtent": true,
     "search": true,
-   
     "customUrlParam": "",//Name of url param. For example parcels
     "searchLayers": [{
       "id": "",

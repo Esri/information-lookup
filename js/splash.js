@@ -1,30 +1,16 @@
 ﻿define([
   "dojo/Evented",
   "dojo",
-  "dojo/ready",
   "dojo/_base/declare",
   "dojo/_base/lang",
-  "dojo/on",
-  "dojo/dom",
-  "dojo/dom-class",
-  "dojo/dom-construct",
-  "dojo/Deferred",
-  "dojo/window",
-  "dojo/topic"
+  "dojo/dom-construct"
 ],
 function (
    Evented,
     dojo,
-    ready,
     declare,
     lang,
-    on,
-    dom,
-    domClass,
-    domConstruct,
-    Deferred,
-    win,
-    topic
+    domConstruct
 ) {
   return declare([Evented], {
     options : {
@@ -53,7 +39,7 @@ function (
 
       this.splashContainer = domConstruct.create("div", {
         id : "divSplashScreenContainer",
-        class : "divSplashScreenContainer"
+        "class" : "divSplashScreenContainer"
       }, dojo.byId(this.options.domNode));
 
       var deviceClass = "splashTextContainerWeb";
@@ -62,11 +48,11 @@ function (
       }
       var splashTextContainer = domConstruct.create("div", {
         id : "splashTextContainer",
-        class : "splashTextContainer " + deviceClass
+        "class" : "splashTextContainer " + deviceClass
       }, this.splashContainer, "first");
       var splashTextContent = domConstruct.create("div", {
         id : "splashTextContent",
-        class : "splashTextContent " + deviceClass
+        "class" : "splashTextContent " + deviceClass
       }, splashTextContainer, "first");
       dojo.connect(this.splashContainer, "onclick", lang.hitch(this, this._closeSplash));
 

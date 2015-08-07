@@ -1,7 +1,6 @@
 ﻿define([
   "dojo/Evented",
   "dojo",
-  "dojo/ready",
   "dojo/_base/declare",
   "dojo/_base/lang",
   "dojo/_base/array",
@@ -19,7 +18,6 @@
 function (
   Evented,
   dojo,
-  ready,
   declare,
   lang,
   array,
@@ -44,31 +42,6 @@ function (
       this.map = map;
       this.config = config;
     },
-    checkingEditing: function () {
-      if (this.config.editingAllowed == null) {
-        this.config.editingAllowed = false;
-
-        if (this.config == null) {
-          this.config.editingAllowed = true;
-
-        }
-        if (this.config.userPrivileges == null) {
-          this.config.editingAllowed = true;
-
-        } else {
-          for (var key in this.config.userPrivileges) {
-            if (this.config.userPrivileges[key] == "features:user:edit") {
-              this.config.editingAllowed = true;
-              return this.config.editingAllowed;
-
-            }
-          }
-        }
-
-      }
-      return this.config.editingAllowed;
-
-    },
 
     addLocatorButton: function (divID) {
 
@@ -89,7 +62,7 @@ function (
     _locate: function (location) {
       this.geoLocate.clear();
 
-      if (location.error != null) {
+      if (location.error !== null && location.error !== undefined) {
         alert(location.error);
 
       } else {
@@ -116,8 +89,14 @@ function (
       dojo.addClass(dojo.byId(divID), "searchControl");
     },
     _createGeocoderOptions: function () {
-      if (this.config.helperServices === null) { return null; }
-      if (this.config.helperServices.geocode === null) { return null; }
+      if (this.config.helperServices === null ||
+        this.config.helperServices === undefined) {
+        return null;
+      }
+      if (this.config.helperServices.geocode === null ||
+        this.config.helperServices.geocode === undefined) {
+        return null;
+      }
       var options, geocoders = lang.clone(this.config.helperServices.geocode);
       // each geocoder
       if (geocoders.length === 0) { return null; }

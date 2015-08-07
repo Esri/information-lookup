@@ -13,7 +13,7 @@
   "dojo/window",
   "dojo/topic",
   "dojo/dom-style",
-  "dojo/query",
+  "dojo/query"
 ],
 function (
   Evented,
@@ -234,10 +234,10 @@ function (
         // fix layout
         this.resize();
         // set loaded property
-        dojo.query("#linkImage").onclick(function (evt) {
+        dojo.query("#linkImage").onclick(function () {
           topic.publish("app.linkImage", false);
         });
-        dojo.query("#emailImage").onclick(function (evt) {
+        dojo.query("#emailImage").onclick(function () {
           topic.publish("app.emailImage", false);
         });
         topic.subscribe("app.contentSet", lang.hitch(this, this._showPanel));
@@ -320,7 +320,7 @@ function (
     _setSide: function (side) {
 
       domClass.add(document.body, side);
-    },
+    }
   });
   return Widget;
 });
