@@ -77,7 +77,8 @@ define([], function () {
     "searchLayers": [{
       "id": "",
       "fields": []
-    }]
+    }],
+    "applicationFavicon": "/images/favicon.ico"
 
   };
   return defaults;
