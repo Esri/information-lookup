@@ -1029,7 +1029,9 @@ define([
     },
     _getPopupForResult: function (feature, popupInfo) {
       try {
-
+        var rUrl = new RegExp("^(?:[a-z]+:)?//", "i");         
+        //var rFile = new RegExp("^([a-zA-Z]:|\\\\[a-z]+)?(\\|\/|\\\\|//)", "i");
+   
         var replaceVal = Math.random().toString(36).substr(2, 5);
 
         var resultFeature = {};
@@ -1042,6 +1044,19 @@ define([
 
           var layFldTable = "";
           var re = null;
+
+          //var popupTemplate = new PopupTemplate(popupInfo);
+          //var featureArray = [];
+          //var content;
+          //var editGraphic = new Graphic(feature.geometry, null,
+          //  feature.attributes, popupTemplate);
+
+
+          //featureArray.push(editGraphic);
+          //this.map.infoWindow.setFeatures(featureArray);
+          //this.map.infoWindow.resize();
+          //content = this.map.infoWindow.getSelectedFeature().getContent();
+
           for (var g = 0, gl = layerFields.length; g < gl; g++) {
             if (mediaInfos !== null) {
               array.forEach(mediaInfos, function (mediaInfo) {
@@ -1054,6 +1069,7 @@ define([
 
             if (popupInfo.description === null ||
               popupInfo.description === undefined) {
+
               re = new RegExp("{" + layerFields[g].fieldName + "}", "ig");
 
               popupTitle = popupTitle.replace(re, "{" +
@@ -1063,7 +1079,7 @@ define([
               if (layerFields[g].visible === true) {
 
                 layFldTable = layFldTable + "<tr valign='top'>";
-                if (layerFields[g].label !== null) {
+                if (layerFields[g].label !== null && layerFields[g].label !== "") {
                   layFldTable = layFldTable + "<td class='popName'>" +
                     layerFields[g].label + "</td>";
                 } else {
@@ -1090,8 +1106,9 @@ define([
 
 
               fldVal = fldVal.toString();
-              if (fldVal.indexOf("http://") >= 0 || fldVal.indexOf("https://") >= 0 ||
-                fldVal.indexOf("www.") >= 0) {
+
+              if (rUrl.test(fldVal)) {
+
                 if (popupInfo.description === null ||
                   popupInfo.description === undefined) {
                   resultFeature[replaceVal + "_" +

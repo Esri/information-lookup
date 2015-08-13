@@ -66,7 +66,7 @@
         padding-right: 5px;
         padding-top: 2px;
         vertical-align: top;
-        width: 113px;
+        /*width: 113px;*/
     }
 
     .popTable .popValue {
@@ -86,6 +86,6 @@
         padding-right: 2px;
         padding-top: 2px;
         vertical-align: top;
-        width: 70px;
+        /*width: 70px;*/
     }
 
