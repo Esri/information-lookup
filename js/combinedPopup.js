@@ -144,6 +144,7 @@ define([
       }
     },
     showPopup: function (evt, info) {
+      topic.publish("app.toggleIndicator", true);
       this.event = evt;//this._getCenter(evt);
       this.searchLoc = evt;
       this.map.infoWindow.hide();
@@ -203,6 +204,7 @@ define([
       }
     },
     showPopupGeo: function (evt, searchByFeature) {
+      topic.publish("app.toggleIndicator", true);
       this.resultCount = 0;
       this.searchByFeature = searchByFeature;
 
@@ -215,7 +217,7 @@ define([
       if (this.lookupLayers.length === 0) {
         return;
       }
-      topic.publish("app.toggleIndicator", true);
+     
       this.map.infoWindow.hide();
       //this.map.infoWindow.highlight = false;
       if (this.showGraphic === true) {
@@ -631,7 +633,7 @@ define([
               else if (serviceAreaLayerNames.indexOf(".") > 0) {
                 serName = serviceAreaLayerNames.split(".");
                 if (layer.id === serName[0]) {
-                  if (subLyrs.id === serName[1]) {
+                  if (subLyrs.id.toString() === serName[1].toString()) {
                     matches = true;
                   }
                 }
