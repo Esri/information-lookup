@@ -1,0 +1,221 @@
+html, body {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    font-family: Arial,Helvetica,sans-serif;
+}
+.esriSimpleSliderTL {
+top: 60px;
+left: 15px;
+}
+#mapDiv {
+ 
+    padding: 0;
+    margin-top: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.loading-indicator {
+    /* Loading status */
+    display: none;
+    height: 100%;
+    width: 100%;
+    z-index: 500;
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    background:  rgba(224,224,224,0.65);
+}
+
+.app-loading .loading-indicator,
+.app-error .loading-indicator {
+    /* Show this class when loading or error */
+    display: block;
+}
+
+.app-loading .loading-indicator {
+    /* Loading image */
+    background-position: center center;
+    background-image: url(../images/preloader.gif);
+    background-repeat: no-repeat;
+}
+
+.app-error .loading-message {
+    /* Error status */
+    background-position: top center;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAQAAAC0NkA6AAACTElEQVR4Ac3YsWtUWRQG8N++WWF5mSJM5yS1lrYpLERS7YJkCdNYCEEe6BR2WsUif0ACNmlsU7ggrGCTgI0pzMJMsZ2Iks43jWwxEJwqZ8uF5TLzMpm72d+UB+br3v3O8f+xZNOuV9777MyZz957ZdemJQ38YLqOX21Y95O0iXfe+N1f5lTaNhbCuYEd991xQ1vbDXfct2PoXAhj20oX1lKphXCk0kVaV+VICLVKi+ZWDYVw4rYmbjsRwtCqhtaMhFM9F9FzKoysaeCBiXBo2UUtOxQmHsyOCGFPyzxa9oSYHrNmIjx2GY+FiTXSVo2EPZe1J4ysSmgZCodaLqvlUBim/qkSTi1bhGWnQgUAUKqFnkXpCbUSANgWTizSibANFKDjGZ5apKd4pgPAQ+HIoh0JD6EAG3ht0V5jA2DJd+e6Fq3r3HdLwKYwkHLNloGBLdfmmg+FTWBX2JGyJYQQtuaa7wi7FFjBJyl9AP255p+wQoHrqOVQ4zoFuukQ7APYn2teo8uPU0MO0Me+g8bzRAicCW05tIUzin/yMuii/g9DRllDRhT4iptyuImvFPiAn2d25nXPHRgYGxs48Nz6zCb9Cz40+0CWHvkoEr+PHimbfSB5K1TSer4J4YsX+u5aseKuvhe+COGbnrRKeDv70Sq9FMKxewr/VrjnWAgvldMeLaBjLBLl+p0w8cQ0T0yE40QJD2Od2UXiN3+6ZZZb/vAmXSSuoBLlL3f5a2r+wp1/dci/BOVf5/IvpvlX7PzHgvxnj/wHnPynqCv3N+8tN518+xnVAAAAAElFTkSuQmCC);
+
+    background-repeat: no-repeat;
+    padding-top: 60px;
+    width: 100%;
+    position: absolute;
+    z-index: 2;
+    top: 40%;
+    left: 0;
+    text-align: center;
+}
+
+
+.esriRTL label {
+    /*Example of a rule that will be applied if the app is viewed in a browser wtih a RTL locale like Hebrew or Arabic.*/
+}
+
+
+/*---------------------------------------------------------------------------------------------------------*/
+
+.showContainer {
+    -webkit-transition: All 0.5s ease-in;
+    -moz-transition: All 0.5s ease-in;
+    -o-transition: All 0.5s ease-in;
+    transition: All 0.5s ease-in;
+    -webkit-transform: scale(1);
+    -moz-transform: scale(1);
+    -o-transform: scale(1);
+    -ms-transform: scale(1);
+    transform: scale(1);
+}
+
+.hideContainer {
+    -webkit-transition: All 0.5s ease-in;
+    -moz-transition: All 0.5s ease-in;
+    -o-transition: All 0.5s ease-in;
+    transition: All 0.5s ease-in;
+    -webkit-transform: scale(0);
+    -moz-transform: scale(0);
+    -o-transform: scale(0);
+    -ms-transform: scale(0);
+    transform: scale(0);
+}
+
+.opacityHideAnimation {
+    visibility: hidden;
+    opacity: 0;
+    -webkit-transition: visibility 0s linear 0.5s, opacity 0.5s ease-in;
+    -moz-transition: visibility 0s linear 0.5s, opacity 0.5s ease-in;
+    -o-transition: visibility 0s linear 0.5s, opacity 0.5s ease-in;
+    transition: visibility 0s linear 0.5s, opacity 0.5s ease-in;
+}
+
+.hideContainerHeight {
+    overflow: hidden;
+    -webkit-transition: height 0.5s ease-in;
+    -moz-transition: height 0.5s ease-in;
+    -o-transition: height 0.5s ease-in;
+    transition: height 0.5s ease-in;
+    height: 0;
+}
+
+.showContainerHeight {
+    overflow: hidden;
+    -webkit-transition: height 0.5s ease-in;
+    -moz-transition: height 0.5s ease-in;
+    -o-transition: height 0.5s ease-in;
+    transition: height 0.5s ease-in;
+    height: 100%;
+}
+
+.side-bar-icon {
+  font-size: 30px;
+  line-height: 30px;
+  float: left;
+  cursor: pointer;
+  margin: 0 10px 0 0;
+  text-decoration: none;
+  display: block; }
+
+.side-bar-icon:visited {
+  color: rgba(0, 0, 0, 0.5); }
+
+.esriRTL .side-bar-icon {
+  float: right;
+  margin: 0 0 0 10px; }
+
+.sside-bar-icon:hover {
+  color: rgba(0, 0, 0, 0.8); }
+
+/*Icon Fonts*/
+@font-face {
+  font-family: 'tool-icons';
+  src: url('../fonts/tool-icons.eot?23344103');
+  src: url('../fonts/tool-icons.eot?23344103#iefix') format('embedded-opentype'), url('../fonts/tool-icons.woff?23344103') format('woff'), url('../fonts/tool-icons.ttf?23344103') format('truetype'), url('../fonts/tool-icons.svg?23344103#tool-icons') format('svg');
+  font-weight: normal;
+  font-style: normal; }
+
+/* Chrome hack: SVG is rendered more smooth in Windozze. 100% magic, uncomment if you need it. */
+/* Note, that will break hinting! In other OS-es font will be not as sharp as it could be */
+/*
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  @font-face {
+    font-family: 'tool-icons';
+    src: url('../fonts/tool-icons.svg?23344103#tool-icons') format('svg');  }
+}
+*/
+[class^="icon-"]:before, [class*=" icon-"]:before {
+  font-family: "tool-icons";
+  font-style: normal;
+  font-weight: normal;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  width: 1em;
+  margin-right: 0.2em;
+  text-align: center;
+  /* opacity: .8; */
+  /* For safety - reset parent styles, that can break glyph codes*/
+  font-variant: normal;
+  text-transform: none;
+  /* fix buttons height, for twitter bootstrap */
+  line-height: 1em;
+  /* Animation center compensation - margins should be symmetric */
+  /* remove if not needed */
+  margin-left: 0.2em;
+  /* you can be more comfortable with increased icons size */
+  /* font-size: 120%; */
+  /* Uncomment for 3D effect */
+  /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */ }
+
+.icon-home-1:before {
+  content: '\e800'; }
+
+/* ' ' */
+.icon-menu:before {
+  content: '\e801'; }
+
+/* '' */
+.icon-twitter:before {
+  content: '\e802'; }
+
+/* '' */
+.icon-facebook-squared:before {
+  content: '\e803'; }
+
+/* '' */
+.icon-gplus:before {
+  content: '\e804'; }
+
+/* '' */
+.icon-mail-alt:before {
+  content: '\e805'; }
+
+/* '' */
+.icon-link:before {
+  content: '\e806'; }
+
+/* '' */
+.icon-buffer:before {
+  content: '\e80b'; }
+
+/* '' */
+.icon-target:before {
+  content: '\e80c'; }
+
+/* '' */
+.icon-angle-down:before {
+  content: '\e809'; }
+
+/* '  ' */
+.icon-check-1:before {
+  content: '\2713'; }
