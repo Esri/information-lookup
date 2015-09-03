@@ -217,6 +217,12 @@
           }
         },
         {
+          "type": "boolean",
+          "fieldName": "linksInPopup",
+          "label": "Email and Link option in the pop up",
+          "tooltip": "Replace the zoom to with email and link buttons.  Only valid when the pop up is displayed on the map."
+        },
+        {
           "type": "string",
           "fieldName": "serviceUnavailableTitle",
           "label": "Unavailable Popup Title:",
@@ -382,11 +388,12 @@
     "title": "Information Lookup",
     "color": "#FFFFFF",
     "backcolor": "#000000",
-    "hypercolor":"#0000EE",
+    "hypercolor": "#0000EE",
     "uidirection": "left",
     "showUI": false,
     "popupSide": false,
     "popPostMessage": "",
-    "popPreMessage": ""
+    "popPreMessage": "",
+    "linksInPopup": false
   }
 }
