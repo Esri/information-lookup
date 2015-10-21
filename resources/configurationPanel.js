@@ -246,6 +246,12 @@
           "label": "Title:",
           "tooltip": "Title to show in the UI"
         },
+         {
+           "type": "boolean",
+           "fieldName": "basemapWidgetVisible",
+           "label": "Show the basemap selector",
+           "tooltip": "Check this option if you would like to show the basemap selector"
+         },
         {
           "type": "boolean",
           "fieldName": "showUI",
@@ -396,6 +402,8 @@
     "popupHeight": null,
     "serviceUnavailableTitle": "Outside Service Area",
     "serviceUnavailableMessage": "No information available at the selected location",
+    "noSearchFeatureTitle":"No Search Feature",
+    "noSearchFeatureMessage":"A search feature uses to lookup information was not found, please select a new location.",
     "zoomLevel": 18,
     "storeLocation": false,
     "serviceRequestLayerAvailibiltyFieldValueAvail": "Intersected",

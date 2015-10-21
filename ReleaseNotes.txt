@@ -1,1 +1,4 @@
 - Exposed configuration to change the size of the splash screen
+- Locale url parameter added
+- new loading icon
+- Exposed option to turn off basemap widget
