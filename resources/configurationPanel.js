@@ -36,7 +36,7 @@
         },
         {
           "type": "paragraph",
-          "value": "The following two option allow you to add text to the beginning and end of the pop up when results are found.  The following parameters are supported:<br />&nbsp; - {IL_SEARCHBY} pop up from the search by layer.<br />&nbsp; - {&lt;FieldName&gt;} for a field from the search by layer<br />&nbsp; - {&lt;LayerName&gt;} for a count of the features from each look up layer.<br />&nbsp; - {IL_LAT},{IL_LONG} ,{IL_XCOORD} ,{IL_YCOORD} for coordinates from the lookup location, centroid it used a line or polygon"
+          "value": "The following two option allow you to add text to the beginning and end of the pop up when results are found.  The following parameters are supported:<br />&nbsp; - {IL_SEARCHBY} pop up from the search by layer.<br />&nbsp; - {&lt;FieldName&gt;} for a field from the search by layer<br />&nbsp; - {&lt;LayerName&gt;} for a count of the features from each look up layer.<br />&nbsp; - {IL_LAT}, {IL_LONG}, {IL_XCOORD}, {IL_YCOORD} for coordinates from the lookup location, the centroid is used a line or polygon"
         },
         {
           "type": "string",
@@ -217,6 +217,12 @@
           }
         },
         {
+          "type": "boolean",
+          "fieldName": "linksInPopup",
+          "label": "Email and Link option in the pop up",
+          "tooltip": "Replace the zoom to with email and link buttons.  Only valid when the pop up is displayed on the map."
+        },
+        {
           "type": "string",
           "fieldName": "serviceUnavailableTitle",
           "label": "Unavailable Popup Title:",
@@ -240,6 +246,12 @@
           "label": "Title:",
           "tooltip": "Title to show in the UI"
         },
+         {
+           "type": "boolean",
+           "fieldName": "basemapWidgetVisible",
+           "label": "Show the basemap selector",
+           "tooltip": "Check this option if you would like to show the basemap selector"
+         },
         {
           "type": "boolean",
           "fieldName": "showUI",
@@ -304,6 +316,26 @@
           "label": "Splash Screen message",
           "tooltip": "Message to display when application is loaded",
           "stringFieldOption": "richtext"
+        },
+        {
+          "type": "number",
+          "fieldName": "splashWidth",
+          "label": "Splash Screen Width",
+          "tooltip": "Splash Screen width",
+          "constraints": {
+            "min": 0,
+            "places": 0
+          }
+        },
+        {
+          "type": "number",
+          "fieldName": "splashHeight",
+          "label": "Splash Screen Height",
+          "tooltip": "Splash Screen height",
+          "constraints": {
+            "min": 0,
+            "places": 0
+          }
         }
       ]
     },
@@ -370,6 +402,8 @@
     "popupHeight": null,
     "serviceUnavailableTitle": "Outside Service Area",
     "serviceUnavailableMessage": "No information available at the selected location",
+    "noSearchFeatureTitle":"No Search Feature",
+    "noSearchFeatureMessage":"A search feature uses to lookup information was not found, please select a new location.",
     "zoomLevel": 18,
     "storeLocation": false,
     "serviceRequestLayerAvailibiltyFieldValueAvail": "Intersected",
@@ -382,11 +416,14 @@
     "title": "Information Lookup",
     "color": "#FFFFFF",
     "backcolor": "#000000",
-    "hypercolor":"#0000EE",
+    "hypercolor": "#0000EE",
     "uidirection": "left",
+    "splashHeight": 350,
+    "splashWidth": 290,
     "showUI": false,
     "popupSide": false,
     "popPostMessage": "",
-    "popPreMessage": ""
+    "popPreMessage": "",
+    "linksInPopup": false
   }
 }

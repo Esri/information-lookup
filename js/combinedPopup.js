@@ -140,6 +140,15 @@ define([
 
       }
       else if ('geometry' in arguments[0]) {
+      
+        if ("wkid" in arguments[0].geometry.spatialReference && "wkid" in this.map.spatialReference) {
+          if (arguments[0].geometry.spatialReference.wkid !== this.map.spatialReference.wkid) {
+            if (webMercatorUtils.canProject(arguments[0].geometry, this.map.spatialReference)) {
+              arguments[0].geometry = webMercatorUtils.project(arguments[0].geometry, this.map.spatialReference);
+            }
+         
+          }
+        }
         this.showPopup(arguments[0].geometry, arguments[0].layerId);
       }
     },
@@ -330,7 +339,7 @@ define([
                    point.y - toleraceInMapCoords,
                    point.x + toleraceInMapCoords,
                    point.y + toleraceInMapCoords,
-                   this.map.spatialReference);
+                   point.spatialReference);
     },
     searchLayerForPopup: function (geo) {
       var query = new Query();
@@ -865,6 +874,24 @@ define([
 
     },
     _initShareLink: function () {
+      if (this.config.linksInPopup === null ||
+        this.config.linksInPopup === undefined ||
+        this.config.linksInPopup === false 
+        ) {
+        //do nothing
+      }
+      else {
+        var style = document.createElement('style');
+        style.type = 'text/css';
+        style.innerHTML = '.esriPopup .actionsPane .zoomTo { display: none; }';
+        document.getElementsByTagName('head')[0].appendChild(style);
+
+      
+
+      
+      //.esriPopup .actionsPane .zoomTo {
+      //  display: none;
+      //}
       var linkText = "Link";
       var emailText = "Email";
 
@@ -888,6 +915,7 @@ define([
 
       dojo.connect(link, "onclick", lang.hitch(this, this._linkclick));
       dojo.connect(email, "onclick", lang.hitch(this, this._emailclick));
+      }
 
     },
     _drawEnd: function (evt) {
