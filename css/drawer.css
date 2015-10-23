@@ -45,6 +45,7 @@
     line-height: 64px;
     margin-right: 10px;
     margin-left: 10px;
+    overflow:hidden;
 }
 
 .page-icon {
