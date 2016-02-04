@@ -1075,7 +1075,7 @@ define([
       }
       if (layer.layerObject.hasAttachments && layer.layerObject.hasAttachments === true) {
         this.promises.push(layer.layerObject.queryAttachmentInfos(
-          feature.attributes.OBJECTID,
+          oid,
           lang.hitch(this, this._onQueryAttachmentInfosComplete),
           lang.hitch(this, this._onQueryAttachmentsError))
           );
@@ -1157,13 +1157,13 @@ define([
           //this.map.infoWindow.setFeatures(featureArray);
           //this.map.infoWindow.resize();
           //content = this.map.infoWindow.getSelectedFeature().getContent();
-
+          oid = feature.attributes[layer.layerObject.objectIdField]
           for (var g = 0, gl = layerFields.length; g < gl; g++) {
             if (mediaInfos !== null) {
               array.forEach(mediaInfos, function (mediaInfo) {
                 mediaInfo = this._processObject(mediaInfo,
                   layerFields[g].fieldName, replaceVal,
-                  false, feature.attributes.OBJECTID);
+                  false, oid);
 
               }, this);
             }
@@ -1174,7 +1174,7 @@ define([
               re = new RegExp("{" + layerFields[g].fieldName + "}", "ig");
 
               popupTitle = popupTitle.replace(re, "{" +
-                replaceVal + "_" + feature.attributes.OBJECTID + "_" +
+                replaceVal + "_" + oid + "_" +
                 layerFields[g].fieldName + "}");
 
               if (layerFields[g].visible === true) {
@@ -1189,7 +1189,7 @@ define([
                 }
                 layFldTable = layFldTable + "<td class='popValue'>" +
                   "{" + replaceVal + "_" +
-                  feature.attributes.OBJECTID + "_" +
+                  oid + "_" +
                   layerFields[g].fieldName + "}</td>";
                 layFldTable = layFldTable + "</tr>";
 
@@ -1199,7 +1199,7 @@ define([
               re = new RegExp("{" + layerFields[g].fieldName + "}", "gi");
 
               layerDescription = layerDescription.replace(re, "{" + replaceVal + "_" +
-                feature.attributes.OBJECTID + "_" + layerFields[g].fieldName + "}");
+                oid + "_" + layerFields[g].fieldName + "}");
 
             }
             var fldVal = feature.attributes[layerFields[g].fieldName];
@@ -1213,39 +1213,39 @@ define([
                 if (popupInfo.description === null ||
                   popupInfo.description === undefined) {
                   resultFeature[replaceVal + "_" +
-                     feature.attributes.OBJECTID + "_" +
+                     oid + "_" +
                     layerFields[g].fieldName + "_" + "Hyper"] =
                     "<a target='_blank' href='" + fldVal + "'>" +
                     i18n.popup.urlMoreInfo + "</a>";
 
                   if (layFldTable.indexOf("{" + replaceVal +
-                    "_" + feature.attributes.OBJECTID +
+                    "_" + oid +
                     "_" + layerFields[g].fieldName + "}") >= 0) {
                     layFldTable = layFldTable.replace("{" + replaceVal + "_" +
-                      feature.attributes.OBJECTID +
+                      oid +
                       "_" + layerFields[g].fieldName + "}", "{" + replaceVal + "_" +
-                      feature.attributes.OBJECTID + "_" + layerFields[g].fieldName + "_" +
+                      oid + "_" + layerFields[g].fieldName + "_" +
                       "Hyper" + "}");
                   }
-                  resultFeature[replaceVal + "_" + feature.attributes.OBJECTID + "_" +
+                  resultFeature[replaceVal + "_" + oid + "_" +
                     layerFields[g].fieldName] = fldVal;
                 }
                 else {
-                  resultFeature[replaceVal + "_" + feature.attributes.OBJECTID + "_" +
+                  resultFeature[replaceVal + "_" + oid + "_" +
                     layerFields[g].fieldName] = fldVal;
                 }
               }
               else {
-                resultFeature[replaceVal + "_" + feature.attributes.OBJECTID + "_" +
+                resultFeature[replaceVal + "_" + oid + "_" +
                   layerFields[g].fieldName] = fldVal;
               }
             }
             else {
-              resultFeature[replaceVal + "_" + feature.attributes.OBJECTID + "_" +
+              resultFeature[replaceVal + "_" + oid + "_" +
                 layerFields[g].fieldName] = fldVal;
             }
             layerFields[g].fieldName = replaceVal + "_" +
-              feature.attributes.OBJECTID +
+              oid +
               "_" + layerFields[g].fieldName;
 
           }
@@ -1329,8 +1329,9 @@ define([
               var popDet = this._getPopupForResult(feature, layer);
               allFields = allFields.concat(popDet.fields);
               resultFeature = lang.mixin(resultFeature, popDet.feature);
-              mediaArray[result.Layer.layerOrder][feature.attributes.OBJECTID] = popDet.media;
-              popUpArray[result.Layer.layerOrder][feature.attributes.OBJECTID] = popDet.desc;
+              oid = feature.attributes[result.Layer.layerObject.objectIdField];
+              mediaArray[result.Layer.layerOrder][oid] = popDet.media;
+              popUpArray[result.Layer.layerOrder][oid] = popDet.desc;
             }, this);
           }, this);
 
