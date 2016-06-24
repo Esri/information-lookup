@@ -17,33 +17,33 @@
       "category": "General",
       "fields": [
         {
-          "type": "string",
-          "fieldName": "title",
-          "label": "Title:",
-          "tooltip": "Title to show in the UI"
-        },
-        {
           "type": "boolean",
           "fieldName": "showUI",
-          "label": "Show a title bar",
-          "tooltip": "Check on if you want to display the header bar"
+          "label": "Include a title and a title bar",
+          "tooltip": "Adds a title bar to the app and enables a side panel."
+        },
+		{
+          "type": "string",
+          "fieldName": "title",
+          "label": "Title Name:",
+          "tooltip": "Title to show in the UI"
         },
         {
           "type": "string",
           "fieldName": "pageIcon",
           "label": "Title Bar Icon:",
-          "tooltip": "Url to image to be used in title bar, max size 64x64"
+          "tooltip": "URL to the image to be used in the title bar, max size is 64x64"
         },
         {
           "type": "boolean",
           "fieldName": "popupSide",
-          "label": "Show the pop up on the side panel",
-          "tooltip": "Check on if you want to display the pop up details in a side panel"
+          "label": "Show feature pop ups in the side panel",
+          "tooltip": "The title bar must be enabled for this. Check on if you want to display the pop up details in a side panel."
         },
         {
           "type": "string",
           "fieldName": "uidirection",
-          "tooltip": "Side to show the side pop up",
+          "tooltip": "The side of the app for the side panel to be docked.",
           "label": "Pop up side:",
           "options": [
             {

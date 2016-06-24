@@ -1149,6 +1149,16 @@ define([
       }
       return oid;
     },
+    _cloneAndRemoveRelationshipFields: function(fieldInfos){
+      var newFieldArr = [];
+      array.forEach(fieldInfos, function (fieldInfo) {
+        if (fieldInfo.fieldName.indexOf('relationships/') === -1) {
+          newFieldArr.push(lang.clone(fieldInfo));
+
+        }     
+      });
+      return newFieldArr;
+    },
     _getPopupForResult: function (feature, layer) {
       try {
 
@@ -1165,7 +1175,7 @@ define([
           if (popupInfo.showAttachments == true) {
             this._getAttachments(feature, layer);
           }
-          var layerFields = lang.clone(popupInfo.fieldInfos);
+          var layerFields = this._cloneAndRemoveRelationshipFields(popupInfo.fieldInfos);//lang.clone(popupInfo.fieldInfos);
 
           var layerDescription = lang.clone(popupInfo.description);
           var popupTitle = lang.clone(popupInfo.title);
