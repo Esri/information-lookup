@@ -230,24 +230,24 @@
         {
           "type": "boolean",
           "fieldName": "onlySearchFeature",
-          "label": "Only include the search feature in the results if the search layer is included in the lookup layers.",
-          "tooltip": "This option is useful when you have overlapping features in the same layer and you only want to show the feature clicked or searched on."
+          "label": "Limit lookup results to search feature.",
+          "tooltip": "Only include the search feature in the results if the search layer is included in the lookup layers.  This option is useful when you have overlapping features in the same layer and you only want to show the feature clicked or searched on."
         },
         {
           "type": "boolean",
           "fieldName": "checkSize",
-          "label": "Check the amount of overlap of the searched results from the lookup layer with the search features geometry.",
-          "tooltip": "This option is useful when you have polygons that share boundaries."
+          "label": "Check size of overlap",
+          "tooltip": "Check the amount of overlap of the searched results from the lookup layer with the search features geometry. This option is useful when you have polygons that share boundaries."
         },
         {
-          "label": "Minimum polygon area",
+          "label": "Minimum polygon overlap area",
           "fieldName": "minPolygonSize",
           "type": "number",
           "constraints": {
             "min": -1,
             "places": 2
           },
-          "tooltip": "The minimum size of the overlap to return in the results."
+          "tooltip": "The minimum size of the overlap of polygons in the results.  Only valid when checksize is enabled"
         },
         {
           "label": "Minimum line length",
@@ -257,7 +257,7 @@
             "min": -1,
             "places": 2
           },
-          "tooltip": "The minimum size of the overlap to return in the results."
+          "tooltip": "The minimum size of the overlap of lines in the results.  Only valid when checksize is enabled"
         },
         {
           "type": "string",
