@@ -213,6 +213,11 @@ define([
       }
     },
     showPopupGeo: function (evt, searchByFeature) {
+      var onlySearchFeature = false;
+      if (this.config.hasOwnProperty("onlySearchFeature"))
+      {
+        onlySearchFeature = this.config.onlySearchFeature;
+      }
       this.resultCount = 0;
       this.searchByFeature = searchByFeature;
 
@@ -256,8 +261,77 @@ define([
         geoExt = this._getExtent(evt);
 
       }
+      var layerObject = null;
+      var objectIdField = null;
+      if (this.tempPopUp.hasOwnProperty("layer")) {
+        if (this.tempPopUp.layer.hasOwnProperty("layerObject")) {
+          if (this.tempPopUp.layer.layerObject.hasOwnProperty("objectIdField")) {
+            objectIdField = this.tempPopUp.layer.layerObject.objectIdField;
+          }
+        }
+      }
+      else if (this.tempPopUp.hasOwnProperty("layerObject")) {
+        if (this.tempPopUp.layerObject.hasOwnProperty("objectIdField")) {
+          objectIdField = this.tempPopUp.layerObject.objectIdField;
+        }
+      }
       for (var f = 0, fl = this.lookupLayers.length; f < fl; f++) {
-        if (this.lookupLayers[f].url === null) {
+        layerObject = null
+
+        if (this.lookupLayers[f].hasOwnProperty("layer")) {
+          if (this.lookupLayers[f].layer.hasOwnProperty("layerObject")) {
+            layerObject = this.lookupLayers[f].layer.layerObject;
+          }
+        }
+        else if (this.lookupLayers[f].hasOwnProperty("layerObject")) {
+          layerObject = this.lookupLayers[f].layerObject;
+        }
+       
+        if (onlySearchFeature === true &&
+                  searchByFeature !== null && searchByFeature !== undefined &&
+                  this.tempPopUp !== null && this.tempPopUp !== undefined &&
+                  layerObject !== null && objectIdField !== null &&
+                  this.tempPopUp.id === layerObject.id &&
+                  searchByFeature.hasOwnProperty("attributes") &&
+                  objectIdField in searchByFeature.attributes) {
+
+          //  query = new Query();
+
+          //  query.spatialRelationship = Query.SPATIAL_REL_INTERSECTS;
+          //  //
+          //  //.relationParam = "dim (g1.interior, g2) > null";
+          //  if (evt.type === "point") {
+          //    query.geometry = geoExt;
+          //    query.geometryType = "esriGeometryExtent";
+          //  }
+          //  else {
+          //    query.geometry = evt;
+          //  }
+
+          //  query.returnGeometry = true;
+          //  query.outSpatialReference = this.map.spatialReference;
+          //  query.outFields = ["*"];
+          //  if (this.lookupLayers[f].definitionExpression) {
+          //    query.where = this.lookupLayers[f].definitionExpression;
+          //  }
+          //  queryTask = new QueryTask(this.lookupLayers[f].url);
+          //  queryDeferred = queryTask.execute(query);
+          //  queryDeferred.addCallback(lang.hitch(this, this._queryComplete(this.lookupLayers[f])));
+
+          //  queryDeferred.addErrback(lang.hitch(this, this._queryError));
+          //  //query.returnGeometry = true;
+          //  //query.outSpatialReference = this.map.spatialReference;
+          query = new Query();
+          query.outFields = ["*"];
+          query.objectIds = [searchByFeature.attributes[objectIdField]];
+
+          queryDeferred = layerObject.queryFeatures(query);
+          queryDeferred.addCallback(lang.hitch(this, this._queryComplete(this.lookupLayers[f])));
+
+          queryDeferred.addErrback(lang.hitch(this, this._queryError));
+
+        }
+        else if (this.lookupLayers[f].url === null) {
 
           query = new Query();
 
@@ -279,7 +353,9 @@ define([
           queryDeferred.addCallback(lang.hitch(this, this._queryComplete(this.lookupLayers[f])));
 
           queryDeferred.addErrback(lang.hitch(this, this._queryError));
-        } else {
+        }
+
+        else {
           query = new Query();
 
           query.spatialRelationship = Query.SPATIAL_REL_INTERSECTS;
@@ -1022,15 +1098,107 @@ define([
     _queryComplete: function (lookupLayer) {
 
       return function (result) {
-
+        var size = null;
+        var minLineSize = 1;
+        var minPolygonSize = 5;
+        var checkSize = false;
+        var intersection;
+        if (this.config.hasOwnProperty('minLineSize')) {
+          minLineSize = this.config.minLineSize;
+        }
+        if (this.config.hasOwnProperty('minPolygonSize')) {
+          minPolygonSize = this.config.minPolygonSize;
+        }
+        if (this.config.hasOwnProperty('checkSize')) {
+          checkSize = this.config.checkSize;
+        }
         if (result.features.length > 0) {
           result.features = array.filter(result.features, lang.hitch(this, function (feature) {
-            if (this.event.type === 'point' && feature.geometry.type === 'polyline') {
-              return true;
+            //if (this.event.type === 'point' && feature.geometry.type === 'polyline') {
+            //  return true;
+            //}
+            //else {
+            if (geometryEngine.intersects(this.event, feature.geometry)) {
+              size = null;
+              if (this.event.type === 'polygon') {
+                if (feature.geometry.type === 'polygon') {
+                  intersection = geometryEngine.intersect(this.event, feature.geometry);
+                  if (intersection === null) {
+                    return false;
+                  }
+                  try {
+                    size = geometryEngine.geodesicArea(intersection, 109405)
+
+                  }
+                  catch (err) {
+                    try {
+                      size = geometryEngine.planarArea(intersection, 109405)
+                    }
+                    catch (err) {
+
+                    }
+
+                  }
+                  return size === null ? false : size >= minPolygonSize || checkSize === false ? true : false;
+                }
+                else if (feature.geometry.type === 'polyline') {
+                  intersection = geometryEngine.intersect(feature.geometry, this.event);
+                  if (intersection === null) {
+                    return false;
+                  }
+                  try {
+                    size = geometryEngine.geodesicLength(intersection, 9002)
+
+                  }
+                  catch (err) {
+                    try {
+                      size = geometryEngine.planarLength(intersection, 9002)
+                    }
+                    catch (err) {
+
+                    }
+
+                  }
+                  return size === null ? false : size >= minLineSize || checkSize === false ? true : false;
+                }
+                else {
+                  return true;
+                }
+              }
+              else if (this.event.type === 'polyline') {
+                if (feature.geometry.type === 'polygon') {
+                  intersection = geometryEngine.intersect(feature.geometry, this.event);
+                  if (intersection === null) {
+                    return false;
+                  }
+                  try {
+                    size = geometryEngine.geodesicLength(intersection, 9002)
+
+                  }
+                  catch (err) {
+                    try {
+                      size = geometryEngine.planarLength(intersection, 9002)
+                    }
+                    catch (err) {
+
+                    }
+
+                  }
+                  return size === null ? false : size >= minLineSize || checkSize === false ? true : false;
+                }
+                else {
+                  return true;
+                }
+              }
+              else {
+                return true;
+              }
+
             }
             else {
-              return geometryEngine.intersect(this.event, feature.geometry);
+              return false;
             }
+
           }));
 
           this.resultCount = this.resultCount + result.features.length;
@@ -1149,13 +1317,13 @@ define([
       }
       return oid;
     },
-    _cloneAndRemoveRelationshipFields: function(fieldInfos){
+    _cloneAndRemoveRelationshipFields: function (fieldInfos) {
       var newFieldArr = [];
       array.forEach(fieldInfos, function (fieldInfo) {
         if (fieldInfo.fieldName.indexOf('relationships/') === -1) {
           newFieldArr.push(lang.clone(fieldInfo));
 
-        }     
+        }
       });
       return newFieldArr;
     },
