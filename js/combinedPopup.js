@@ -959,8 +959,8 @@ define([
         if (obj !== undefined && obj !== null) {
           dojo.style(obj, "display", "none");
         }
-       
-     
+
+
         //do nothing
       }
       else {
@@ -1324,19 +1324,19 @@ define([
       }
       return oid;
     },
-    _cloneAndRemoveRelationshipFields: function (fieldInfos,fields) {
+    _cloneAndRemoveRelationshipFields: function (fieldInfos, fields) {
       var newFieldArr = [];
       array.forEach(fieldInfos, function (fieldInfo) {
         if (fieldInfo.fieldName.indexOf('relationships/') === -1) {
           var newFld = lang.clone(fieldInfo);
-          if (fields !== undefined && fields !== null){
+          if (fields !== undefined && fields !== null) {
             array.some(fields, function (field) {
               if (field.name === fieldInfo.fieldName) {
                 if (field.hasOwnProperty("domain")) {
                   newFld.domain = lang.clone(field.domain);
                   return true;
                 }
-              
+
               }
             });
           }
@@ -1359,10 +1359,25 @@ define([
         var replaceOID = replaceVal + "_" + oid + "_";
         var resultFeature = {};
         var layerFields = null;
-        if (layer.hasOwnProperty("layerObject")) {
+        if (layer.hasOwnProperty("layerObject") &&
+          layer.layerObject !== undefined &&
+          layer.layerObject !== null) {
           if (layer.layerObject.hasOwnProperty("fields")) {
             layerFields = layer.layerObject.fields;
           }
+        } else if (layer.hasOwnProperty("layer") &&
+          layer.layer !== undefined &&
+          layer.layer !== null) {
+          if (layer.layer.hasOwnProperty("layerObject") &&
+             layer.layer.layerObject !== undefined &&
+             layer.layer.layerObject !== null) {
+            if (layer.layer.layerObject.hasOwnProperty("fields")) {
+              layerFields = layer.layer.layerObject.fields;
+            }
+          }
+        }
+        if (layerFields === undefined) {
+          layerFields = null;
         }
         if (popupInfo !== null && popupInfo !== undefined) {
           if (popupInfo.showAttachments == true) {
@@ -1435,23 +1450,24 @@ define([
 
             }
             var fldVal = feature.attributes[layerFields[g].fieldName];
-            if (layerFields[g].hasOwnProperty("domain") &&
-                layerFields[g].domain !== undefined &&
-                layerFields[g].domain !== null) {
-              var domain = layerFields[g].domain;
-              if (domain.hasOwnProperty("codedValues") &&
-                domain.codedValues !== undefined &&
-                domain.codedValues !== null) {
-                array.some(domain.codedValues, function (codedValue) {
-                  if (codedValue.code.toString() === fldVal.toString()) {
-                    fldVal = codedValue.name;
-                  }
-                });
-              }
-            }
+         
+
             if (fldVal !== null && fldVal !== undefined) {
 
-
+              if (layerFields[g].hasOwnProperty("domain") &&
+              layerFields[g].domain !== undefined &&
+              layerFields[g].domain !== null) {
+                var domain = layerFields[g].domain;
+                if (domain.hasOwnProperty("codedValues") &&
+                  domain.codedValues !== undefined &&
+                  domain.codedValues !== null) {
+                  array.some(domain.codedValues, function (codedValue) {
+                    if (codedValue.code.toString() === fldVal.toString()) {
+                      fldVal = codedValue.name;
+                    }
+                  });
+                }
+              }
               fldVal = fldVal.toString();
 
               if (rUrl.test(fldVal)) {
