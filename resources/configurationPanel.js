@@ -364,7 +364,7 @@
           "type": "boolean",
           "fieldName": "linksInPopup",
           "label": "Email and Link option in the pop up",
-          "tooltip": "Replace the zoom to with email and link buttons.  Only valid when the pop up is displayed on the map."
+          "tooltip": "Replace the zoom to with email and link buttons."
         },
         {
           "type": "string",

@@ -214,8 +214,7 @@ define([
     },
     showPopupGeo: function (evt, searchByFeature) {
       var onlySearchFeature = false;
-      if (this.config.hasOwnProperty("onlySearchFeature"))
-      {
+      if (this.config.hasOwnProperty("onlySearchFeature")) {
         onlySearchFeature = this.config.onlySearchFeature;
       }
       this.resultCount = 0;
@@ -263,16 +262,18 @@ define([
       }
       var layerObject = null;
       var objectIdField = null;
-      if (this.tempPopUp.hasOwnProperty("layer")) {
-        if (this.tempPopUp.layer.hasOwnProperty("layerObject")) {
-          if (this.tempPopUp.layer.layerObject.hasOwnProperty("objectIdField")) {
-            objectIdField = this.tempPopUp.layer.layerObject.objectIdField;
+      if (this.tempPopUp) {
+        if (this.tempPopUp.hasOwnProperty("layer")) {
+          if (this.tempPopUp.layer.hasOwnProperty("layerObject")) {
+            if (this.tempPopUp.layer.layerObject.hasOwnProperty("objectIdField")) {
+              objectIdField = this.tempPopUp.layer.layerObject.objectIdField;
+            }
           }
         }
-      }
-      else if (this.tempPopUp.hasOwnProperty("layerObject")) {
-        if (this.tempPopUp.layerObject.hasOwnProperty("objectIdField")) {
-          objectIdField = this.tempPopUp.layerObject.objectIdField;
+        else if (this.tempPopUp.hasOwnProperty("layerObject")) {
+          if (this.tempPopUp.layerObject.hasOwnProperty("objectIdField")) {
+            objectIdField = this.tempPopUp.layerObject.objectIdField;
+          }
         }
       }
       for (var f = 0, fl = this.lookupLayers.length; f < fl; f++) {
@@ -286,7 +287,7 @@ define([
         else if (this.lookupLayers[f].hasOwnProperty("layerObject")) {
           layerObject = this.lookupLayers[f].layerObject;
         }
-       
+
         if (onlySearchFeature === true &&
                   searchByFeature !== null && searchByFeature !== undefined &&
                   this.tempPopUp !== null && this.tempPopUp !== undefined &&
@@ -954,6 +955,12 @@ define([
         this.config.linksInPopup === undefined ||
         this.config.linksInPopup === false
         ) {
+        var obj = dojo.byId('sidebar_button_pane');
+        if (obj !== undefined && obj !== null) {
+          dojo.style(obj, "display", "none");
+        }
+       
+     
         //do nothing
       }
       else {
@@ -1317,11 +1324,23 @@ define([
       }
       return oid;
     },
-    _cloneAndRemoveRelationshipFields: function (fieldInfos) {
+    _cloneAndRemoveRelationshipFields: function (fieldInfos,fields) {
       var newFieldArr = [];
       array.forEach(fieldInfos, function (fieldInfo) {
         if (fieldInfo.fieldName.indexOf('relationships/') === -1) {
-          newFieldArr.push(lang.clone(fieldInfo));
+          var newFld = lang.clone(fieldInfo);
+          if (fields !== undefined && fields !== null){
+            array.some(fields, function (field) {
+              if (field.name === fieldInfo.fieldName) {
+                if (field.hasOwnProperty("domain")) {
+                  newFld.domain = lang.clone(field.domain);
+                  return true;
+                }
+              
+              }
+            });
+          }
+          newFieldArr.push(newFld);
 
         }
       });
@@ -1339,11 +1358,18 @@ define([
         oid = this._getOID(feature, layer);
         var replaceOID = replaceVal + "_" + oid + "_";
         var resultFeature = {};
+        var layerFields = null;
+        if (layer.hasOwnProperty("layerObject")) {
+          if (layer.layerObject.hasOwnProperty("fields")) {
+            layerFields = layer.layerObject.fields;
+          }
+        }
         if (popupInfo !== null && popupInfo !== undefined) {
           if (popupInfo.showAttachments == true) {
             this._getAttachments(feature, layer);
           }
-          var layerFields = this._cloneAndRemoveRelationshipFields(popupInfo.fieldInfos);//lang.clone(popupInfo.fieldInfos);
+
+          var layerFields = this._cloneAndRemoveRelationshipFields(popupInfo.fieldInfos, layerFields);//lang.clone(popupInfo.fieldInfos);
 
           var layerDescription = lang.clone(popupInfo.description);
           var popupTitle = lang.clone(popupInfo.title);
@@ -1409,6 +1435,20 @@ define([
 
             }
             var fldVal = feature.attributes[layerFields[g].fieldName];
+            if (layerFields[g].hasOwnProperty("domain") &&
+                layerFields[g].domain !== undefined &&
+                layerFields[g].domain !== null) {
+              var domain = layerFields[g].domain;
+              if (domain.hasOwnProperty("codedValues") &&
+                domain.codedValues !== undefined &&
+                domain.codedValues !== null) {
+                array.some(domain.codedValues, function (codedValue) {
+                  if (codedValue.code.toString() === fldVal.toString()) {
+                    fldVal = codedValue.name;
+                  }
+                });
+              }
+            }
             if (fldVal !== null && fldVal !== undefined) {
 
 
