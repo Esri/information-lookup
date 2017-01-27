@@ -83,6 +83,7 @@ define([], function () {
     }],
     "applicationFavicon": "/images/favicon.ico",
     "linksInPopup": false,
+    "linksInPopupSide": true,
     "minLineSize": 1,
     "minPolygonSize": 5,
     "checkSize": false,

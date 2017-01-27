@@ -951,19 +951,20 @@ define([
 
     },
     _initShareLink: function () {
-      if (this.config.linksInPopup === null ||
-        this.config.linksInPopup === undefined ||
-        this.config.linksInPopup === false
+      if (this.config.linksInPopupSide === null ||
+        this.config.linksInPopupSide === undefined ||
+        this.config.linksInPopupSide === false
         ) {
         var obj = dojo.byId('sidebar_button_pane');
         if (obj !== undefined && obj !== null) {
           dojo.style(obj, "display", "none");
         }
-
-
+      }
+      if (this.config.linksInPopup === null ||
+          this.config.linksInPopup === undefined){
         //do nothing
       }
-      else {
+      else if (this.config.linksInPopup === true) {
         var style = document.createElement('style');
         style.type = 'text/css';
         style.innerHTML = '.esriPopup .actionsPane .zoomTo { display: none; }';

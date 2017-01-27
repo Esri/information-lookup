@@ -366,6 +366,12 @@
           "label": "Email and Link option in the pop up",
           "tooltip": "Replace the zoom to with email and link buttons."
         },
+         {
+           "type": "boolean",
+           "fieldName": "linksInPopupSide",
+           "label": "Email and Link option on the side panel pop up",
+           "tooltip": "Add email and link buttons on the side panel."
+         },
         {
           "type": "string",
           "fieldName": "serviceUnavailableTitle",
@@ -467,6 +473,7 @@
     "popPostMessage": "",
     "popPreMessage": "",
     "linksInPopup": false,
+    "linksInPopupSide": true,
     "minLineSize": 1,
     "minPolygonSize": 5,
     "checkSize": false,
