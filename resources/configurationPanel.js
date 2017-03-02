@@ -13,7 +13,7 @@
         }
       ]
     },
-	{
+    {
       "category": "General",
       "fields": [
         {
@@ -22,7 +22,7 @@
           "label": "Include a title and a title bar",
           "tooltip": "Adds a title bar to the app and enables a side panel."
         },
-		{
+        {
           "type": "string",
           "fieldName": "title",
           "label": "Title Name:",
@@ -56,7 +56,7 @@
             }
           ]
         },
-		{
+        {
           "type": "boolean",
           "fieldName": "basemapWidgetVisible",
           "label": "Show the basemap selector",
@@ -64,7 +64,7 @@
         }
       ]
     },
-	{
+    {
       "category": "Theme",
       "fields": [
         {
@@ -87,7 +87,7 @@
         }
       ]
     },
-	{
+    {
       "category": "Splash Screen",
       "fields": [
         {
@@ -156,7 +156,7 @@
           },
           "tooltip": "Sets the max auto zoom level for the map after a lookup"
         },
-		{
+        {
           "label": "Lookup Layers",
           "fieldName": "serviceAreaLayerNamesSelector",
           "type": "multilayerandfieldselector",
@@ -226,6 +226,38 @@
           "fieldName": "searchByLayer",
           "label": "Search by layer",
           "tooltip": "Layer to search for features to lookup intersecting layers"
+        },
+        {
+          "type": "boolean",
+          "fieldName": "onlySearchFeature",
+          "label": "Limit lookup results to search feature.",
+          "tooltip": "Only include the search feature in the results if the search layer is included in the lookup layers.  This option is useful when you have overlapping features in the same layer and you only want to show the feature clicked or searched on."
+        },
+        {
+          "type": "boolean",
+          "fieldName": "checkSize",
+          "label": "Check size of overlap",
+          "tooltip": "Check the amount of overlap of the searched results from the lookup layer with the search features geometry. This option is useful when you have polygons that share boundaries."
+        },
+        {
+          "label": "Minimum polygon overlap area",
+          "fieldName": "minPolygonSize",
+          "type": "number",
+          "constraints": {
+            "min": -1,
+            "places": 2
+          },
+          "tooltip": "The minimum size of the overlap of polygons in the results.  Only valid when Check size of overlap is enabled"
+        },
+        {
+          "label": "Minimum line length",
+          "fieldName": "minLineSize",
+          "type": "number",
+          "constraints": {
+            "min": -1,
+            "places": 2
+          },
+          "tooltip": "The minimum size of the overlap of lines in the results.  Only valid when Check size of overlap is enabled"
         },
         {
           "type": "string",
@@ -332,8 +364,14 @@
           "type": "boolean",
           "fieldName": "linksInPopup",
           "label": "Email and Link option in the pop up",
-          "tooltip": "Replace the zoom to with email and link buttons.  Only valid when the pop up is displayed on the map."
+          "tooltip": "Replace the zoom to with email and link buttons."
         },
+         {
+           "type": "boolean",
+           "fieldName": "linksInPopupSide",
+           "label": "Email and Link option on the side panel pop up",
+           "tooltip": "Add email and link buttons on the side panel."
+         },
         {
           "type": "string",
           "fieldName": "serviceUnavailableTitle",
@@ -349,7 +387,7 @@
         }
       ]
     },
-	{
+    {
       "category": "Search",
       "fields": [
         {
@@ -412,8 +450,8 @@
     "popupHeight": null,
     "serviceUnavailableTitle": "Outside Service Area",
     "serviceUnavailableMessage": "No information is available at the selected location.",
-    "noSearchFeatureTitle":"No Search Feature Found",
-    "noSearchFeatureMessage":"A search feature used to lookup information was not found.  Please select a new location.",
+    "noSearchFeatureTitle": "No Search Feature Found",
+    "noSearchFeatureMessage": "A search feature used to lookup information was not found.  Please select a new location.",
     "zoomLevel": 18,
     "storeLocation": false,
     "serviceRequestLayerAvailibiltyFieldValueAvail": "Intersected",
@@ -434,6 +472,11 @@
     "popupSide": false,
     "popPostMessage": "",
     "popPreMessage": "",
-    "linksInPopup": false
+    "linksInPopup": false,
+    "linksInPopupSide": true,
+    "minLineSize": 1,
+    "minPolygonSize": 5,
+    "checkSize": false,
+    "onlySearchFeature": false
   }
 }

@@ -48,7 +48,7 @@ define([], function () {
     "noSearchFeatureMessage": "A search feature to use to lookup information was not found, please select a new location.",
     "popupWidth": null,
     "popupHeight": null,
-    "zoomLevel": 16,
+    "zoomLevel": 18,
     "storeLocation": false,
     "serviceRequestLayerName": "Request Tracking",
     "serviceRequestLayerAvailibiltyField": "REQSTATUS",
@@ -57,8 +57,11 @@ define([], function () {
     "serviceRequestLayerAvailibiltyFieldValueNoSearch": "No Search Feature",
     "showSplash": false,
     "splashText": "<center>Information Lookup is a configurable web application template that can be used to provide the general public, internal staff and other interested parties the with information about a location. If no features are found at that location, a general message is displayed. Optionally, the location entered can be stored in a point layer. The template can be configured using the ArcGIS Online Configuration dialog.</center>",
+    "splashHeight": 300,
+    "splashWidth": 350,
     "color": null,
     "backcolor": null,
+    "hypercolor": "#0000EE",
     "uidirection": "left",
     "showUI": false,
     "popupSide": false,
@@ -73,13 +76,18 @@ define([], function () {
     //the current map extent
     //"searchExtent": true,
     "search": true,
-    
     "customUrlParam": "",//Name of url param. For example parcels
     "searchLayers": [{
       "id": "",
       "fields": []
-    }]
-
+    }],
+    "applicationFavicon": "/images/favicon.ico",
+    "linksInPopup": false,
+    "linksInPopupSide": true,
+    "minLineSize": 1,
+    "minPolygonSize": 5,
+    "checkSize": false,
+    "onlySearchFeature": false
   };
   return defaults;
 });

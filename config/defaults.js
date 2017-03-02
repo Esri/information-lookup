@@ -82,7 +82,12 @@ define([], function () {
       "fields": []
     }],
     "applicationFavicon": "/images/favicon.ico",
-    "linksInPopup":false
+    "linksInPopup": false,
+    "linksInPopupSide": true,
+    "minLineSize": 1,
+    "minPolygonSize": 5,
+    "checkSize": false,
+    "onlySearchFeature": false
   };
   return defaults;
 });
