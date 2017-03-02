@@ -247,7 +247,7 @@
             "min": -1,
             "places": 2
           },
-          "tooltip": "The minimum size of the overlap of polygons in the results.  Only valid when checksize is enabled"
+          "tooltip": "The minimum size of the overlap of polygons in the results.  Only valid when Check size of overlap is enabled"
         },
         {
           "label": "Minimum line length",
@@ -257,7 +257,7 @@
             "min": -1,
             "places": 2
           },
-          "tooltip": "The minimum size of the overlap of lines in the results.  Only valid when checksize is enabled"
+          "tooltip": "The minimum size of the overlap of lines in the results.  Only valid when Check size of overlap is enabled"
         },
         {
           "type": "string",
