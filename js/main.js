@@ -193,11 +193,12 @@ function (
         }
         if (this.config.basemapWidgetVisible === true) {
           var basemapGalleryGroupQuery = null;
-          if (this.config.orgInfo) {
+          if (this.config.basemapgroup) {
+            basemapGalleryGroupQuery = this.config.basemapgroup;
+          }
+          else if (this.config.orgInfo) {
             if (this.config.orgInfo.basemapGalleryGroupQuery) {
               basemapGalleryGroupQuery = this.config.orgInfo.basemapGalleryGroupQuery;
-
-
             }
           }
           this.basemapButton = new BasemapButton(
