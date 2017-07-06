@@ -65,6 +65,24 @@ function (
       }
       this._events = [];
     },
+    _getBasemapGroup: function () {
+      //Get the id or owner and title for an organizations custom basemap group.
+      var basemapGroup = null;
+
+      if (this.basemapGalleryGroupQuery && this.basemapGalleryGroupQuery.title &&
+        this.basemapGalleryGroupQuery.owner) {
+        basemapGroup = {
+          "owner": this.basemapGalleryGroupQuery.owner,
+          "title": this.basemapGalleryGroupQuery.title
+        };
+      } else if (this.basemapGalleryGroupQuery && this.basemapGalleryGroupQuery.id) {
+        basemapGroup = {
+          "id": this.basemapGalleryGroupQuery.id
+        };
+      } else
+        basemapGroup = this.basemapGalleryGroupQuery;
+      return basemapGroup;
+    },
     _addBaseMapGallery: function () {
       this._basemapGallery = dojo.byId(this.domNode);
       if (this._basemapGallery) {
@@ -140,7 +158,7 @@ function (
             })],
             showArcGISBasemaps: true,  // ignored if a group is configured
             portalUrl: this.config.sharinghost,
-            basemapsGroup: this.basemapGalleryGroupQuery,
+            basemapsGroup: this._getBasemapGroup(),
             bingMapsKey: this.config.bingKey,
             map: this.map
           }, "basemapContent");

@@ -547,6 +547,27 @@ define([
             // use feet/miles only for the US and if nothing is set for a user
             cfg.units = "english";
           }
+
+          // If it has the useVectorBasemaps property and its true then use the 
+          // vectorBasemapGalleryGroupQuery otherwise use the default 
+          var basemapGalleryGroupQuery = response.basemapGalleryGroupQuery;
+          if (response.hasOwnProperty("useVectorBasemaps") && response.useVectorBasemaps === true && response.vectorBasemapGalleryGroupQuery) {
+            basemapGalleryGroupQuery = response.vectorBasemapGalleryGroupQuery;
+          }
+
+          var q = this._parseQuery(basemapGalleryGroupQuery);
+          cfg.basemapgroup = {
+            id: null,
+            title: null,
+            owner: null
+          };
+          if (q.id) {
+            cfg.basemapgroup.id = q.id;
+          } else if (q.title && q.owner) {
+            cfg.basemapgroup.title = q.title;
+            cfg.basemapgroup.owner = q.owner;
+          }
+
           // Get the helper services (routing, print, locator etc)
           cfg.helperServices = response.helperServices;
           // are any custom roles defined in the organization?
@@ -567,6 +588,23 @@ define([
         deferred.resolve();
       }
       return deferred.promise;
-    }
+    },
+    _parseQuery: function (queryString) {
+
+      var regex = /(AND|OR)?\W*([a-z]+):/ig,
+        fields = {},
+        fieldName,
+        fieldIndex,
+        result = regex.exec(queryString);
+      while (result) {
+        fieldName = result && result[2];
+        fieldIndex = result ? (result.index + result[0].length) : -1;
+
+        result = regex.exec(queryString);
+
+        fields[fieldName] = queryString.substring(fieldIndex, result ? result.index : queryString.length).replace(/^\s+|\s+$/g, "").replace(/\"/g, ""); //remove extra quotes in title
+      }
+      return fields;
+    },
   });
 });
