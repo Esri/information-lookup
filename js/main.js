@@ -314,10 +314,21 @@ function (
       clearTimeout(this.resizeTimeout);
 
     },
+    _map_data_loaded: false,
+    _combined_loaded: false,
     _mapLoaded: function () {
       // Map is ready
       try {
-        console.log("map loaded");
+       // console.log("map loaded");
+        var updateListener = this.map.on("update-end", lang.hitch(this,function (err) {
+          // do something
+          updateListener.remove();
+          this._map_data_loaded = true;
+          if (this._combined_loaded === true) {
+            this._toggleIndicator(false);
+            this.popup.check_params();
+          }
+        }));
         //search control
         var contentID = null;
         if (this.config.showUI && this.config.popupSide &&
@@ -341,10 +352,9 @@ function (
           });
         topic.subscribe("app.contentSet", lang.hitch(this, this._styleHyper));
 
+        topic.subscribe("app.combined_popup_loaded", lang.hitch(this, this._combinedLoaded));
         this.popup.startup();
-        this.popup.enableMapClick();
-
-        this._toggleIndicator(false);
+       
 
         topic.publish("app.mapLoaded", this.map);
          //domClass.add(document.body, this.config.theme);
@@ -371,6 +381,14 @@ function (
       }
       catch (e) {
         this.reportError(e);
+      }
+    },
+    _combinedLoaded: function () {
+      this.popup.enableMapClick();
+      this._combined_loaded = true;
+      if (this._map_data_loaded === true){
+        this._toggleIndicator(false);
+        this.popup.check_params();
       }
     },
     _styleHyper: function () {
