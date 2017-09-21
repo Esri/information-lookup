@@ -173,6 +173,45 @@
               "esriGeometryPoint"
             ]
           }
+        },
+        {
+          "label": "Search Tolerance",
+          "fieldName": "searchTol",
+          "type": "number",
+          "constraints": {
+            "min": 0,
+            "places": 0
+          },
+          "tooltip": "Set the search area around the map click"
+        },
+        {
+          "label": "Point on Point Distance",
+          "fieldName": "pointOverlap",
+          "type": "number",
+          "constraints": {
+            "min": 0,
+            "places": 0
+          },
+          "tooltip": "Set the maximum planar distance a map click or search by location will match a point in the search by layer.  The search tolerence is first used to find matching locations, this will further refine the results."
+        },
+        {
+          "type": "options",
+          "fieldName": "pointOverlapUnit",
+          "tooltip": "The Point on Point Distance unit.",
+          "label": "Point on Point Distance Unit:",
+          "options": [{
+            "label": "Meters",
+            "value": "meters"
+          }, {
+            "label": "Feet",
+            "value": "feet"
+          }, {
+            "label": "Kilometers",
+            "value": "kilometers"
+          }, {
+            "label": "Miles",
+            "value": "miles"
+          }]
         }
       ]
     },
@@ -477,6 +516,9 @@
     "minLineSize": 1,
     "minPolygonSize": 5,
     "checkSize": false,
-    "onlySearchFeature": false
+    "onlySearchFeature": false,
+    "searchTol":4,
+    "pointOverlap":40,
+    "pointOverlapUnit":'feet'
   }
 }

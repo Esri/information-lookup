@@ -87,7 +87,10 @@ define([], function () {
     "minLineSize": 1,
     "minPolygonSize": 5,
     "checkSize": false,
-    "onlySearchFeature": false
+    "onlySearchFeature": false,
+    "searchTol": 4,
+    "pointOverlap": 40,
+    "pointOverlapUnit": 'feet'
   };
   return defaults;
 });
