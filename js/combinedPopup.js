@@ -2067,7 +2067,6 @@ define([
         }
       } else {
         if (this.map._fixExtent(ext, true).lod.level > this.config.zoomLevel) {
-          console.log(1);
           if(this.config.orientForMobile) {
             var offset = this._offsetLocation({"ext":ext});
             // offset where point to zoom the map so that the infowindow will always be centered
