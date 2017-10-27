@@ -71,19 +71,22 @@
           "type": "color",
           "fieldName": "color",
           "tooltip": "Font color",
-          "label": "Font color:"
+          "label": "Font color:",
+          "sharedThemeProperty": "header.text"
         },
         {
           "type": "color",
           "fieldName": "backcolor",
           "tooltip": "UI color",
-          "label": "Theme Color:"
+          "label": "Theme Color:",
+          "sharedThemeProperty": "header.background"
         },
         {
           "type": "color",
           "fieldName": "hypercolor",
           "tooltip": "Hyperlink color",
-          "label": "Hyperlink Color:"
+          "label": "Hyperlink Color:",
+          "sharedThemeProperty": "button.text"
         }
       ]
     },
@@ -412,6 +415,12 @@
            "tooltip": "Add email and link buttons on the side panel."
          },
         {
+            "type": "boolean",
+            "fieldName": "orientForMobile",
+            "label": "Center the pop up on mobile viewing",
+            "tooltip": "Center the pop up on a mobile screen by offsetting the search location."
+        },
+        {
           "type": "string",
           "fieldName": "serviceUnavailableTitle",
           "label": "Outside Lookup Layer Popup Title:",
@@ -511,6 +520,7 @@
     "popupSide": false,
     "popPostMessage": "",
     "popPreMessage": "",
+    "orientForMobile": false,
     "linksInPopup": false,
     "linksInPopupSide": true,
     "minLineSize": 1,
