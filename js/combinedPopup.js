@@ -26,6 +26,8 @@ define([
   "esri/dijit/PopupTemplate",
   "esri/geometry/webMercatorUtils",
   "esri/geometry/geometryEngine",
+  "esri/geometry/ScreenPoint",
+  "esri/layers/FeatureLayer",
   "esri/request",
   "dojo/string",
   "dojo/i18n!application/nls/resources"
@@ -56,6 +58,8 @@ define([
   PopupTemplate,
   webMercatorUtils,
   geometryEngine,
+  ScreenPoint,
+  FeatureLayer,
   esriRequest,
   djString,
   i18n
@@ -160,7 +164,7 @@ define([
 
         }
 
-      }
+      };
     },
     requestFailed: function (error, io) {
 
@@ -360,7 +364,7 @@ define([
         }
       }
       for (var f = 0, fl = this.lookupLayers.length; f < fl; f++) {
-        layerObject = null
+        layerObject = null;
 
         if (this.lookupLayers[f].hasOwnProperty("layer")) {
           if (this.lookupLayers[f].layer.hasOwnProperty("layerObject")) {
@@ -460,7 +464,7 @@ define([
          // queryDeferred = this.lookupLayers[f].layerObject.queryFeatures(query);
           queryTask = new QueryTask(this.lookupLayers[f].url);
           queryDeferred = queryTask.execute(query);
-         
+
           queryDeferred.addCallback(lang.hitch(this, this._queryComplete(this.lookupLayers[f])));
 
           queryDeferred.addErrback(lang.hitch(this, this._queryError));
@@ -1474,17 +1478,19 @@ define([
         var rUrl = new RegExp("^(?:[a-z]+:)?//", "i");
         //var rFile = new RegExp("^([a-zA-Z]:|\\\\[a-z]+)?(\\|\/|\\\\|//)", "i");
 
-        var replaceVal = Math.random().toString(36).substr(2, 5);
+        var replaceVal = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
         var oid = null;
         oid = this._getOID(feature, layer);
         var replaceOID = replaceVal + "_" + oid + "_";
         var resultFeature = {};
         var layerFields = null;
+        var fcFields = null;
         if (layer.hasOwnProperty("layerObject") &&
           layer.layerObject !== undefined &&
           layer.layerObject !== null) {
           if (layer.layerObject.hasOwnProperty("fields")) {
             layerFields = layer.layerObject.fields;
+            fcFields = lang.clone(layer.layerObject.fields);
           }
         } else if (layer.hasOwnProperty("layer") &&
           layer.layer !== undefined &&
@@ -1494,11 +1500,13 @@ define([
              layer.layer.layerObject !== null) {
             if (layer.layer.layerObject.hasOwnProperty("fields")) {
               layerFields = layer.layer.layerObject.fields;
+              fcFields = lang.clone(layer.layerObject.fields);
             }
           }
         }
         if (layerFields === undefined) {
           layerFields = null;
+          fcFields = null;
         }
         if (popupInfo !== null && popupInfo !== undefined) {
           if (popupInfo.showAttachments == true) {
@@ -1533,6 +1541,7 @@ define([
               exp_lookup[expressionInfo.name] = expressionInfo.title;
             }, this);
           }
+          var new_to_old_field = {};
           for (var g = 0, gl = layerFields.length; g < gl; g++) {
             var new_field_name;
             if (layerFields[g].fieldName.indexOf('expression/') !== -1) {
@@ -1541,6 +1550,7 @@ define([
             }
             else {
               new_field_name = replaceOID + layerFields[g].fieldName;
+              new_to_old_field[layerFields[g].fieldName] = new_field_name;
             }
 
             if (mediaInfos !== null && mediaInfos !== undefined) {
@@ -1558,6 +1568,7 @@ define([
 
               }, this);
             }
+
             if (popupInfo.description === null ||
               popupInfo.description === undefined) {
 
@@ -1595,40 +1606,44 @@ define([
               layerDescription = layerDescription.replace(re, "{" + new_field_name + "}");
 
             }
-            var fldVal = feature.attributes[layerFields[g].fieldName];
 
+            if (feature.attributes.hasOwnProperty(layerFields[g].fieldName)) {
+              var fldVal = feature.attributes[layerFields[g].fieldName];
+              if (fldVal !== null && fldVal !== undefined) {
 
-            if (fldVal !== null && fldVal !== undefined) {
-
-              if (layerFields[g].hasOwnProperty("domain") &&
-              layerFields[g].domain !== undefined &&
-              layerFields[g].domain !== null) {
-                var domain = layerFields[g].domain;
-                if (domain.hasOwnProperty("codedValues") &&
-                  domain.codedValues !== undefined &&
-                  domain.codedValues !== null) {
-                  array.some(domain.codedValues, function (codedValue) {
-                    if (codedValue.code.toString() === fldVal.toString()) {
-                      fldVal = codedValue.name;
-                    }
-                  });
-                }
-              }
-              fldVal = fldVal.toString();
-
-              if (rUrl.test(fldVal)) {
-
-                if (popupInfo.description === null ||
-                  popupInfo.description === undefined) {
-                  resultFeature[new_field_name + "_" + "Hyper"] =
-                    "<a target='_blank' href='" + fldVal + "'>" +
-                    i18n.popup.urlMoreInfo + "</a>";
-
-                  if (layFldTable.indexOf("{" + new_field_name + "}") >= 0) {
-                    layFldTable = layFldTable.replace("{" + new_field_name + "}", "{" + new_field_name + "_" +
-                      "Hyper" + "}");
+                if (layerFields[g].hasOwnProperty("domain") &&
+                layerFields[g].domain !== undefined &&
+                layerFields[g].domain !== null) {
+                  var domain = layerFields[g].domain;
+                  if (domain.hasOwnProperty("codedValues") &&
+                    domain.codedValues !== undefined &&
+                    domain.codedValues !== null) {
+                    array.some(domain.codedValues, function (codedValue) {
+                      if (codedValue.code.toString() === fldVal.toString()) {
+                        fldVal = codedValue.name;
+                      }
+                    });
                   }
-                  resultFeature[new_field_name] = fldVal;
+                }
+                fldVal = fldVal.toString();
+
+                if (rUrl.test(fldVal)) {
+
+                  if (popupInfo.description === null ||
+                    popupInfo.description === undefined) {
+                    resultFeature[new_field_name + "_" + "Hyper"] =
+                      "<a target='_blank' href='" + fldVal + "'>" +
+                      i18n.popup.urlMoreInfo + "</a>";
+
+                    if (layFldTable.indexOf("{" + new_field_name + "}") >= 0) {
+                      layFldTable = layFldTable.replace("{" + new_field_name + "}", "{" + new_field_name + "_" +
+                        "Hyper" + "}");
+                    }
+                    resultFeature[new_field_name] = fldVal;
+                  }
+                  else {
+                    resultFeature[new_field_name] = fldVal;
+                  }
                 }
                 else {
                   resultFeature[new_field_name] = fldVal;
@@ -1638,9 +1653,7 @@ define([
                 resultFeature[new_field_name] = fldVal;
               }
             }
-            else {
-              resultFeature[new_field_name] = fldVal;
-            }
+
             layerFields[g].fieldName = new_field_name;
 
           }
@@ -1670,14 +1683,25 @@ define([
             popupTable = popupTable + "</div>";
             layerDescription = popupTable;
           }
+          if (fcFields) {
+            array.forEach(fcFields, function (field) {
+              if (new_to_old_field.hasOwnProperty(field.name)) {
+                field.name = new_to_old_field[field.name];
+                if (field.type === "esriFieldTypeOID") {
+                  field.type = "esriFieldTypeInteger";
+                }
+              }
+            });
+          }
+
           return {
             fields: layerFields,
             media: mediaInfos,
             desc: layerDescription,
             feature: resultFeature,
             newid: replaceOID,
-            expression: expressionInfos
-
+            expression: expressionInfos,
+            fcFields: fcFields
           };
 
         }
@@ -1692,7 +1716,7 @@ define([
         this.promises = [];
         this.attLinks = "";
         var allFields = [];
-
+        var allFCFields = [];
         var allDescriptions = "";
         var popUpArray = {};
         var mediaArray = {};
@@ -1734,9 +1758,9 @@ define([
               var desc = null;
               var popDet = this._getPopupForResult(feature, layer);
               //try {
-              //  //if (layer.infoTemplate) {       
+              //  //if (layer.infoTemplate) {
               //  //  //layer.layerObject.infoTemplate
-                  
+
               //  //  //this.popContentCP.set("content", this.map.infoWindow.setFeatures([feature]).features[0].getContent());
               //  //  //this.popContentCP.set("content", new Graphic(feature, null, feature.attributes, layer.infoTemplate).getContent());
               //  //  //desc = this.popContentCP.domNode.innerHTML.split('<div class="break">')[0];
@@ -1746,7 +1770,7 @@ define([
               //  //  desc = this.popContentCP.domNode.innerHTML;
               //  //  //desc = this.popContentCP.domNode.innerHTML.split('<div class="break">')[0];
               //  //  //desc = desc.split('<div class="mainSection">')[1];
-               
+
               //  //  //if (layer.infoTemplate.info !== null && layer.infoTemplate.info !== undefined) {
               //  //  //  if (layer.infoTemplate.info.popupTitle !== "") {
               //  //  //    desc = desc.split('<div class="hzLine"></div>')[1];
@@ -1754,7 +1778,7 @@ define([
               //  //  //}
               //  //}
               //  //else {
-                  
+
               //  //}
               //}
               //catch (err) {
@@ -1768,7 +1792,8 @@ define([
                 //oid = feature.attributes[result.Layer.layerObject.objectIdField];
                 mediaArray[result.Layer.layerOrder][popDet.newid] = popDet.media;
                 expressionArray[result.Layer.layerOrder][popDet.newid] = popDet.expression;
-                popUpArray[result.Layer.layerOrder][popDet.newid] = desc//popDet.desc;
+                popUpArray[result.Layer.layerOrder][popDet.newid] = desc;//popDet.desc;
+                allFCFields = allFCFields.concat(popDet.fcFields);
               }
 
             }, this);
@@ -1883,6 +1908,10 @@ define([
                   allDescriptions = allDescriptions.replace(/{IL_SEARCHBY}/gi, searchByPopup.desc);
                   allFields = allFields.concat(searchByPopup.fields);
                   resultFeature = lang.mixin(resultFeature, searchByPopup.feature);
+
+                  //TODO: Do we need to handle expressions in the search by layer
+                  //expressionArray[result.Layer.layerOrder][searchByPopup.newid] = searchByPopup.expression;
+                  allFCFields = allFCFields.concat(searchByPopup.fcFields);
                 }
               }
             }
@@ -1915,7 +1944,8 @@ define([
                 finalExpArr,
                 this.config.serviceRequestLayerAvailibiltyFieldValueAvail,
                 resultFeature,
-                centr
+                centr,
+                allFCFields
                 );
             }));
           }
@@ -1935,7 +1965,8 @@ define([
               this.config.serviceRequestLayerAvailibiltyFieldValueAvail,
               resultFeature,
               centr,
-              show_at_center
+              show_at_center,
+              allFCFields
               );
           }
         }
@@ -1956,7 +1987,8 @@ define([
           this.config.serviceRequestLayerAvailibiltyFieldValueNotAvail,
           resultFeature,
           centr,
-          show_at_center
+          show_at_center,
+          allFCFields
           );
         }
 
@@ -1965,7 +1997,7 @@ define([
 
       }
     },
-    _showFinalResults: function (title, fieldInfos, description, mediaInfos, expressionInfos, valToStore, resultFeature, centr, showAtCenter) {
+    _showFinalResults: function (title, fieldInfos, description, mediaInfos, expressionInfos, valToStore, resultFeature, centr, showAtCenter,fcfields) {
       var atts = {};
       showAtCenter = showAtCenter || false;
       this.popupTemplate = new PopupTemplate({
@@ -1989,6 +2021,22 @@ define([
 
       if (this.showGraphic === true) {
         this.map.graphics.add(editGraphic);
+        //This may be need to added arcade expressions
+        this.map.graphics.fields = fcfields;
+      } else {
+
+        var layerDefinition = {
+          "geometryType": "esriGeometryPoint",
+          "fields": fcfields
+        };
+        var featureCollection = {
+          layerDefinition: layerDefinition,
+          featureSet: null
+        };
+        var featureLayer = new FeatureLayer(featureCollection, {
+          showLabels: false
+        });
+        editGraphic._layer = featureLayer;
       }
       featureArray.push(editGraphic);
 
@@ -2007,16 +2055,52 @@ define([
       var def;
       var ext = this._getExtent(this.event);
       if (ext === null) {
-        def = this.map.centerAndZoom(centr, this.config.zoomLevel);
-
-      } else {
-        if (this.map._fixExtent(ext, true).lod.level > this.config.zoomLevel) {
+        if(this.config.orientForMobile) {
+          var offset = this._offsetLocation({"ext":ext});
+          // offset where point to zoom the map so that the infowindow will always be centered
+          var newX = centr.x + offset.x;
+          var newY = centr.y + offset.y;
+          var centerPopup = new Point(newX, newY, this.map.spatialReference);
+          def = this.map.centerAndZoom(centerPopup, this.config.zoomLevel);
+        } else {
           def = this.map.centerAndZoom(centr, this.config.zoomLevel);
         }
-        else {
-          def = this.map.setExtent(ext, true);
+      } else {
+        if (this.map._fixExtent(ext, true).lod.level > this.config.zoomLevel) {
+          if(this.config.orientForMobile) {
+            var offset = this._offsetLocation({"ext":ext});
+            // offset where point to zoom the map so that the infowindow will always be centered
+            /*
+            var extCenter = ext.getCenter();
+            var newX = extCenter.x + offset.x;
+            var newY = extCenter.y - offset.y;
+            var newLocation = new Point(newX, newY, this.map.spatialReference);
+            def = this.map.centerAndZoom(newLocation, this.config.zoomLevel);
+            */
+            var newMinX = ext.xmin + offset.x;
+            var newMaxX = ext.xmax + offset.x;
+            var newMinY = ext.ymin + offset.y;
+            var newMaxY = ext.ymax + offset.y;
+            ext.update(newMinX, newMinY, newMaxX, newMaxY, this.map.spatialReference);
+            def = this.map.setExtent(ext, true);
+          }
+          else {
+            def = this.map.centerAndZoom(centr, this.config.zoomLevel);
+          }
         }
-
+        else {
+          if(this.config.orientForMobile) {
+            var offset = this._offsetLocation({"ext":ext});
+            var newMinX = ext.xmin + offset.x;
+            var newMaxX = ext.xmax + offset.x;
+            var newMinY = ext.ymin + offset.y;
+            var newMaxY = ext.ymax + offset.y;
+            ext.update(newMinX, newMinY, newMaxX, newMaxY, this.map.spatialReference);
+            def = this.map.setExtent(ext, true);
+          } else {
+            def = this.map.setExtent(ext, true);
+          }
+        }
 
       }
       def.addCallback(lang.hitch(this, function () {
@@ -2042,6 +2126,44 @@ define([
         }
       }));
 
+    },
+    _offsetLocation: function(args) {
+      if(args.ext !== null) {
+        //gets the level of the feature selected to use the level's rez to offset
+        var fixed = this.map._fixExtent(args.ext, true);
+        var level = fixed.lod.level;
+        var lods = this.map.__tileInfo.lods;
+        var rez = 0;
+        // loop through the levels and match the one that the selected feature entails
+        array.forEach(lods, lang.hitch(this, function(lod) {
+          if(lod.level === level) {
+            rez = lod.resolution;
+          }
+        }));
+      } else {
+        //get the LODs in map and match the level set in config to get the resolution
+        var lods = this.map.__tileInfo.lods;
+        var rez = 0;
+        array.forEach(lods, lang.hitch(this, function(lod) {
+          if(lod.level === this.config.zoomLevel) {
+            rez = lod.resolution;
+          }
+        }));
+      }
+      //multiply the resolution and info window size to know how much to offset the point clicked
+      var popW = this.map.infoWindow._positioner.clientWidth;
+      var popH = this.map.infoWindow._positioner.clientHeight;
+      var multiplierH = 1;
+      var multiplierW = 2 * (this.map.width / popW);
+      if(this.map.infoWindow.features[0].infoTemplate.info.title === this.config.serviceUnavailableTitle ||
+        this.map.infoWindow.features[0].infoTemplate.info.title === this.config.noSearchFeatureTitle) {
+        multiplierH =  1 + (popH / this.map.height);
+      } else {
+        multiplierH = 2.2 + (popH / this.map.height);
+      }
+      var offsetX = (rez * this.map.infoWindow._positioner.clientWidth) / multiplierW;
+      var offsetY = (rez * this.map.infoWindow._positioner.clientHeight) * multiplierH;
+      return {"x": offsetX, "y": offsetY};
     },
     _showNoSearchFeatureFound: function () {
       var centr = this._getCenter(this.searchLoc);
@@ -2105,14 +2227,51 @@ define([
       var ext = this._getExtent(this.event);
       var def = null;
       if (ext === null) {
-        def = this.map.centerAndZoom(centr, this.config.zoomLevel);
+        if(this.config.orientForMobile) {
+          var offset = this._offsetLocation({"ext":ext});
+          // offset where point to zoom the map so that the infowindow will always be centered
+          var newX = centr.x + offset.x;
+          var newY = centr.y + offset.y;
+          var centerPopup = new Point(newX, newY, this.map.spatialReference);
+          def = this.map.centerAndZoom(centerPopup, this.config.zoomLevel);
+        } else {
+          def = this.map.centerAndZoom(centr, this.config.zoomLevel);
+        }
 
       } else {
         if (this.map._fixExtent(ext, true).lod.level > this.config.zoomLevel) {
-          def = this.map.centerAndZoom(centr, this.config.zoomLevel);
+          if(this.config.orientForMobile) {
+            var offset = this._offsetLocation({"ext":ext});
+            // offset where point to zoom the map so that the infowindow will always be centered
+            /*
+            var extCenter = ext.getCenter();
+            var newX = extCenter.x + offset.x;
+            var newY = extCenter.y - offset.y + ext.getHeight();
+            var newLocation = new Point(newX, newY, this.map.spatialReference);
+            def = this.map.centerAndZoom(newLocation, this.config.zoomLevel);
+            */
+            var newMinX = ext.xmin + offset.x;
+            var newMaxX = ext.xmax + offset.x;
+            var newMinY = ext.ymin + offset.y;
+            var newMaxY = ext.ymax + offset.y;
+            ext.update(newMinX, newMinY, newMaxX, newMaxY, this.map.spatialReference);
+            def = this.map.setExtent(ext, true);
+          } else {
+            def = this.map.centerAndZoom(centr, this.config.zoomLevel);
+          }
         }
         else {
-          def = this.map.setExtent(ext, true);
+          if(this.config.orientForMobile) {
+            var offset = this._offsetLocation({"ext":ext});
+            var newMinX = ext.xmin + offset.x;
+            var newMaxX = ext.xmax + offset.x;
+            var newMinY = ext.ymin + offset.y;
+            var newMaxY = ext.ymax + offset.y;
+            ext.update(newMinX, newMinY, newMaxX, newMaxY, this.map.spatialReference);
+            def = this.map.setExtent(ext, true);
+          } else {
+            def = this.map.setExtent(ext, true);
+          }
         }
 
 

@@ -1,6 +1,6 @@
 /*global define,location */
 define([], function () {
-  //Default configuration settings for the application. This is where you'll define things like a bing maps key, 
+  //Default configuration settings for the application. This is where you'll define things like a bing maps key,
   //default web map, default app color theme and more. These values can be overwritten by template configuration settings
   //and url parameters.
   var defaults = {
@@ -36,11 +36,9 @@ define([], function () {
 
       }]
     },
-    "searchByLayer": [{
-      "id": "",
-      "fields": []
-    }],
+    "searchByLayer": {},
     "serviceAreaLayerNames": "Service Area",
+    "serviceAreaLayerNamesSelector": "",
     "popupTitle": "Service Information",
     "serviceUnavailableTitle": "Outside Service Area",
     "serviceUnavailableMessage": "No information is available at the selected location",
@@ -68,6 +66,7 @@ define([], function () {
     "title": "Information Lookup",
     "popPreMessage": null,
     "popPostMessage": null,
+    "orientForMobile": false,
     "pageIcon": '',
     "basemapWidgetVisible": true,
 
