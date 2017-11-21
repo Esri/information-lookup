@@ -6,6 +6,7 @@ define([
   "esri/dijit/Search",
   "esri/lang",
   "dojo/topic",
+  "dojo/dom",
   "dojo/i18n!application/nls/resources",
   "application/SearchSources",
   "esri/urlUtils"
@@ -18,6 +19,7 @@ function (
   Search,
   esriLang,
   topic,
+  dom,
   i18n,
   SearchSources,
   urlUtils
@@ -294,6 +296,9 @@ function (
             }
             topic.publish("app.mapLocate", msg);
           }
+        }
+        if((this).hasOwnProperty("search")) {
+          dom.byId(this.search.inputNode.id).blur();
         }
       }
     }
