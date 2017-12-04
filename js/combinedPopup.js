@@ -827,7 +827,7 @@ define([
                 layDetails.layerOrder = f;
                 layDetails.url = layer.layerObject.url + "/" + subLyrs.id;
                 layDetails.layerObject = layer.layerObject;
-                this.getMapServerLayersContents(layDetails.url, layDetails)
+                this.getMapServerLayersContents(layDetails.url, layDetails);
 
                 if (layer.layers !== null &&
                   layer.layers !== undefined) {
@@ -1258,12 +1258,12 @@ define([
                     return false;
                   }
                   try {
-                    size = geometryEngine.geodesicArea(intersection, 109405)
+                    size = geometryEngine.geodesicArea(intersection, 109405);
 
                   }
                   catch (err) {
                     try {
-                      size = geometryEngine.planarArea(intersection, 109405)
+                      size = geometryEngine.planarArea(intersection, 109405);
                     }
                     catch (err) {
 
@@ -1278,12 +1278,12 @@ define([
                     return false;
                   }
                   try {
-                    size = geometryEngine.geodesicLength(intersection, 9002)
+                    size = geometryEngine.geodesicLength(intersection, 9002);
 
                   }
                   catch (err) {
                     try {
-                      size = geometryEngine.planarLength(intersection, 9002)
+                      size = geometryEngine.planarLength(intersection, 9002);
                     }
                     catch (err) {
 
@@ -1303,12 +1303,12 @@ define([
                     return false;
                   }
                   try {
-                    size = geometryEngine.geodesicLength(intersection, 9002)
+                    size = geometryEngine.geodesicLength(intersection, 9002);
 
                   }
                   catch (err) {
                     try {
-                      size = geometryEngine.planarLength(intersection, 9002)
+                      size = geometryEngine.planarLength(intersection, 9002);
                     }
                     catch (err) {
 
@@ -1588,7 +1588,7 @@ define([
                   field_label = layerFields[g].label;
                 }
                 else {
-                  field_label = layerFields[g].fieldName
+                  field_label = layerFields[g].fieldName;
                 }
 
                 layFldTable = layFldTable + "<td class='popName'>" +
@@ -2039,6 +2039,8 @@ define([
         editGraphic._layer = featureLayer;
       }
       featureArray.push(editGraphic);
+
+      this.map.infoWindow.markerSymbol.outline.setColor(new Color([0,0,0,0]));
 
       this.map.infoWindow.setFeatures(featureArray);
       if (this.config.popupWidth !== null && this.config.popupHeight !== null) {
