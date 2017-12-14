@@ -36,10 +36,7 @@ define([], function () {
 
       }]
     },
-    "searchByLayer": [{
-        "id": "",
-        "fields": []
-    }],
+    "searchByLayer": {},
     "serviceAreaLayerNames": "Service Area",
     "serviceAreaLayerNamesSelector": "",
     "popupTitle": "Service Information",
