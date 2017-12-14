@@ -19,6 +19,7 @@ define([
   "dojo",
   "dojo/_base/declare",
   "dojo/_base/lang",
+  'dojo/_base/html',
   "dojo/Deferred",
   "esri/arcgis/utils",
   "dojo/dom",
@@ -41,6 +42,7 @@ function (
     dojo,
     declare,
     lang,
+    html,
     Deferred,
     arcgisUtils,
     dom,
@@ -70,7 +72,6 @@ function (
       this._toggleIndicatorListener = topic.subscribe("app.toggleIndicator", this._toggleIndicator);
       this._errorListener = topic.subscribe("app.error", this.reportError);
       //topic.subscribe("app.mapLocate", lang.hitch(this, this._mapLocate));
-
       if (config) {
         this.config = config;
         this._setApplicationShortcutIcon();
@@ -93,6 +94,19 @@ function (
         this._drawer.startup();
 
         this._checkEditing();
+
+        //Added: 11/21/17 to override CSS for popup so close button is easier on mobile platforms.
+        if((this.config).hasOwnProperty("orientForMobile")) {
+          if(this.config.orientForMobile) {
+            html.create('link', {
+              id: "mobileInfoLookUpCss",
+              rel: "stylesheet",
+              type: "text/css",
+              href: "css/mobileOverride.css"
+            }, document.getElementsByTagName('head')[0]);
+          }
+        }
+
         try {
 
           this.config = config;
@@ -179,7 +193,6 @@ function (
               }
             }
           }
-
         }
         catch (e) {
           console.log(e.message);
@@ -257,7 +270,7 @@ function (
         this._drawer.hideBar();
         return;
       }
-   
+
       if (this.config.pageIcon !== null &&
         this.config.pageIcon !== undefined &&
         this.config.pageIcon !== "") {
@@ -273,13 +286,13 @@ function (
           });
       }
       if (this.config.showUI && this.config.showUI === true) {
-        
+
         if (this.config.popupSide !== undefined && this.config.popupSide === false) {
 
           this._drawer.hideSide();
           return;
         }
-       
+
       }
 
 
@@ -354,7 +367,7 @@ function (
 
         topic.subscribe("app.combined_popup_loaded", lang.hitch(this, this._combinedLoaded));
         this.popup.startup();
-       
+
 
         topic.publish("app.mapLoaded", this.map);
          //domClass.add(document.body, this.config.theme);
@@ -375,7 +388,7 @@ function (
 
         this._drawer.toggle(false);
         this._drawer.resize();
-        
+
         this.map.resize(true);
 
       }
