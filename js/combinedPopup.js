@@ -1500,7 +1500,7 @@ define([
              layer.layer.layerObject !== null) {
             if (layer.layer.layerObject.hasOwnProperty("fields")) {
               layerFields = layer.layer.layerObject.fields;
-              fcFields = lang.clone(layer.layerObject.fields);
+              fcFields = lang.clone(layer.layer.layerObject.fields);
             }
           }
         }
