@@ -164,7 +164,7 @@ define([
 
         }
 
-      }
+      };
     },
     requestFailed: function (error, io) {
 
@@ -827,7 +827,7 @@ define([
                 layDetails.layerOrder = f;
                 layDetails.url = layer.layerObject.url + "/" + subLyrs.id;
                 layDetails.layerObject = layer.layerObject;
-                this.getMapServerLayersContents(layDetails.url, layDetails)
+                this.getMapServerLayersContents(layDetails.url, layDetails);
 
                 if (layer.layers !== null &&
                   layer.layers !== undefined) {
@@ -1258,12 +1258,12 @@ define([
                     return false;
                   }
                   try {
-                    size = geometryEngine.geodesicArea(intersection, 109405)
+                    size = geometryEngine.geodesicArea(intersection, 109405);
 
                   }
                   catch (err) {
                     try {
-                      size = geometryEngine.planarArea(intersection, 109405)
+                      size = geometryEngine.planarArea(intersection, 109405);
                     }
                     catch (err) {
 
@@ -1278,12 +1278,12 @@ define([
                     return false;
                   }
                   try {
-                    size = geometryEngine.geodesicLength(intersection, 9002)
+                    size = geometryEngine.geodesicLength(intersection, 9002);
 
                   }
                   catch (err) {
                     try {
-                      size = geometryEngine.planarLength(intersection, 9002)
+                      size = geometryEngine.planarLength(intersection, 9002);
                     }
                     catch (err) {
 
@@ -1303,12 +1303,12 @@ define([
                     return false;
                   }
                   try {
-                    size = geometryEngine.geodesicLength(intersection, 9002)
+                    size = geometryEngine.geodesicLength(intersection, 9002);
 
                   }
                   catch (err) {
                     try {
-                      size = geometryEngine.planarLength(intersection, 9002)
+                      size = geometryEngine.planarLength(intersection, 9002);
                     }
                     catch (err) {
 
@@ -1500,7 +1500,7 @@ define([
              layer.layer.layerObject !== null) {
             if (layer.layer.layerObject.hasOwnProperty("fields")) {
               layerFields = layer.layer.layerObject.fields;
-              fcFields = lang.clone(layer.layerObject.fields);
+              fcFields = lang.clone(layer.layer.layerObject.fields);
             }
           }
         }
@@ -1588,7 +1588,7 @@ define([
                   field_label = layerFields[g].label;
                 }
                 else {
-                  field_label = layerFields[g].fieldName
+                  field_label = layerFields[g].fieldName;
                 }
 
                 layFldTable = layFldTable + "<td class='popName'>" +
@@ -1792,7 +1792,7 @@ define([
                 //oid = feature.attributes[result.Layer.layerObject.objectIdField];
                 mediaArray[result.Layer.layerOrder][popDet.newid] = popDet.media;
                 expressionArray[result.Layer.layerOrder][popDet.newid] = popDet.expression;
-                popUpArray[result.Layer.layerOrder][popDet.newid] = desc//popDet.desc;
+                popUpArray[result.Layer.layerOrder][popDet.newid] = desc;//popDet.desc;
                 allFCFields = allFCFields.concat(popDet.fcFields);
               }
 
@@ -2040,6 +2040,8 @@ define([
       }
       featureArray.push(editGraphic);
 
+      this.map.infoWindow.markerSymbol.outline.setColor(new Color([0,0,0,0]));
+
       this.map.infoWindow.setFeatures(featureArray);
       if (this.config.popupWidth !== null && this.config.popupHeight !== null) {
         this.map.infoWindow.resize(this.config.popupWidth, this.config.popupHeight);
@@ -2055,31 +2057,52 @@ define([
       var def;
       var ext = this._getExtent(this.event);
       if (ext === null) {
-        //get the LODs in map and match the level set in config to get the resolution
-        var lods = this.map.__tileInfo.lods;
-        var rez = 0;
-        array.forEach(lods, lang.hitch(this, function(lod) {
-          if(lod.level === this.config.zoomLevel) {
-            rez = lod.resolution;
-          }
-        }));
-        //multiple the resolution and info window size to know how much to offset the point clicked
-        var offsetX = rez * this.map.infoWindow._positioner.clientWidth;
-        var offsetY = rez * this.map.infoWindow._positioner.clientHeight;
-        // offset where point to zoom the map so that the infowindow will always be centered
-        var newX = centr.x + offsetX / 2;
-        var newY = centr.y + offsetY;
-        var centerPopup = new Point(newX, newY, this.map.spatialReference);
-        def = this.map.centerAndZoom(centerPopup, this.config.zoomLevel);
-
-      } else {
-        if (this.map._fixExtent(ext, true).lod.level > this.config.zoomLevel) {
+        if(this.config.orientForMobile) {
+          var offset = this._offsetLocation({"ext":ext});
+          // offset where point to zoom the map so that the infowindow will always be centered
+          var newX = centr.x + offset.x;
+          var newY = centr.y + offset.y;
+          var centerPopup = new Point(newX, newY, this.map.spatialReference);
+          def = this.map.centerAndZoom(centerPopup, this.config.zoomLevel);
+        } else {
           def = this.map.centerAndZoom(centr, this.config.zoomLevel);
         }
-        else {
-          def = this.map.setExtent(ext, true);
+      } else {
+        if (this.map._fixExtent(ext, true).lod.level > this.config.zoomLevel) {
+          if(this.config.orientForMobile) {
+            var offset = this._offsetLocation({"ext":ext});
+            // offset where point to zoom the map so that the infowindow will always be centered
+            /*
+            var extCenter = ext.getCenter();
+            var newX = extCenter.x + offset.x;
+            var newY = extCenter.y - offset.y;
+            var newLocation = new Point(newX, newY, this.map.spatialReference);
+            def = this.map.centerAndZoom(newLocation, this.config.zoomLevel);
+            */
+            var newMinX = ext.xmin + offset.x;
+            var newMaxX = ext.xmax + offset.x;
+            var newMinY = ext.ymin + offset.y;
+            var newMaxY = ext.ymax + offset.y;
+            ext.update(newMinX, newMinY, newMaxX, newMaxY, this.map.spatialReference);
+            def = this.map.setExtent(ext, true);
+          }
+          else {
+            def = this.map.centerAndZoom(centr, this.config.zoomLevel);
+          }
         }
-
+        else {
+          if(this.config.orientForMobile) {
+            var offset = this._offsetLocation({"ext":ext});
+            var newMinX = ext.xmin + offset.x;
+            var newMaxX = ext.xmax + offset.x;
+            var newMinY = ext.ymin + offset.y;
+            var newMaxY = ext.ymax + offset.y;
+            ext.update(newMinX, newMinY, newMaxX, newMaxY, this.map.spatialReference);
+            def = this.map.setExtent(ext, true);
+          } else {
+            def = this.map.setExtent(ext, true);
+          }
+        }
 
       }
       def.addCallback(lang.hitch(this, function () {
@@ -2105,6 +2128,44 @@ define([
         }
       }));
 
+    },
+    _offsetLocation: function(args) {
+      if(args.ext !== null) {
+        //gets the level of the feature selected to use the level's rez to offset
+        var fixed = this.map._fixExtent(args.ext, true);
+        var level = fixed.lod.level;
+        var lods = this.map.__tileInfo.lods;
+        var rez = 0;
+        // loop through the levels and match the one that the selected feature entails
+        array.forEach(lods, lang.hitch(this, function(lod) {
+          if(lod.level === level) {
+            rez = lod.resolution;
+          }
+        }));
+      } else {
+        //get the LODs in map and match the level set in config to get the resolution
+        var lods = this.map.__tileInfo.lods;
+        var rez = 0;
+        array.forEach(lods, lang.hitch(this, function(lod) {
+          if(lod.level === this.config.zoomLevel) {
+            rez = lod.resolution;
+          }
+        }));
+      }
+      //multiply the resolution and info window size to know how much to offset the point clicked
+      var popW = this.map.infoWindow._positioner.clientWidth;
+      var popH = this.map.infoWindow._positioner.clientHeight;
+      var multiplierH = 1;
+      var multiplierW = 2 * (this.map.width / popW);
+      if(this.map.infoWindow.features[0].infoTemplate.info.title === this.config.serviceUnavailableTitle ||
+        this.map.infoWindow.features[0].infoTemplate.info.title === this.config.noSearchFeatureTitle) {
+        multiplierH =  1 + (popH / this.map.height);
+      } else {
+        multiplierH = 2.2 + (popH / this.map.height);
+      }
+      var offsetX = (rez * this.map.infoWindow._positioner.clientWidth) / multiplierW;
+      var offsetY = (rez * this.map.infoWindow._positioner.clientHeight) * multiplierH;
+      return {"x": offsetX, "y": offsetY};
     },
     _showNoSearchFeatureFound: function () {
       var centr = this._getCenter(this.searchLoc);
@@ -2168,14 +2229,51 @@ define([
       var ext = this._getExtent(this.event);
       var def = null;
       if (ext === null) {
-        def = this.map.centerAndZoom(centr, this.config.zoomLevel);
+        if(this.config.orientForMobile) {
+          var offset = this._offsetLocation({"ext":ext});
+          // offset where point to zoom the map so that the infowindow will always be centered
+          var newX = centr.x + offset.x;
+          var newY = centr.y + offset.y;
+          var centerPopup = new Point(newX, newY, this.map.spatialReference);
+          def = this.map.centerAndZoom(centerPopup, this.config.zoomLevel);
+        } else {
+          def = this.map.centerAndZoom(centr, this.config.zoomLevel);
+        }
 
       } else {
         if (this.map._fixExtent(ext, true).lod.level > this.config.zoomLevel) {
-          def = this.map.centerAndZoom(centr, this.config.zoomLevel);
+          if(this.config.orientForMobile) {
+            var offset = this._offsetLocation({"ext":ext});
+            // offset where point to zoom the map so that the infowindow will always be centered
+            /*
+            var extCenter = ext.getCenter();
+            var newX = extCenter.x + offset.x;
+            var newY = extCenter.y - offset.y + ext.getHeight();
+            var newLocation = new Point(newX, newY, this.map.spatialReference);
+            def = this.map.centerAndZoom(newLocation, this.config.zoomLevel);
+            */
+            var newMinX = ext.xmin + offset.x;
+            var newMaxX = ext.xmax + offset.x;
+            var newMinY = ext.ymin + offset.y;
+            var newMaxY = ext.ymax + offset.y;
+            ext.update(newMinX, newMinY, newMaxX, newMaxY, this.map.spatialReference);
+            def = this.map.setExtent(ext, true);
+          } else {
+            def = this.map.centerAndZoom(centr, this.config.zoomLevel);
+          }
         }
         else {
-          def = this.map.setExtent(ext, true);
+          if(this.config.orientForMobile) {
+            var offset = this._offsetLocation({"ext":ext});
+            var newMinX = ext.xmin + offset.x;
+            var newMaxX = ext.xmax + offset.x;
+            var newMinY = ext.ymin + offset.y;
+            var newMaxY = ext.ymax + offset.y;
+            ext.update(newMinX, newMinY, newMaxX, newMaxY, this.map.spatialReference);
+            def = this.map.setExtent(ext, true);
+          } else {
+            def = this.map.setExtent(ext, true);
+          }
         }
 
 
