@@ -2306,23 +2306,24 @@ define([
       });
     },
     _logRequest: function (geom, atts) {
-      if (this.serviceRequestLayerName !== null) {
-        if (this.serviceRequestLayerName.isEditable() === true) {
-          if (this.serviceRequestLayerName.geometryType === "esriGeometryPoint") {
-            var serviceLocation = new Graphic(geom, null, atts);
-            var editDeferred = this.serviceRequestLayerName.applyEdits([serviceLocation],
-              null, null);
+      if (typeof this.serviceRequestLayerName !== "undefined") {
+        if (this.serviceRequestLayerName !== null) {
+          if (this.serviceRequestLayerName.isEditable() === true) {
+            if (this.serviceRequestLayerName.geometryType === "esriGeometryPoint") {
+              var serviceLocation = new Graphic(geom, null, atts);
+              var editDeferred = this.serviceRequestLayerName.applyEdits([serviceLocation],
+                null, null);
 
-            editDeferred.addCallback(lang.hitch(this, function (result) {
-              console.log(result);
-            }));
-            editDeferred.addErrback(function (error) {
-              console.log(error);
-            });
+              editDeferred.addCallback(lang.hitch(this, function (result) {
+                console.log(result);
+              }));
+              editDeferred.addErrback(function (error) {
+                console.log(error);
+              });
+            }
           }
         }
       }
-
     },
     _createSymbols: function () {
       this.markerSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_SQUARE, 20,
