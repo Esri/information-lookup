@@ -88,6 +88,11 @@ define([
     },
     startup: function () {
       //disconnect the popup handler
+      String.prototype.replaceAll = function (strReplace, strWith) {
+        var esc = strReplace.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        var reg = new RegExp(esc, 'ig');
+        return this.replace(reg, strWith);
+      };
       this._createSymbols();
       this.disableWebMapPopup();
       this.popContentCP = new ContentPane({}, domConstruct.create("div"));
@@ -1100,22 +1105,22 @@ define([
       }
 
     },
+
     _drawEnd: function (evt) {
       this.showPopup(evt.geometry, "MapClick");
     },
     _processExpression: function (expression, fieldName, newfieldName) {
       try {
-        //var regex = new RegExp("$feature." + fieldName, "g");
-        //expression = expression.replace(regex, "$feature." + newfieldName);
-        //regex = new RegExp("$feature,\"" + fieldName, "g");
-        //expression = expression.replace(regex, "$feature,\"" + newfieldName);
-        //regex = new RegExp("$feature, \"" + fieldName, "g");
-        //expression = expression.replace(regex, "$feature, \"" + newfieldName);
-        //return expression;
-        expression = expression.split("$feature." + fieldName).join("$feature." + newfieldName);
-        expression = expression.split("$feature,\"" + fieldName).join("$feature,\"" + newfieldName);
-        expression = expression.split("$feature, \"" + fieldName).join("$feature, \"" + newfieldName);
+
+        search_vals = ["$feature.", "$feature,\"", "$feature, \"", '$feature["', "$feature['"]
+        var count = search_vals.length;
+
+        for (var i = 0; i < count; i++) {
+          var item = search_vals[i];
+          expression = expression.replaceAll(item + fieldName, item + newfieldName);
+        }
         return expression;
+
       } catch (err) {
         console.log("_processExpression error:" + err);
         return null;
@@ -2306,23 +2311,24 @@ define([
       });
     },
     _logRequest: function (geom, atts) {
-      if (this.serviceRequestLayerName !== null) {
-        if (this.serviceRequestLayerName.isEditable() === true) {
-          if (this.serviceRequestLayerName.geometryType === "esriGeometryPoint") {
-            var serviceLocation = new Graphic(geom, null, atts);
-            var editDeferred = this.serviceRequestLayerName.applyEdits([serviceLocation],
-              null, null);
+      if (typeof this.serviceRequestLayerName !== "undefined") {
+        if (this.serviceRequestLayerName !== null) {
+          if (this.serviceRequestLayerName.isEditable() === true) {
+            if (this.serviceRequestLayerName.geometryType === "esriGeometryPoint") {
+              var serviceLocation = new Graphic(geom, null, atts);
+              var editDeferred = this.serviceRequestLayerName.applyEdits([serviceLocation],
+                null, null);
 
-            editDeferred.addCallback(lang.hitch(this, function (result) {
-              console.log(result);
-            }));
-            editDeferred.addErrback(function (error) {
-              console.log(error);
-            });
+              editDeferred.addCallback(lang.hitch(this, function (result) {
+                console.log(result);
+              }));
+              editDeferred.addErrback(function (error) {
+                console.log(error);
+              });
+            }
           }
         }
       }
-
     },
     _createSymbols: function () {
       this.markerSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_SQUARE, 20,

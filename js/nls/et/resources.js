@@ -1,7 +1,7 @@
 define({
   "map": {
     "error": "Kaardi loomine ebaõnnestus",
-    "mouseToolTip": "Kliki kaardil teenuse kontrollimiseks"
+    "mouseToolTip": "Klikkige kaardil teenuse kontrollimiseks"
   },
   "error": {
     "layerNotFound": "Kiht pole veebikaardil",
