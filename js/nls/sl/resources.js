@@ -10,7 +10,7 @@ define({
     "noLayersSet": "Sloji niso določeni v konfiguraciji, iskalno polje ne bo delovalo"
   },
   "page": {
-    "title": "Vpogled informacij"
+    "title": "Vpogled v informacije"
   },
   "ui": {
     "basemapButton": "Temeljna karta"
