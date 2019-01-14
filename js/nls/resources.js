@@ -2,7 +2,11 @@ define({
     root: ({
         map: {
             error: "Unable to create map",
-            mouseToolTip: "Click on the map to check for service"
+            mouseToolTip: "Click on the map to check for service",
+            licenseError: {
+              message: "Your account is not licensed to use Configurable Apps that are not public. Please ask your organization administrator to assign you a user type that includes Essential Apps or an add-on Essential Apps license.",
+              title: "Not Licensed"
+            }
         },
         error: {
             layerNotFound: "Layer is not in the webmap",
@@ -37,7 +41,7 @@ define({
     "he": 1,
     "hi": 1,
     "hr": 1,
-	"hu": 1,
+	  "hu": 1,
     "id": 1,
     "it": 1,
     "ja": 1,

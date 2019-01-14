@@ -117,6 +117,7 @@
       "items": [{
         "type": "layerAndFieldSelector",
         "fields": [{
+          "editOnly": true,
           "supportedTypes": ["esriFieldTypeString"],
           "multipleSelection": false,
           "fieldName": "serviceRequestLayerAvailibiltyField",

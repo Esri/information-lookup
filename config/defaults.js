@@ -6,7 +6,7 @@ define([], function () {
   var defaults = {
     "appid": "",
     "webmap": "25660c0facdb419191c8b2dec5da74d7",
-    "oauthappid": null, //"AFTKRmv16wj14N3z",
+    "oauthappid": "arcgisWebApps", //"AFTKRmv16wj14N3z",
     //Group templates must support a group url parameter. This will contain the id of the group.
     //group: "",
     //Enter the url to the proxy if needed by the application. See the 'Using the proxy page' help topic for details

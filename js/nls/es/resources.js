@@ -1,7 +1,11 @@
 define({
   "map": {
     "error": "No se puede crear el mapa",
-    "mouseToolTip": "Haz clic en el mapa para comprobar el servicio"
+    "mouseToolTip": "Haz clic en el mapa para comprobar el servicio",
+    "licenseError": {
+      "message": "Su cuenta no tiene licencia para utilizar aplicaciones configurables que no son públicas. Pídale al administrador de su organización que le asigne un tipo de usuario que incluya aplicaciones esenciales o una licencia complementaria de aplicaciones esenciales.",
+      "title": "Sin licencia"
+    }
   },
   "error": {
     "layerNotFound": "La capa no está en el mapa web",

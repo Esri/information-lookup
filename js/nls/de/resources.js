@@ -1,7 +1,11 @@
 define({
   "map": {
     "error": "Karte kann nicht erstellt werden",
-    "mouseToolTip": "Klicken Sie auf die Karte, um den Service zu überprüfen"
+    "mouseToolTip": "Klicken Sie auf die Karte, um den Service zu überprüfen",
+    "licenseError": {
+      "message": "Ihr Konto ist nicht für die Verwendung von nicht öffentlichen konfigurierbaren Apps lizenziert. Bitten Sie den Administrator der Organisation, Ihnen einen Benutzertyp mit Essential Apps oder eine Add-On-Lizenz für Essential Apps zuzuweisen.",
+      "title": "Nicht lizenziert"
+    }
   },
   "error": {
     "layerNotFound": "Layer ist nicht in der Webkarte enthalten",
