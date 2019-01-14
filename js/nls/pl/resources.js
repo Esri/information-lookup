@@ -1,7 +1,11 @@
 define({
   "map": {
     "error": "Nie można utworzyć mapy",
-    "mouseToolTip": "Kliknij mapę, aby sprawdzić dostępność usługi"
+    "mouseToolTip": "Kliknij mapę, aby sprawdzić dostępność usługi",
+    "licenseError": {
+      "message": "Twoje konto nie jest licencjonowane do korzystania z aplikacji konfigurowalnych, które nie są publiczne. Poproś administratora instytucji o przypisanie typu użytkownika, który obejmuje licencję na kluczowe aplikacje lub licencję na kluczowe aplikacje dodatkowe.",
+      "title": "Nie licencjonowano"
+    }
   },
   "error": {
     "layerNotFound": "Warstwa nie znajduje się na mapie internetowej",

@@ -1,7 +1,11 @@
 define({
   "map": {
     "error": "Nije moguće stvoriti kartu",
-    "mouseToolTip": "Kliknite na kartu za pregled usluge"
+    "mouseToolTip": "Kliknite na kartu za pregled usluge",
+    "licenseError": {
+      "message": "Vaš račun nije licenciran za upotrebu konfigurabilnih appova koji nisu javni. Obratite se administratoru svoje organizacije da vam dodijeli vrstu korisnika koja sadrži licencu za osnovne appove ili za dodatke za osnovne appove.",
+      "title": "Nema licence"
+    }
   },
   "error": {
     "layerNotFound": "Sloj nije na web-karti",

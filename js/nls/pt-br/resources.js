@@ -1,7 +1,11 @@
 define({
   "map": {
     "error": "Não foi possível criar o mapa",
-    "mouseToolTip": "Clique no mapa para verificar por serviço"
+    "mouseToolTip": "Clique no mapa para verificar por serviço",
+    "licenseError": {
+      "message": "Sua conta não está licenciada para utilizar Aplicativos Configuráveis que não sejam públicos. Solicite ao administrador da sua organização que lhe atribua um tipo de usuário que inclua os Aplicativos Fundamentais ou uma licença complementar dos Aplicativos Fundamentais.",
+      "title": "Não Licenciado"
+    }
   },
   "error": {
     "layerNotFound": "A camada não está no mapa da web",

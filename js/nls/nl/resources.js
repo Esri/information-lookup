@@ -1,7 +1,11 @@
 define({
   "map": {
     "error": "Kan kaart niet maken",
-    "mouseToolTip": "Klik op de kaart om te controleren op service"
+    "mouseToolTip": "Klik op de kaart om te controleren op service",
+    "licenseError": {
+      "message": "Uw account heeft geen licentie om configureerbare apps te gebruiken die niet openbaar zijn. Vraag uw organisatiebeheerder om u een gebruikerstype toe te wijzen dat Essential Apps of een add-on Essential Apps-licentie bevat.",
+      "title": "Geen licentie"
+    }
   },
   "error": {
     "layerNotFound": "Kaartlaag bevindt zich niet in de webmap",
